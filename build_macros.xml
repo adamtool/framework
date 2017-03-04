@@ -1,0 +1,193 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="adam_macros">
+	<dirname property="macros.basedir" file="${ant.file.adam_macros}"/>
+
+<!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% TESTS %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+	<path id="testng.classpath">
+		<filelist id="tests.libs" dir=".">
+			<file name="${macros.basedir}/lib/testng-6.9.9/testng-6.9.9.jar"/>
+			<file name="${macros.basedir}/lib/testng-6.9.9/jcommander-1.48.jar" />
+		</filelist>
+	</path>
+
+	<taskdef name="testng" classname="org.testng.TestNGAntTask" classpathref="testng.classpath" />
+
+	<macrodef name="invoke-testng">
+		<attribute name="outputdir"/>
+		<attribute name="testclassesclasspath"/>
+		<attribute name="testclassesfolder"/>
+		<attribute name="examplesfolder"/>
+		<sequential>
+			<testng outputdir="@{outputdir}" verbose="2" haltonfailure="true">
+				<!-- enable assertions -->
+				<jvmarg value="-ea" />
+				<jvmarg value="-Dexamplesfolder=@{examplesfolder}" />
+				<classpath refid="@{testclassesclasspath}" />
+				<!--<xmlfileset file="testng.xml"/>		-->
+				<!-- only for all classes this would be enough	-->
+				<classfileset dir="@{testclassesfolder}">
+					<include name="**/*Test*.class"/>
+				</classfileset>
+			</testng>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="invoke-test-class">
+		<attribute name="reportsfolder"/>
+		<attribute name="testclassesclasspath"/>
+		<attribute name="testclassesfolder"/>
+		<attribute name="examplesfolder"/>
+		<sequential>
+			<condition property="propsSpecified">
+				<and>
+					<isset property="class.name"/>
+				</and>
+			</condition>
+			<tstamp/>
+			<fail unless="propsSpecified" message="class.name property not specified; try calling ant with -Dclass.name=uniolunisaar.adam...."/>
+			<copy file="${macros.basedir}/testng.single-class.xml" tofile="testng.xml" overwrite="true">
+				<filterset>
+					<filter token="CLASS" value="${class.name}"/>
+				</filterset>
+			</copy>
+			<invoke-testng outputdir="@{reportsfolder}/testng-single-class-${class.name}" 
+				testclassesclasspath="@{testclassesclasspath}"
+				testclassesfolder="@{testclassesfolder}"
+				examplesfolder="@{examplesfolder}"/>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="invoke-test-method">
+		<attribute name="reportsfolder"/>
+		<attribute name="testclassesclasspath"/>
+		<attribute name="testclassesfolder"/>
+		<attribute name="examplesfolder"/>
+		<sequential>
+			<condition property="propsSpecified">
+				<and>
+					<isset property="class.name"/>
+					<isset property="test.name"/>
+				</and>
+			</condition>
+			<tstamp/>
+			<fail unless="propsSpecified" message="class.name and/or test.name property not specified; try calling ant with -Dclass.name=uniolunisaar.adam... -Dtest.name=myTestMethod"/>
+			<copy file="${macros.basedir}/testng.single-method.xml" tofile="testng.xml" overwrite="true">
+				<filterset>
+					<filter token="CLASS" value="${class.name}"/>
+					<filter token="TEST" value="${test.name}"/>
+				</filterset>
+			</copy>		
+			<invoke-testng outputdir="@{reportsfolder}testng-single-class-${class.name}-${test.name}"
+				testclassesclasspath="@{testclassesclasspath}"
+				testclassesfolder="@{testclassesfolder}"
+				examplesfolder="@{examplesfolder}"/>
+		</sequential>
+	</macrodef>
+
+<!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% CHECK-DEPENDENCIES %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+	<macrodef name="invoke-check-dependencies">
+		<attribute name="resourcen"/>
+		<sequential>
+			<restrict id="missing.libs">
+				<resourcelist refid="@{resourcen}"/>
+				<not>
+					<exists/>
+				</not>
+			</restrict>
+
+			<property name="missing.libs" refid="missing.libs" />
+			<fail message="Some dependencies are missing: ${missing.libs}">
+				<condition>
+					<length string="${missing.libs}" when="greater" length="0" />
+				</condition>
+			</fail>		
+		</sequential>
+	</macrodef>
+
+<!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% JAVAC %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+	<macrodef name="invoke-javac">
+		<attribute name="dependencies"/>
+		<attribute name="classpath"/>
+		<attribute name="src"/>
+		<attribute name="output"/>
+		<sequential>
+			<invoke-check-dependencies resourcen="@{dependencies}"/>
+			<mkdir dir="@{output}"/>
+			<javac includes="**" encoding="utf-8" destdir="@{output}" source="1.7" target="1.7" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
+				<src path="@{src}"/>
+				<classpath refid="@{classpath}"/>
+				<compilerarg value="-Xlint:all"/>
+			</javac>
+		</sequential>
+	</macrodef>
+
+<!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% JAVADOC %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+	<macrodef name="invoke-javadoc">
+		<attribute name="sourcefolder"/>
+		<attribute name="testfolder"/>	
+		<attribute name="classpath"/>	
+		<attribute name="output"/>	
+		<sequential>
+			<mkdir dir="@{output}"/>
+			<javadoc encoding="utf-8" destdir="@{output}" author="true" version="true" use="true" charset="UTF-8" docencoding="UTF-8" access="private">
+				<fileset dir="@{sourcefolder}" includes="**/*.java"/>
+				<fileset dir="@{testfolder}" includes="**/*.java"/>
+				<classpath refid="@{classpath}" />
+			</javadoc>
+		</sequential>
+	</macrodef>
+
+<!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% JAR %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+	<macrodef name="invoke-jar-standalone">
+		<attribute name="filesuffix"/>
+		<attribute name="resources"/>	
+		<attribute name="outputfolder"/>	
+		<sequential>
+			<jar destfile="@{outputfolder}/adam_@{filesuffix}-standalone.jar">
+				<resources refid="@{resources}" />
+			</jar>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="invoke-jar">
+		<attribute name="filesuffix"/>
+		<attribute name="classesfolder"/>	
+		<attribute name="outputfolder"/>	
+		<sequential>
+			<jar destfile="@{outputfolder}/adam_@{filesuffix}.jar">				
+				<fileset dir="${classesfolder}"/>	
+			</jar>
+		</sequential>
+	</macrodef>
+
+<!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% CLEANING %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
+	<macrodef name="invoke-clean">
+		<attribute name="classesfolder"/>
+		<attribute name="testclassesfolder"/>
+		<attribute name="javadocfolder"/>
+		<attribute name="subproject"/>
+		<sequential>
+			<delete dir="@{classesfolder}" failonerror="false"/>
+			<delete dir="@{testclassesfolder}" failonerror="false"/>
+			<delete dir="@{javadocfolder}" failonerror="false"/>
+			<delete file="adam_@{subproject}.jar" failonerror="false"/>
+			<delete file="testng.xml" failonerror="false"/>
+		</sequential>
+	</macrodef>
+
+	<macrodef name="invoke-clean-all">
+		<attribute name="classesfolder"/>
+		<attribute name="testclassesfolder"/>
+		<attribute name="javadocfolder"/>
+		<attribute name="subproject"/>
+		<attribute name="reportsfolder"/>
+		<sequential>
+			<invoke-clean
+				classesfolder="@{classesfolder}"
+				testclassesfolder="@{testclassesfolder}"
+				javadocfolder="@{javadocfolder}"
+				subproject="@{subproject}"/>
+			<delete dir="@{reportsfolder}" failonerror="false"/>
+		</sequential>
+	</macrodef>
+</project>
