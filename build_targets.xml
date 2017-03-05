@@ -69,7 +69,7 @@
 	</union>
 
 	<target name="jar-standalone" depends="javac" description="Builds a logics jar file. Also contains all files of the needed dependencies.">
-		<invoke-jar outputfolder="${subproject.basedir}" filesuffix="${subproject}" resources="jar.res"/>
+		<invoke-jar-standalone outputfolder="${subproject.basedir}" filesuffix="${subproject}" resources="jar.res"/>
 	</target>
 
 	<target name="jar" depends="javac" description="Builds a logics jar file. Also contains all files of the needed dependencies.">
