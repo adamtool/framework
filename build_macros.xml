@@ -22,11 +22,11 @@
 				<jvmarg value="-ea" />
 				<jvmarg value="-Dexamplesfolder=@{examplesfolder}" />
 				<classpath refid="@{testclassesclasspath}" />
-				<!--<xmlfileset file="testng.xml"/>		-->
+				<xmlfileset file="testng.xml"/>		
 				<!-- only for all classes this would be enough	-->
-				<classfileset dir="@{testclassesfolder}">
+			<!--	<classfileset dir="@{testclassesfolder}">
 					<include name="**/*Test*.class"/>
-				</classfileset>
+				</classfileset>-->
 			</testng>
 		</sequential>
 	</macrodef>
