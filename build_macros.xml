@@ -4,10 +4,9 @@
 
 <!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% TESTS %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 	<path id="testng.classpath">
-		<filelist id="tests.libs" dir=".">
-			<file name="${macros.basedir}/lib/testng-6.9.9/testng-6.9.9.jar"/>
-			<file name="${macros.basedir}/lib/testng-6.9.9/jcommander-1.48.jar" />
-		</filelist>
+		<resourcelist id="tests.libs">
+			<file name="${macros.basedir}/test/testlibs.res"/>
+		</resourcelist>
 	</path>
 
 	<taskdef name="testng" classname="org.testng.TestNGAntTask" classpathref="testng.classpath" />
