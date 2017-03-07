@@ -28,9 +28,14 @@
 			classpath="tests.classpath"
 			src="${testfolder}"
 			output="${testclassesfolder}" />
+		<invoke-javac
+			dependencies="tests.libs"
+			classpath="tests.classpath"
+			src="${macros.basedir}/test"
+			output="${testclassesfolder}" />
 	</target>
 	
-	<target name="test" depends="tests.javac" description="Run tests">
+	<target name="test" depends="tests.javac,create-xml" description="Run tests">
 		<invoke-testng 
 			outputdir="${reportsfolder}/all"
 			testclassesclasspath="tests.classpath"
@@ -52,6 +57,15 @@
 			testclassesclasspath="tests.classpath"
 			testclassesfolder="${testclassesfolder}"
 			examplesfolder="${examplesfolder}"/>
+	</target>
+
+	<target name="create-xml" description="Creates the testng.xml for the test suite">
+		<java classname="uniol.apt.tasks.WriteTestsXML" failonerror="true">
+			<classpath refid="tests.classpath" />
+			<arg path="testng.xml" />
+			<arg path="${testclassesfolder}" />
+			<arg value="*Test.class" />
+		</java>
 	</target>
 <!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% JAVADOC %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 	<target name="javadoc" description="Generate logics documentation from java source">
