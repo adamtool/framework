@@ -140,10 +140,12 @@
 	<macrodef name="invoke-jar-standalone">
 		<attribute name="filesuffix"/>
 		<attribute name="resources"/>	
+		<attribute name="jarresources"/>	
 		<attribute name="outputfolder"/>	
 		<sequential>
 			<jar destfile="@{outputfolder}/adam_@{filesuffix}-standalone.jar">
 				<resources refid="@{resources}" />
+				<zipgroupfileset dir="${macros.basedir}/lib" includes="@{jarresources}"/>
 			</jar>
 		</sequential>
 	</macrodef>
@@ -154,7 +156,7 @@
 		<attribute name="outputfolder"/>	
 		<sequential>
 			<jar destfile="@{outputfolder}/adam_@{filesuffix}.jar">				
-				<fileset dir="${classesfolder}"/>	
+				<fileset dir="@{classesfolder}"/>	
 			</jar>
 		</sequential>
 	</macrodef>
@@ -187,6 +189,7 @@
 				javadocfolder="@{javadocfolder}"
 				subproject="@{subproject}"/>
 			<delete dir="@{reportsfolder}" failonerror="false"/>
+			<delete file="adam_@{subproject}-standalone.jar" failonerror="false"/>
 		</sequential>
 	</macrodef>
 </project>
