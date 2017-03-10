@@ -8,7 +8,7 @@
 		</resourcelist>
 	</path>
 	
-	<target name="javac" description="Compile logics code">
+	<target name="javac" description="Compile code">
 		<invoke-javac 
 			dependencies="libs" 
 			classpath="classpath"
@@ -33,7 +33,7 @@
 		<invoke-javac
 			dependencies="tests.libs"
 			classpath="tests.classpath"
-			src="${macros.basedir}/test"
+			src="${macros.basedir}/test/src"
 			output="${testclassesfolder}" />
 	</target>
 	
@@ -45,7 +45,7 @@
 			examplesfolder="${examplesfolder}"/>
 	</target>
 
-	<target name="test-class" depends="tests.javac" description="Compile logics test code">
+	<target name="test-class" depends="tests.javac" description="Run test code for a specific class.">
 		<invoke-test-class
 			reportsfolder="${reportsfolder}"
 			testclassesclasspath="tests.classpath"
@@ -53,7 +53,7 @@
 			examplesfolder="${examplesfolder}"/>
 	</target>
 
-	<target name="test-method" depends="tests.javac" description="Compile logics test code">
+	<target name="test-method" depends="tests.javac" description="Run test code for a specific method.">
 		<invoke-test-method
 			reportsfolder="${reportsfolder}"
 			testclassesclasspath="tests.classpath"
@@ -62,15 +62,15 @@
 	</target>
 
 	<target name="create-xml" description="Creates the testng.xml for the test suite">
-		<java classname="uniol.apt.tasks.WriteTestsXML" failonerror="true">
+		<java classname="uniolunisaar.adam.ant.tasks.WriteTestsXML" failonerror="true">
 			<classpath refid="tests.classpath" />
 			<arg path="testng.xml" />
 			<arg path="${testclassesfolder}" />
-			<arg value="*Test.class" />
+<!--			<arg value="*Test.class" />-->
 		</java>
 	</target>
 <!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% JAVADOC %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-	<target name="javadoc" description="Generate logics documentation from java source">
+	<target name="javadoc" description="Generate documentation from java source">
 		<invoke-javadoc
 			sourcefolder="${srcfolder}"
 			testfolder="${testfolder}"
@@ -108,12 +108,12 @@
 			<resources refid="${subproject}.jar.res" />
 	</union>
 
-	<target name="jar-standalone" depends="javac" description="Builds a logics jar file. Also contains all files of the needed dependencies.">
+	<target name="jar-standalone" depends="javac" description="Builds a jar file. Also contains all files of the needed dependencies.">
 		<invoke-jar-standalone outputfolder="${subproject.basedir}" filesuffix="${subproject}" resources="jar.res" jarresources="${libs.jars}"/>
 	</target>
 
 <!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% JAR %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-	<target name="jar" depends="javac" description="Builds a logics jar file. Also contains all files of the needed dependencies.">
+	<target name="jar" depends="javac" description="Builds a jar file with all classes belonging to this package.">
 		<invoke-jar outputfolder="${subproject.basedir}" filesuffix="${subproject}" classesfolder="${classesfolder}"/>
 	</target>
 

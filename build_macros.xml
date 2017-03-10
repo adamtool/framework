@@ -65,18 +65,18 @@
 			<condition property="propsSpecified">
 				<and>
 					<isset property="class.name"/>
-					<isset property="test.name"/>
+					<isset property="method.name"/>
 				</and>
 			</condition>
 			<tstamp/>
-			<fail unless="propsSpecified" message="class.name and/or test.name property not specified; try calling ant with -Dclass.name=uniolunisaar.adam... -Dtest.name=myTestMethod"/>
+			<fail unless="propsSpecified" message="class.name and/or test.name property not specified; try calling ant with -Dclass.name=uniolunisaar.adam... -Dmethod.name=myTestMethod"/>
 			<copy file="${macros.basedir}/testng.single-method.xml" tofile="testng.xml" overwrite="true">
 				<filterset>
 					<filter token="CLASS" value="${class.name}"/>
-					<filter token="TEST" value="${test.name}"/>
+					<filter token="TEST" value="${method.name}"/>
 				</filterset>
 			</copy>		
-			<invoke-testng outputdir="@{reportsfolder}testng-single-class-${class.name}-${test.name}"
+			<invoke-testng outputdir="@{reportsfolder}/testng-single-class-${class.name}-${method.name}"
 				testclassesclasspath="@{testclassesclasspath}"
 				testclassesfolder="@{testclassesfolder}"
 				examplesfolder="@{examplesfolder}"/>
