@@ -16,11 +16,13 @@
 		<attribute name="testclassesclasspath"/>
 		<attribute name="testclassesfolder"/>
 		<attribute name="examplesfolder"/>
+		<attribute name="testoutputfolder"/>
 		<sequential>
 			<testng outputdir="@{outputdir}" verbose="2" haltonfailure="true">
 				<!-- enable assertions -->
 				<jvmarg value="-ea" />
 				<jvmarg value="-Dexamplesfolder=@{examplesfolder}" />
+				<jvmarg value="-Dtestoutputfolder=@{testoutputfolder}" />
 				<classpath refid="@{testclassesclasspath}" />
 				<xmlfileset file="testng.xml"/>		
 				<!-- only for all classes this would be enough	-->
@@ -36,6 +38,7 @@
 		<attribute name="testclassesclasspath"/>
 		<attribute name="testclassesfolder"/>
 		<attribute name="examplesfolder"/>
+		<attribute name="testoutputfolder"/>
 		<sequential>
 			<condition property="propsSpecified">
 				<and>
@@ -52,7 +55,8 @@
 			<invoke-testng outputdir="@{reportsfolder}/testng-single-class-${class.name}" 
 				testclassesclasspath="@{testclassesclasspath}"
 				testclassesfolder="@{testclassesfolder}"
-				examplesfolder="@{examplesfolder}"/>
+				examplesfolder="@{examplesfolder}"
+				testoutputfolder="@{testoutputfolder}"/>
 		</sequential>
 	</macrodef>
 
@@ -61,6 +65,7 @@
 		<attribute name="testclassesclasspath"/>
 		<attribute name="testclassesfolder"/>
 		<attribute name="examplesfolder"/>
+		<attribute name="testoutputfolder"/>
 		<sequential>
 			<condition property="propsSpecified">
 				<and>
@@ -79,7 +84,8 @@
 			<invoke-testng outputdir="@{reportsfolder}/testng-single-class-${class.name}-${method.name}"
 				testclassesclasspath="@{testclassesclasspath}"
 				testclassesfolder="@{testclassesfolder}"
-				examplesfolder="@{examplesfolder}"/>
+				examplesfolder="@{examplesfolder}"
+				testoutputfolder="@{testoutputfolder}"/>
 		</sequential>
 	</macrodef>
 
@@ -179,6 +185,7 @@
 	<macrodef name="invoke-clean-all">
 		<attribute name="classesfolder"/>
 		<attribute name="testclassesfolder"/>
+		<attribute name="testoutputfolder"/>
 		<attribute name="javadocfolder"/>
 		<attribute name="subproject"/>
 		<attribute name="reportsfolder"/>
@@ -189,6 +196,7 @@
 				javadocfolder="@{javadocfolder}"
 				subproject="@{subproject}"/>
 			<delete dir="@{reportsfolder}" failonerror="false"/>
+			<delete dir="@{testoutputfolder}" failonerror="false"/>
 			<delete file="adam_@{subproject}-standalone.jar" failonerror="false"/>
 		</sequential>
 	</macrodef>

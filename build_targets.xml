@@ -21,6 +21,9 @@
 		<path refid="classpath" />
 		<pathelement location="${testclassesfolder}"/>
 		<path refid="testng.classpath" />
+		<resourcelist id="subprojects.tests.libs">
+			<file file="${subproject.basedir}/testlibs.res"/>
+		</resourcelist>
 	</path>
 
 	<target name="tests.javac" depends="javac" description="Compile test code">
@@ -42,7 +45,8 @@
 			outputdir="${reportsfolder}/all"
 			testclassesclasspath="tests.classpath"
 			testclassesfolder="${testclassesfolder}"
-			examplesfolder="${examplesfolder}"/>
+			examplesfolder="${examplesfolder}"
+			testoutputfolder="${testoutputfolder}"/>
 	</target>
 
 	<target name="test-class" depends="tests.javac" description="Run test code for a specific class.">
@@ -50,7 +54,8 @@
 			reportsfolder="${reportsfolder}"
 			testclassesclasspath="tests.classpath"
 			testclassesfolder="${testclassesfolder}"
-			examplesfolder="${examplesfolder}"/>
+			examplesfolder="${examplesfolder}"
+			testoutputfolder="${testoutputfolder}"/>
 	</target>
 
 	<target name="test-method" depends="tests.javac" description="Run test code for a specific method.">
@@ -58,7 +63,8 @@
 			reportsfolder="${reportsfolder}"
 			testclassesclasspath="tests.classpath"
 			testclassesfolder="${testclassesfolder}"
-			examplesfolder="${examplesfolder}"/>
+			examplesfolder="${examplesfolder}"
+			testoutputfolder="${testoutputfolder}"/>
 	</target>
 
 	<target name="create-xml" description="Creates the testng.xml for the test suite">
@@ -132,6 +138,7 @@
 			testclassesfolder="${testclassesfolder}"
 			javadocfolder="${javadocfolder}"
 			subproject="${subproject}"
-		    reportsfolder="${reportsfolder}" />
+		    reportsfolder="${reportsfolder}"
+		    testoutputfolder="${testoutputfolder}" />
 	</target>
 </project>
