@@ -31,12 +31,12 @@
 		<invoke-javac
 			dependencies="tests.libs"
 			classpath="tests.classpath"
-			src="${testfolder}"
+			src="${macros.basedir}/test/src"
 			output="${testclassesfolder}" />
 		<invoke-javac
 			dependencies="tests.libs"
 			classpath="tests.classpath"
-			src="${macros.basedir}/test/src"
+			src="${testfolder}"
 			output="${testclassesfolder}" />
 	</target>
 	
