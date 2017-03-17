@@ -46,7 +46,8 @@
 			testclassesclasspath="tests.classpath"
 			testclassesfolder="${testclassesfolder}"
 			examplesfolder="${examplesfolder}"
-			testoutputfolder="${testoutputfolder}"/>
+			testoutputfolder="${testoutputfolder}"
+			libfolder="${libfolder}"/>
 	</target>
 
 	<target name="test-class" depends="tests.javac" description="Run test code for a specific class.">
@@ -55,7 +56,8 @@
 			testclassesclasspath="tests.classpath"
 			testclassesfolder="${testclassesfolder}"
 			examplesfolder="${examplesfolder}"
-			testoutputfolder="${testoutputfolder}"/>
+			testoutputfolder="${testoutputfolder}"
+			libfolder="${libfolder}"/>
 	</target>
 
 	<target name="test-method" depends="tests.javac" description="Run test code for a specific method.">
@@ -64,7 +66,8 @@
 			testclassesclasspath="tests.classpath"
 			testclassesfolder="${testclassesfolder}"
 			examplesfolder="${examplesfolder}"
-			testoutputfolder="${testoutputfolder}"/>
+			testoutputfolder="${testoutputfolder}"
+			libfolder="${libfolder}"/>
 	</target>
 
 	<target name="create-xml" description="Creates the testng.xml for the test suite">

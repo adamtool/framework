@@ -17,12 +17,14 @@
 		<attribute name="testclassesfolder"/>
 		<attribute name="examplesfolder"/>
 		<attribute name="testoutputfolder"/>
+		<attribute name="libfolder"/>
 		<sequential>
 			<testng outputdir="@{outputdir}" verbose="2" haltonfailure="true">
 				<!-- enable assertions -->
 				<jvmarg value="-ea" />
 				<jvmarg value="-Dexamplesfolder=@{examplesfolder}" />
 				<jvmarg value="-Dtestoutputfolder=@{testoutputfolder}" />
+				<jvmarg value="-Dlibfolder=@{libfolder}" />
 				<classpath refid="@{testclassesclasspath}" />
 				<xmlfileset file="testng.xml"/>		
 				<!-- only for all classes this would be enough	-->
@@ -39,6 +41,7 @@
 		<attribute name="testclassesfolder"/>
 		<attribute name="examplesfolder"/>
 		<attribute name="testoutputfolder"/>
+		<attribute name="libfolder"/>
 		<sequential>
 			<condition property="propsSpecified">
 				<and>
@@ -56,7 +59,8 @@
 				testclassesclasspath="@{testclassesclasspath}"
 				testclassesfolder="@{testclassesfolder}"
 				examplesfolder="@{examplesfolder}"
-				testoutputfolder="@{testoutputfolder}"/>
+				testoutputfolder="@{testoutputfolder}"
+				libfolder="@{libfolder}"/>
 		</sequential>
 	</macrodef>
 
@@ -66,6 +70,7 @@
 		<attribute name="testclassesfolder"/>
 		<attribute name="examplesfolder"/>
 		<attribute name="testoutputfolder"/>
+		<attribute name="libfolder"/>
 		<sequential>
 			<condition property="propsSpecified">
 				<and>
@@ -85,7 +90,8 @@
 				testclassesclasspath="@{testclassesclasspath}"
 				testclassesfolder="@{testclassesfolder}"
 				examplesfolder="@{examplesfolder}"
-				testoutputfolder="@{testoutputfolder}"/>
+				testoutputfolder="@{testoutputfolder}"
+				libfolder="@{libfolder}"/>
 		</sequential>
 	</macrodef>
 
