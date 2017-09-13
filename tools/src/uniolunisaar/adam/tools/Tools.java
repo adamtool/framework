@@ -263,9 +263,8 @@ public class Tools {
         return FileUtils.readFileToString(new File(path));
     }
 
-    public static boolean isDeterministic(PetriNet strat) {
+    public static boolean isDeterministic(PetriNet strat, CoverabilityGraph cover) {
         boolean det = true;
-        CoverabilityGraph cover = CoverabilityGraph.getReachabilityGraph(strat);
         for (Place place : strat.getPlaces()) {
             if (!place.hasExtension("env")) {
                 Set<Transition> post = place.getPostset();
@@ -328,10 +327,49 @@ public class Tools {
         return false;
     }
 
+    public static boolean isDeadlockAvoiding(PetriNet origNet, PetriNet strat, CoverabilityGraph cover) {        
+        for (Iterator<CoverabilityGraphNode> iterator = cover.getNodes().iterator(); iterator.hasNext();) {
+            CoverabilityGraphNode next = iterator.next();
+            Marking m = next.getMarking();
+            // Get marking in original net
+            Marking mappedMarking = new Marking(origNet);
+            for (Place place : strat.getPlaces()) {
+                int val = (int) m.getToken(place).getValue();
+                if (val > 0) {
+                    mappedMarking = mappedMarking.addTokenCount((String) place.getExtension("origID"), val);
+                }
+            }
+            // if there's a transition in the original isfirable
+            boolean firable = false;
+            for (Transition t : origNet.getTransitions()) {
+                if (t.isFireable(mappedMarking)) {
+                    firable = true;
+                    break;
+                }
+            }
+            if (firable) { // there must also be a firable transition in the strategy                
+                boolean stratfirable = false;
+                for (Transition t : strat.getTransitions()) {
+                    if (t.isFireable(m)) {
+                        stratfirable = true;
+                        break;
+                    }
+                }
+                if (!stratfirable) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public static boolean checkStrategy(PetriNet origNet, PetriNet strat) {
         boolean isStrat = true;
+        CoverabilityGraph cover = CoverabilityGraph.getReachabilityGraph(strat);
+        // deadlock avoiding
+        isStrat &= isDeadlockAvoiding(origNet, strat, cover);
         // (S1)
-        isStrat &= isDeterministic(strat);
+        isStrat &= isDeterministic(strat, cover);
         // (S2)
         isStrat &= !restrictsEnvTransition(origNet, strat);
         return isStrat;
