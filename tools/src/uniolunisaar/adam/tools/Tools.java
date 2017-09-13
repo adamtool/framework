@@ -263,10 +263,10 @@ public class Tools {
         return FileUtils.readFileToString(new File(path));
     }
 
-    public static boolean isDeterministic(PetriNet net) {
+    public static boolean isDeterministic(PetriNet strat) {
         boolean det = true;
-        CoverabilityGraph cover = CoverabilityGraph.getReachabilityGraph(net);
-        for (Place place : net.getPlaces()) {
+        CoverabilityGraph cover = CoverabilityGraph.getReachabilityGraph(strat);
+        for (Place place : strat.getPlaces()) {
             if (!place.hasExtension("env")) {
                 Set<Transition> post = place.getPostset();
                 for (Iterator<CoverabilityGraphNode> iterator = cover.getNodes().iterator(); iterator.hasNext();) {
@@ -292,5 +292,48 @@ public class Tools {
             }
         }
         return det;
+    }
+
+    public static boolean isEnvTransition(Transition t) {
+        for (Place p : t.getPreset()) {
+            if (!p.hasExtension("env")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public static boolean restrictsEnvTransition(PetriNet origNet, PetriNet strat) {
+        for (Place place : strat.getPlaces()) { // every env place of the strategy
+            if (place.hasExtension("env")) {
+                String id = (String) place.getExtension("origID");
+                Place origPlace = origNet.getPlace(id);
+                Set<Transition> post = origPlace.getPostset();
+                for (Transition transition : post) {
+                    if (isEnvTransition(transition)) { // should not restrict a single env transition
+                        boolean found = false;
+                        for (Transition t : place.getPostset()) {
+                            // we must find the id of transition "transition"
+                            if (t.getLabel().equals(transition.getId())) {
+                                found = true;
+                            }
+                        }
+                        if (!found) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public static boolean checkStrategy(PetriNet origNet, PetriNet strat) {
+        boolean isStrat = true;
+        // (S1)
+        isStrat &= isDeterministic(strat);
+        // (S2)
+        isStrat &= !restrictsEnvTransition(origNet, strat);
+        return isStrat;
     }
 }
