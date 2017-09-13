@@ -7,12 +7,16 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import uniol.apt.adt.pn.Flow;
+import uniol.apt.adt.pn.Marking;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniol.apt.analysis.coverability.CoverabilityGraph;
+import uniol.apt.analysis.coverability.CoverabilityGraphNode;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.io.parser.impl.AptPNParser;
 import uniol.apt.io.renderer.impl.AptPNRenderer;
@@ -257,5 +261,36 @@ public class Tools {
 
     public static String readFile(String path) throws IOException {
         return FileUtils.readFileToString(new File(path));
+    }
+
+    public static boolean isDeterministic(PetriNet net) {
+        boolean det = true;
+        CoverabilityGraph cover = CoverabilityGraph.getReachabilityGraph(net);
+        for (Place place : net.getPlaces()) {
+            if (!place.hasExtension("env")) {
+                Set<Transition> post = place.getPostset();
+                for (Iterator<CoverabilityGraphNode> iterator = cover.getNodes().iterator(); iterator.hasNext();) {
+                    CoverabilityGraphNode next = iterator.next();
+                    Marking m = next.getMarking();
+                    boolean exTransition = false;
+                    for (Transition transition : post) {
+                        Set<Place> pre = transition.getPreset();
+                        boolean isSubset = true;
+                        for (Place place1 : pre) {
+                            if (m.getToken(place1).getValue() <= 0) {
+                                isSubset = false;
+                            }
+                        }
+                        if (isSubset) {
+                            if (exTransition) {
+                                return false;
+                            }
+                            exTransition = true;
+                        }
+                    }
+                }
+            }
+        }
+        return det;
     }
 }
