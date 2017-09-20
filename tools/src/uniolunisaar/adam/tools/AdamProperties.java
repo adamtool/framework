@@ -3,13 +3,13 @@ package uniolunisaar.adam.tools;
 import java.util.Enumeration;
 import java.util.Properties;
 
-public class ADAMProperties {
+public class AdamProperties {
 
-    private static ADAMProperties instance = null;
+    private static AdamProperties instance = null;
     private static Properties props;
     private static final String LIBFOLDER = "libfolder";
 
-    private ADAMProperties() {//throws ClassNotFoundException, IOException {
+    private AdamProperties() {//throws ClassNotFoundException, IOException {
         props = new Properties();
 //        InputStream input = null;
 //        String filename = "ADAM.prop";
@@ -26,9 +26,9 @@ public class ADAMProperties {
         props.setProperty(LIBFOLDER, folder == null ? "./lib" : folder);
     }
 
-    public static ADAMProperties getInstance() {//throws ClassNotFoundException, IOException {
+    public static AdamProperties getInstance() {//throws ClassNotFoundException, IOException {
         if (instance == null) {
-            instance = new ADAMProperties();
+            instance = new AdamProperties();
         }
         return instance;
     }

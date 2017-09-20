@@ -207,8 +207,36 @@ public class Tools {
         Logger.getInstance().addMessage("Saved to: " + path + ".dot", false);
     }
 
-    public static PetriNet getPetriNet(String input) throws ParseException, IOException {
-        PetriNet net = new AptPNParser().parseFile(input);
+    /**
+     * Returns a Petri net parsed from the given string
+     *
+     * @param content
+     * @return
+     * @throws ParseException
+     * @throws IOException
+     */
+    public static PetriNet getPetriNetFromString(String content) throws ParseException, IOException {
+        PetriNet net = new AptPNParser().parseString(content);
+        Set<Transition> transitions = new HashSet<>(net.getTransitions());
+        for (Transition trans : transitions) {
+            if (trans.getPreset().isEmpty() && trans.getPostset().isEmpty()) {
+                net.removeTransition(trans);
+                Logger.getInstance().addMessage("[WARNING] You added a transition (" + trans + ") with an empty pre- and postset. We deleted it for usability reasons.", false);
+            }
+        }
+        return net;
+    }
+
+    /**
+     * Returns a Petri net parsed from the given file at the path
+     *
+     * @param path
+     * @return
+     * @throws ParseException
+     * @throws IOException
+     */
+    public static PetriNet getPetriNet(String path) throws ParseException, IOException {
+        PetriNet net = new AptPNParser().parseFile(path);
         Set<Transition> transitions = new HashSet<>(net.getTransitions());
         for (Transition trans : transitions) {
             if (trans.getPreset().isEmpty() && trans.getPostset().isEmpty()) {
@@ -327,7 +355,7 @@ public class Tools {
         return false;
     }
 
-    public static boolean isDeadlockAvoiding(PetriNet origNet, PetriNet strat, CoverabilityGraph cover) {        
+    public static boolean isDeadlockAvoiding(PetriNet origNet, PetriNet strat, CoverabilityGraph cover) {
         for (Iterator<CoverabilityGraphNode> iterator = cover.getNodes().iterator(); iterator.hasNext();) {
             CoverabilityGraphNode next = iterator.next();
             Marking m = next.getMarking();
