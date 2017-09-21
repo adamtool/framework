@@ -42,6 +42,9 @@ and the classes have to start with ${mainfolder}/ and have to be located from th
 	<target name="jar-standalone" depends="loadProperties" description="Builds a jar with all its dependencies">
 		<antcall target="tools.fu.jar-standalone"/>
 	</target>
+	<target name="javadoc" depends="loadProperties" description="Creates the JavaDoc of this package.">
+		<antcall target="bounded.fu.javadoc"/>
+	</target>
 	<target name="clean" depends="loadProperties" description="Cleans all temporary files.">
 		<antcall target="tools.fu.clean"/>
 	</target>
