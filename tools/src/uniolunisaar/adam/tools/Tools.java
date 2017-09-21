@@ -19,6 +19,7 @@ import uniol.apt.analysis.coverability.CoverabilityGraph;
 import uniol.apt.analysis.coverability.CoverabilityGraphNode;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.io.parser.impl.AptPNParser;
+import uniol.apt.io.renderer.RenderException;
 import uniol.apt.io.renderer.impl.AptPNRenderer;
 import uniol.apt.module.exception.ModuleException;
 
@@ -257,7 +258,7 @@ public class Tools {
         savePN2DotAndPDF(output, pn, withLabel);
     }
 
-    public static String getPN(PetriNet net) throws ModuleException {
+    public static String getPN(PetriNet net) throws RenderException {
         String file = new AptPNRenderer().render(net);
         // TODO: Since the APT-Renderer isn't adaptive enough, 
         // delete the quotation marks around the token number
