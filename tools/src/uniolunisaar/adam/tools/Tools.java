@@ -56,6 +56,26 @@ public class Tools {
         }
         return String.valueOf(i - 52);
     }
+
+    /**
+     * Returns the reverse of calcStringIDSmallPrecendence. So it really have to
+     * be calculated with this method!
+     *
+     * @param id
+     * @return
+     */
+    public static int calcStringIDSmallPrecedenceReverse(String id) {
+        assert id.length() == 1;
+        int i = (int) id.charAt(0);
+        assert i >= 0;
+        if (i >= 97 && i <= 122) {
+            return i - 97;
+        }
+        if (i >= 65 && i <= 90) {
+            return i - 65 + 26;
+        }
+        return i + 52;
+    }
 //
 //    /**
 //     * @deprecated not in use anymore
