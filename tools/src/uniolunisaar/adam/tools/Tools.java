@@ -24,7 +24,7 @@ import uniol.apt.module.exception.ModuleException;
 public class Tools {
 
     /**
-     * Returns A-Za-z0-... for i>=0
+     * Returns A-Z, a-z, 0-... for i>=0
      *
      * @param i
      * @return
@@ -36,6 +36,23 @@ public class Tools {
         }
         if (i > 25 && i < 52) {
             return Character.toString((char) (i + 71));
+        }
+        return String.valueOf(i - 52);
+    }
+
+    /**
+     * Returns a-z, A-Z, 0-... for i>=0
+     *
+     * @param i
+     * @return
+     */
+    public static String calcStringIDSmallPrecedence(int i) {
+        assert i >= 0;
+        if (i >= 0 && i < 26) {
+            return Character.toString((char) (i + 97));
+        }
+        if (i > 25 && i < 52) {
+            return Character.toString((char) (i + 39));
         }
         return String.valueOf(i - 52);
     }
