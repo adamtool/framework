@@ -7,6 +7,7 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
 /**
  *
@@ -87,6 +88,13 @@ public class Logger {
                 System.err.println("Could not send message.");
             }
         }
+    }
+
+    public void addErrorMessage(String msg, Exception e) {
+        if (verbose) {
+            msg = "\n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace());
+        }
+        addErrorMessage(msg);
     }
 
     public void addErrorMessage(String msg) {
