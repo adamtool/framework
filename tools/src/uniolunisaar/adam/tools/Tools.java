@@ -9,9 +9,7 @@ import java.io.PrintStream;
 import java.util.HashSet;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
-import uniol.apt.adt.extension.ExtensionProperty;
 import uniol.apt.adt.pn.PetriNet;
-import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.io.parser.impl.AptPNParser;
@@ -106,7 +104,7 @@ public class Tools {
         for (Transition trans : transitions) {
             if (trans.getPreset().isEmpty() && trans.getPostset().isEmpty()) {
                 net.removeTransition(trans);
-                Logger.getInstance().addMessage("[WARNING] You added a transition (" + trans + ") with an empty pre- and postset. We deleted it for usability reasons.", false);
+                Logger.getInstance().addWarning("You added a transition (" + trans + ") with an empty pre- and postset. We deleted it for usability reasons.");
             }
         }
         return net;
@@ -126,7 +124,7 @@ public class Tools {
         for (Transition trans : transitions) {
             if (trans.getPreset().isEmpty() && trans.getPostset().isEmpty()) {
                 net.removeTransition(trans);
-                Logger.getInstance().addMessage("[WARNING] You added a transition (" + trans + ") with an empty pre- and postset. We deleted it for usability reasons.", false);
+                Logger.getInstance().addWarning("You added a transition (" + trans + ") with an empty pre- and postset. We deleted it for usability reasons.");
             }
         }
         return net;

@@ -16,22 +16,24 @@ import java.util.Arrays;
 public class Logger {
 
     public enum OUTPUT {
-
         NONE,
-        CONSOLE,
+        STREAMS,
         FILE,
-        CONSOLE_AND_FILE,
+        STREAMS_AND_FILE,
         CLIENT
     }
     private static Logger instance = null;
 
     private Logger() {
-        this.verbose = true;
         this.silent = false;
-        this.output = OUTPUT.CONSOLE;
+        this.output = OUTPUT.STREAMS;
         this.path = null;
         this.file = null;
         this.systemOutput = System.out;
+        this.shortMessageStream = System.out;
+        this.verboseMessageStream = System.out;
+        this.errorStream = System.err;
+        this.warningStream = System.out;
     }
 
     public static Logger getInstance() {
@@ -40,7 +42,18 @@ public class Logger {
         }
         return instance;
     }
-    private boolean verbose;
+
+    private PrintStream errorStream;
+    private PrintStream warningStream;
+    private PrintStream shortMessageStream;
+    private PrintStream verboseMessageStream;
+    private final PrintStream emptyStream = new PrintStream(new OutputStream() {
+        @Override
+        public void write(int arg0) throws IOException {
+            // keep empty
+        }
+    });
+
     private boolean silent;
     private OUTPUT output;
     private String path;
@@ -63,19 +76,23 @@ public class Logger {
     }
 
     public void addMessage(String msg, boolean verbose, boolean forced) {
-        if ((!this.verbose && verbose) || (silent && !forced)) {
+        if (silent && !forced) {
             return;
         }
-        if (output == OUTPUT.CONSOLE || output == OUTPUT.CONSOLE_AND_FILE) {
+        if (output == OUTPUT.STREAMS || output == OUTPUT.STREAMS_AND_FILE) {
             if (forced) {
                 setSilent(false);
             }
-            System.out.println(msg);
+            if (verbose) {
+                verboseMessageStream.println(msg);
+            } else {
+                shortMessageStream.println(msg);
+            }
             if (forced) {
                 setSilent(true);
             }
         }
-        if (output == OUTPUT.FILE || output == OUTPUT.CONSOLE_AND_FILE) {
+        if (output == OUTPUT.FILE || output == OUTPUT.STREAMS_AND_FILE) {
             file.append(msg).append(System.lineSeparator());
             file.flush();
         }
@@ -90,26 +107,40 @@ public class Logger {
         }
     }
 
-    public void addErrorMessage(String msg, Exception e) {
-        if (verbose) {
-            msg = "\n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace());
-        }
-        addErrorMessage(msg);
-    }
-
-    public void addErrorMessage(String msg) {
-        msg = "[ERR] " + msg;
+    public void addError(String msg, Exception e) {
+        msg = "[ERROR] " + msg;
         if (output != OUTPUT.CLIENT) {
-            System.err.println(msg);
+            errorStream.println(msg);
+            msg = "\n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace());
+            verboseMessageStream.println(msg);
         }
-        if (output == OUTPUT.FILE || output == OUTPUT.CONSOLE_AND_FILE) {
+        if (output == OUTPUT.FILE || output == OUTPUT.STREAMS_AND_FILE) {
             file.append(msg).append(System.lineSeparator());
             file.flush();
         }
         if (output == OUTPUT.CLIENT) {
             try {
                 writer.writeObject(flag);
-                writer.writeBoolean(verbose);
+                writer.writeObject("[SERVER] " + msg);
+            } catch (IOException ex) {
+                System.err.println("Could not send message.");
+            }
+        }
+    }
+
+    public void addWarning(String msg) {
+        msg = "[WARNING] " + msg;
+        if (output != OUTPUT.CLIENT) {
+            warningStream.println(msg);
+            verboseMessageStream.println(msg);
+        }
+        if (output == OUTPUT.FILE || output == OUTPUT.STREAMS_AND_FILE) {
+            file.append(msg).append(System.lineSeparator());
+            file.flush();
+        }
+        if (output == OUTPUT.CLIENT) {
+            try {
+                writer.writeObject(flag);
                 writer.writeObject("[SERVER] " + msg);
             } catch (IOException ex) {
                 System.err.println("Could not send message.");
@@ -118,7 +149,7 @@ public class Logger {
     }
 
     public void setOutput(OUTPUT output) {
-        if (path == null && (output == OUTPUT.FILE || output == OUTPUT.CONSOLE_AND_FILE)) {
+        if (path == null && (output == OUTPUT.FILE || output == OUTPUT.STREAMS_AND_FILE)) {
             System.err.println("Error: no path set.");
         }
         if ((flag == null || writer == null) & output == OUTPUT.CLIENT) {
@@ -140,18 +171,19 @@ public class Logger {
     }
 
     public void setVerbose(boolean verbose) {
-        this.verbose = verbose;
+        if (verbose) {
+            verboseMessageStream = System.out;
+            shortMessageStream = emptyStream;
+        } else {
+            verboseMessageStream = emptyStream;
+            shortMessageStream = System.out;
+        }
     }
 
     public void setSilent(boolean silent) {
         this.silent = silent;
         if (silent) {
-            System.setOut(new PrintStream(new OutputStream() {
-                @Override
-                public void write(int arg0) throws IOException {
-                    // keep empty
-                }
-            }));
+            System.setOut(emptyStream);
         } else {
             System.setOut(systemOutput);
         }
@@ -167,5 +199,21 @@ public class Logger {
         this.output = OUTPUT.CLIENT;
         this.writer = writer;
         this.flag = flag;
+    }
+
+    public void setErrorStream(PrintStream errorStream) {
+        this.errorStream = errorStream;
+    }
+
+    public void setWarningStream(PrintStream warningStream) {
+        this.warningStream = warningStream;
+    }
+
+    public void setShortMessageStream(PrintStream shortMessageStream) {
+        this.shortMessageStream = shortMessageStream;
+    }
+
+    public void setVerboseMessageStream(PrintStream verboseMessageStream) {
+        this.verboseMessageStream = verboseMessageStream;
     }
 }
