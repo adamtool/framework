@@ -142,6 +142,8 @@ public class ExternalProcessHandler {
         return status;
     }
 
+    //todo: when we have java9 take ProcessHandle to get the CPU time of the process and so on.
+    
     class ProcessOutputReaderThread extends Thread {
 
         private final InputStream is;
