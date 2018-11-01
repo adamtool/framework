@@ -8,6 +8,8 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  *
@@ -47,6 +49,7 @@ public class Logger {
     private PrintStream warningStream;
     private PrintStream shortMessageStream;
     private PrintStream verboseMessageStream;
+    private final Map<String, PrintStream> messageStreams = new HashMap<>();
     private final PrintStream emptyStream = new PrintStream(new OutputStream() {
         @Override
         public void write(int arg0) throws IOException {
@@ -63,18 +66,66 @@ public class Logger {
     private Object flag;
     private final PrintStream systemOutput;
 
+    /**
+     * Adds a message to the verbose message stream.
+     *
+     * @param msg
+     */
     public void addMessage(String msg) {
         addMessage(msg, true, false);
     }
 
+    /**
+     * When force is true, these messages will be shown not matter of the status
+     * of the silent flag.
+     *
+     * @param force
+     * @param msg
+     */
     public void addMessage(boolean force, String msg) {
         addMessage(msg, false, force);
     }
 
+    /**
+     * If verbose is false this message will be sent to the standard message
+     * stream 'shortmessages'.
+     *
+     * @param msg
+     * @param verbose
+     */
     public void addMessage(String msg, boolean verbose) {
         addMessage(msg, verbose, false);
     }
 
+    /**
+     * Adds the message to all the given streams, When the stream don't exists
+     * it is done nothing.
+     *
+     * @param msg
+     * @param streams
+     */
+    public void addMessage(String msg, String... streams) {
+        for (String stream : streams) {
+            PrintStream s = messageStreams.get(stream);
+            if (s != null) {
+                s.println(msg);
+                s.flush();
+            }
+        }
+    }
+
+    /**
+     * If verbose is false this message will be sent to the standard message
+     * stream 'shortmessages'.
+     *
+     * When forced is true, these messages will be shown not matter of the
+     * status of the silent flag.
+     *
+     *
+     * @param msg
+     * @param verbose
+     * @param forced
+     */
     public void addMessage(String msg, boolean verbose, boolean forced) {
         if (silent && !forced) {
             return;
@@ -83,11 +134,11 @@ public class Logger {
             if (forced) {
                 setSilent(false);
             }
-            if (verbose) {
+//            if (verbose) {
                 verboseMessageStream.println(msg);
-            } else {
+//            } else {
                 shortMessageStream.println(msg);
-            }
+//            }
             if (forced) {
                 setSilent(true);
             }
@@ -199,6 +250,14 @@ public class Logger {
         this.output = OUTPUT.CLIENT;
         this.writer = writer;
         this.flag = flag;
+    }
+
+    public void addMessageStream(String key, PrintStream messsageStream) {
+        this.messageStreams.put(key, errorStream);
+    }
+
+    public PrintStream getMessageStream(String key) {
+        return this.messageStreams.get(key);
     }
 
     public void setErrorStream(PrintStream errorStream) {

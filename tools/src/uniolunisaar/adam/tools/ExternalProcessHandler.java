@@ -18,6 +18,7 @@ import java.util.Arrays;
  */
 public class ExternalProcessHandler {
 
+    private boolean buffer;
     private StringWriter procOutputStream = null;
     private StringWriter procErrorStream = null;
     private OutputStream procInput = null;
@@ -33,14 +34,42 @@ public class ExternalProcessHandler {
         this(null, command);
     }
 
-    public ExternalProcessHandler(File directory, String... command) {
-        this.command = command;
-        this.directory = directory;
-        this.procOutputStream = new StringWriter();
-        this.procErrorStream = new StringWriter();
+    public ExternalProcessHandler(boolean buffer, String... command) {
+        this(null, buffer, command);
     }
 
-    public void start(boolean verbose) throws IOException {
+    public ExternalProcessHandler(File directory, String... command) {
+        this(directory, false, command);
+    }
+
+    public ExternalProcessHandler(File directory, boolean buffer, String... command) {
+        this.command = command;
+        this.directory = directory;
+        this.buffer = buffer;
+        if (buffer) {
+            this.procOutputStream = new StringWriter();
+            this.procErrorStream = new StringWriter();
+        }
+    }
+
+    /**
+     * Start with ommitting the output.
+     *
+     * @throws IOException
+     */
+    public void start() throws IOException {
+        start(null, null);
+    }
+
+    /**
+     * Start with sending the error and output to the given streams. When they
+     * are null, the output is ommitted.
+     *
+     * @param outputStream
+     * @param errorStream
+     * @throws IOException
+     */
+    public void start(PrintWriter outputStream, PrintWriter errorStream) throws IOException {
         ProcessBuilder procBuilder = new ProcessBuilder(command);
         // if we want to start the proc from a different directory
         if (directory != null) {
@@ -48,8 +77,13 @@ public class ExternalProcessHandler {
         }
         proc = procBuilder.start();
         procInput = proc.getOutputStream();
-        out = new ProcessOutputReaderThread(proc.getInputStream(), new PrintWriter(procOutputStream, true), verbose);
-        error = new ProcessOutputReaderThread(proc.getErrorStream(), new PrintWriter(procErrorStream, true), verbose);
+        if (buffer) {
+            out = new ProcessOutputReaderThread(proc.getInputStream(), new PrintWriter(procOutputStream, true), outputStream);
+            error = new ProcessOutputReaderThread(proc.getErrorStream(), new PrintWriter(procErrorStream, true), errorStream);
+        } else {
+            out = new ProcessOutputReaderThread(proc.getInputStream(), outputStream);
+            error = new ProcessOutputReaderThread(proc.getErrorStream(), errorStream);
+        }
         out.start();
         error.start();
     }
@@ -61,19 +95,22 @@ public class ExternalProcessHandler {
         return status;
     }
 
-    public int startAndWaitFor(boolean verbose) throws IOException, InterruptedException {
-        ProcessBuilder procBuilder = new ProcessBuilder(command);
-        // if we want to start the proc from a different directory
-        if (directory != null) {
-            procBuilder.directory(directory);
-        }
-        proc = procBuilder.start();
-        procInput = proc.getOutputStream();
-        out = new ProcessOutputReaderThread(proc.getInputStream(), new PrintWriter(procOutputStream, true), verbose);
-        error = new ProcessOutputReaderThread(proc.getErrorStream(), new PrintWriter(procErrorStream, true), verbose);
+    public int startAndWaitFor() throws IOException, InterruptedException {
+        return startAndWaitFor(null, null);
+    }
 
-        out.start();
-        error.start();
+    /**
+     * Start with sending the error and output to the given streams. When they
+     * are null, the output is ommitted.
+     *
+     * @param outputStream
+     * @param errorStream
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public int startAndWaitFor(PrintWriter outputStream, PrintWriter errorStream) throws IOException, InterruptedException {
+        start(outputStream, errorStream);
         status = proc.waitFor();
         out.join();
         error.join();
@@ -82,14 +119,14 @@ public class ExternalProcessHandler {
 
     public String getErrors() throws ProcessNotStartedException {
         if (procErrorStream == null) {
-            throw new ProcessNotStartedException("Process has not been started yet. Error stream is null");
+            throw new ProcessNotStartedException("Process has not been started yet or you decided to not buffer the stream. Error stream is null.");
         }
         return procErrorStream.toString();
     }
 
     public String getOutput() throws ProcessNotStartedException {
         if (procOutputStream == null) {
-            throw new ProcessNotStartedException("Process has not been started yet. Output stream is null");
+            throw new ProcessNotStartedException("Process has not been started yet or you decided to not buffer the stream. Output stream is null.");
         }
         return procOutputStream.toString();
     }
@@ -108,13 +145,19 @@ public class ExternalProcessHandler {
     class ProcessOutputReaderThread extends Thread {
 
         private final InputStream is;
+        private final PrintWriter out;
         private final PrintWriter buffer;
-        private final boolean verbose;
 
-        ProcessOutputReaderThread(InputStream is, PrintWriter buffer, boolean verbose) {
+        ProcessOutputReaderThread(InputStream is, PrintWriter buffer, PrintWriter out) {
             this.is = is;
-            this.verbose = verbose;
             this.buffer = buffer;
+            this.out = out;
+        }
+
+        ProcessOutputReaderThread(InputStream is, PrintWriter out) {
+            this.is = is;
+            this.out = out;
+            this.buffer = null;
         }
 
         @Override
@@ -122,10 +165,14 @@ public class ExternalProcessHandler {
             try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
                 String line;
                 while ((line = br.readLine()) != null) {
-                    // send it to the logger
-                    Logger.getInstance().addMessage(line, verbose);
+                    // send it to the given output
+                    if (out != null) {
+                        out.println(line);
+                    }
                     // also buffer it here if we want to get back to the ouput
-                    buffer.println(line);
+                    if (buffer != null) {
+                        buffer.println(line);
+                    }
                 }
             } catch (IOException ex) {
                 throw new RuntimeException("Buffering the output of '" + Arrays.toString(command) + "'failed. This should not happen.", ex);
