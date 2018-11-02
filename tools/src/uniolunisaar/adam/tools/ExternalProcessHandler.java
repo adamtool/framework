@@ -111,9 +111,7 @@ public class ExternalProcessHandler {
      */
     public int startAndWaitFor(PrintWriter outputStream, PrintWriter errorStream) throws IOException, InterruptedException {
         start(outputStream, errorStream);
-        status = proc.waitFor();
-        out.join();
-        error.join();
+        waitFor();
         return status;
     }
 
@@ -143,7 +141,6 @@ public class ExternalProcessHandler {
     }
 
     //todo: when we have java9 take ProcessHandle to get the CPU time of the process and so on.
-    
     class ProcessOutputReaderThread extends Thread {
 
         private final InputStream is;
