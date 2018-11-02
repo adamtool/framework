@@ -131,15 +131,16 @@ public class Logger {
             return;
         }
         if (output == OUTPUT.STREAMS || output == OUTPUT.STREAMS_AND_FILE) {
-            if (forced) {
+            boolean bufSilent = silent;
+            if (forced && silent) {
                 setSilent(false);
             }
 //            if (verbose) {
-                verboseMessageStream.println(msg);
+            verboseMessageStream.println(msg);
 //            } else {
-                shortMessageStream.println(msg);
+            shortMessageStream.println(msg);
 //            }
-            if (forced) {
+            if (forced && bufSilent) {
                 setSilent(true);
             }
         }
