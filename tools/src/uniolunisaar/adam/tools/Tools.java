@@ -164,4 +164,9 @@ public class Tools {
         return FileUtils.readFileToString(new File(path));
     }
 
+    public static void deleteFile(String path) {
+        new File(path).delete();
+        Logger.getInstance().addMessage("Deleted: " + path, true);
+    }
+
 }
