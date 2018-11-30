@@ -24,7 +24,7 @@ import uniol.apt.module.exception.ModuleException;
 public class Tools {
 
     /**
-     * Returns A-Za-z0-... for i>=0
+     * Returns A-Z, a-z, 0-... for i>=0
      *
      * @param i
      * @return
@@ -38,6 +38,43 @@ public class Tools {
             return Character.toString((char) (i + 71));
         }
         return String.valueOf(i - 52);
+    }
+
+    /**
+     * Returns a-z, A-Z, 0-... for i>=0
+     *
+     * @param i
+     * @return
+     */
+    public static String calcStringIDSmallPrecedence(int i) {
+        assert i >= 0;
+        if (i >= 0 && i < 26) {
+            return Character.toString((char) (i + 97));
+        }
+        if (i > 25 && i < 52) {
+            return Character.toString((char) (i + 39));
+        }
+        return String.valueOf(i - 52);
+    }
+
+    /**
+     * Returns the reverse of calcStringIDSmallPrecendence. So it really have to
+     * be calculated with this method!
+     *
+     * @param id
+     * @return
+     */
+    public static int calcStringIDSmallPrecedenceReverse(String id) {
+        assert id.length() == 1;
+        int i = (int) id.charAt(0);
+        assert i >= 0;
+        if (i >= 97 && i <= 122) {
+            return i - 97;
+        }
+        if (i >= 65 && i <= 90) {
+            return i - 65 + 26;
+        }
+        return i + 52;
     }
 //
 //    /**
@@ -67,7 +104,7 @@ public class Tools {
         for (Transition trans : transitions) {
             if (trans.getPreset().isEmpty() && trans.getPostset().isEmpty()) {
                 net.removeTransition(trans);
-                Logger.getInstance().addMessage("[WARNING] You added a transition (" + trans + ") with an empty pre- and postset. We deleted it for usability reasons.", false);
+                Logger.getInstance().addWarning("You added a transition (" + trans + ") with an empty pre- and postset. We deleted it for usability reasons.");
             }
         }
         return net;
@@ -87,7 +124,7 @@ public class Tools {
         for (Transition trans : transitions) {
             if (trans.getPreset().isEmpty() && trans.getPostset().isEmpty()) {
                 net.removeTransition(trans);
-                Logger.getInstance().addMessage("[WARNING] You added a transition (" + trans + ") with an empty pre- and postset. We deleted it for usability reasons.", false);
+                Logger.getInstance().addWarning("You added a transition (" + trans + ") with an empty pre- and postset. We deleted it for usability reasons.");
             }
         }
         return net;
@@ -125,6 +162,11 @@ public class Tools {
 
     public static String readFile(String path) throws IOException {
         return FileUtils.readFileToString(new File(path));
+    }
+
+    public static void deleteFile(String path) {
+        new File(path).delete();
+        Logger.getInstance().addMessage("Deleted: " + path, true);
     }
 
 }

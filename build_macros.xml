@@ -25,6 +25,7 @@
 				<jvmarg value="-Dexamplesfolder=@{examplesfolder}" />
 				<jvmarg value="-Dtestoutputfolder=@{testoutputfolder}" />
 				<jvmarg value="-Dlibfolder=@{libfolder}" />
+				<jvmarg value="-DPROPERTY_FILE=${mainfolder}/ADAM.properties" />
 				<classpath refid="@{testclassesclasspath}" />
 				<xmlfileset file="testng.xml"/>		
 				<!-- only for all classes this would be enough	-->
