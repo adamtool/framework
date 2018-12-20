@@ -6,7 +6,7 @@ import uniol.apt.adt.CollectionToUnmodifiableSetAdapter;
 import uniol.apt.adt.exception.NoSuchNodeException;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.exceptions.InconsistencyException;
+import uniolunisaar.adam.exceptions.pnwt.InconsistencyException;
 
 /**
  *

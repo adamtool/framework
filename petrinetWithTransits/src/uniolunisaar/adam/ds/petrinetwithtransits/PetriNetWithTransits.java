@@ -17,9 +17,9 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.analysis.coverability.CoverabilityGraph;
 import uniol.apt.io.renderer.RenderException;
-import uniolunisaar.adam.exceptions.InconsistencyException;
-import uniolunisaar.adam.exceptions.NoSuchTransitException;
-import uniolunisaar.adam.exceptions.NotInitialPlaceException;
+import uniolunisaar.adam.exceptions.pnwt.InconsistencyException;
+import uniolunisaar.adam.exceptions.pnwt.NoSuchTransitException;
+import uniolunisaar.adam.exceptions.pnwt.NotInitialPlaceException;
 import uniolunisaar.adam.util.PNWTTools;
 
 /**

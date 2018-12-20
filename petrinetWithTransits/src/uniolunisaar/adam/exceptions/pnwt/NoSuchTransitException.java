@@ -1,4 +1,4 @@
-package uniolunisaar.adam.exceptions;
+package uniolunisaar.adam.exceptions.pnwt;
 
 import uniol.apt.adt.exception.DatastructureException;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
