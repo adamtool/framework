@@ -16,9 +16,11 @@ import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.analysis.coverability.CoverabilityGraph;
+import uniol.apt.io.renderer.RenderException;
 import uniolunisaar.adam.exceptions.InconsistencyException;
 import uniolunisaar.adam.exceptions.NoSuchTransitException;
 import uniolunisaar.adam.exceptions.NotInitialPlaceException;
+import uniolunisaar.adam.util.PNWTTools;
 
 /**
  *
@@ -26,7 +28,7 @@ import uniolunisaar.adam.exceptions.NotInitialPlaceException;
  */
 public class PetriNetWithTransits extends PetriNet {
 
-    private final SortedMap<String, Map<String, Transit>> tokenflows = new TreeMap<>();
+    private final SortedMap<String, Map<String, Transit>> transits = new TreeMap<>();
 
     /**
      * Creates a new Petri net with transits with the given name.
@@ -42,13 +44,13 @@ public class PetriNetWithTransits extends PetriNet {
         // Check if the initial flow places are marked correctly
         // todo: should this still be necessary?
         for (Place p : getPlaces()) {
-            if (isInitialTokenflow(p) && p.getInitialToken().getValue() <= 0) {
+            if (isInitialTransit(p) && p.getInitialToken().getValue() <= 0) {
                 throw new NotInitialPlaceException(p);
             }
         }
         // Initialize for all transition an empty set of tokenflows
         for (Transition t : getTransitions()) {
-            tokenflows.put(t.getId(), new HashMap<>());
+            transits.put(t.getId(), new HashMap<>());
         }
     }
 
@@ -60,10 +62,10 @@ public class PetriNetWithTransits extends PetriNet {
     public PetriNetWithTransits(PetriNetWithTransits game) {
         super(game);
         // COPY token flows
-        for (Map.Entry<String, Map<String, Transit>> entry : game.tokenflows.entrySet()) {
+        for (Map.Entry<String, Map<String, Transit>> entry : game.transits.entrySet()) {
             Map<String, Transit> map = entry.getValue();
             if (map.isEmpty()) {
-                tokenflows.put(entry.getKey(), new TreeMap<>());
+                transits.put(entry.getKey(), new TreeMap<>());
             }
             for (Transit tfl : map.values()) {
                 String[] postset = new String[tfl.getPostset().size()];
@@ -73,25 +75,25 @@ public class PetriNetWithTransits extends PetriNet {
                     ++i;
                 }
                 if (tfl.isInitial()) {
-                    this.createInitialTokenFlow(tfl.getTransition().getId(), postset);
+                    this.createInitialTransit(tfl.getTransition().getId(), postset);
                 } else {
-                    this.createTokenFlow(tfl.getPresetPlace().getId(), tfl.getTransition().getId(), postset);
+                    this.createTransit(tfl.getPresetPlace().getId(), tfl.getTransition().getId(), postset);
                 }
             }
         }
         // the annotations of the objects are already copied by APT
 //        for (Transition t : game.getTransitions()) {
-////            Collection<TokenFlow> tfls = game.getTokenFlows(t);
+////            Collection<TokenFlow> tfls = game.getTransits(t);
 ////            List<TokenFlow> newtfls = new ArrayList<>();
 ////            for (Transit tfl : tfls) {
 ////                if (tfl.isInitial()) {
-////                    newtfls.add(createInitialTokenFlow(getTransition(t.getId()), getPlace(tfl.getPostset().iterator().next().getId())));
+////                    newtfls.add(createInitialTransit(getTransition(t.getId()), getPlace(tfl.getPostset().iterator().next().getId())));
 ////                } else {
 ////                    Set<Place> postset = new HashSet<>();
 ////                    for (Place post : tfl.getPostset()) {
 ////                        postset.add(getPlace(post.getId()));
 ////                    }
-////                    newtfls.add(createTokenFlow(getPlace(tfl.getPresetPlace().getId()), getTransition(t.getId()), postset.toArray(new Place[postset.size()])));
+////                    newtfls.add(createTransit(getPlace(tfl.getPresetPlace().getId()), getTransition(t.getId()), postset.toArray(new Place[postset.size()])));
 ////                }
 ////            }
 ////            PetriGameExtensionHandler.setTokenFlow(getTransition(t.getId()), newtfls);
@@ -123,13 +125,13 @@ public class PetriNetWithTransits extends PetriNet {
                 createFlow(newNode.getId(), post.getId());
             }
             // copy the tokenflows
-            Map<String, Transit> tfls = tokenflows.get(n.getId());
+            Map<String, Transit> tfls = transits.get(n.getId());
             for (Transit tfl : tfls.values()) {
                 Place[] tflPost = tfl.getPostset().toArray(new Place[tfl.getPostset().size()]);
                 if (tfl.isInitial()) {
-                    createInitialTokenFlow(newNode, tflPost);
+                    createInitialTransit(newNode, tflPost);
                 } else {
-                    createTokenFlow(tfl.getPresetPlace(), newNode, tflPost);
+                    PetriNetWithTransits.this.createTransit(tfl.getPresetPlace(), newNode, tflPost);
                 }
             }
             // now delete
@@ -151,16 +153,16 @@ public class PetriNetWithTransits extends PetriNet {
             // copy the tokenflows
             // postset flows
             for (Transition t : p.getPostset()) {
-                Map<String, Transit> tfls = tokenflows.get(t.getId());
+                Map<String, Transit> tfls = transits.get(t.getId());
                 Transit tfl = tfls.get(p.getId());
                 if (tfl != null) {
                     Place[] tflPost = tfl.getPostset().toArray(new Place[tfl.getPostset().size()]);
-                    createTokenFlow(newNode, t, tflPost);
+                    PetriNetWithTransits.this.createTransit(newNode, t, tflPost);
                 }
             }
             // preset flows
             for (Transition t : p.getPreset()) {
-                Map<String, Transit> tfls = tokenflows.get(t.getId());
+                Map<String, Transit> tfls = transits.get(t.getId());
                 // initial
                 Transit init = tfls.get(Transit.INIT_KEY);
                 if (init != null) {
@@ -191,7 +193,7 @@ public class PetriNetWithTransits extends PetriNet {
      * @param postsetIDs
      * @return
      */
-    public Transit createTokenFlow(String preID, String transitionID, String... postsetIDs) {
+    public Transit createTransit(String preID, String transitionID, String... postsetIDs) {
         if (preID == null) {
             throw new IllegalArgumentException("pre == null");
         }
@@ -205,7 +207,7 @@ public class PetriNetWithTransits extends PetriNet {
         for (int i = 0; i < postsetIDs.length; i++) {
             postset[i] = getPlace(postsetIDs[i]);
         }
-        return createTokenFlow(getPlace(preID), getTransition(transitionID), postset);
+        return PetriNetWithTransits.this.createTransit(getPlace(preID), getTransition(transitionID), postset);
     }
 
     /**
@@ -217,7 +219,7 @@ public class PetriNetWithTransits extends PetriNet {
      * @param postset
      * @return
      */
-    public Transit createTokenFlow(Place pre, Transition t, Place... postset) {
+    public Transit createTransit(Place pre, Transition t, Place... postset) {
         if (pre == null) {
             throw new IllegalArgumentException("pre == null");
         }
@@ -233,10 +235,10 @@ public class PetriNetWithTransits extends PetriNet {
         if (!t.getPreset().contains(pre)) {
             throw new InconsistencyException(pre.getId() + " is not in the preset of transition " + t.getId());
         }
-        Map<String, Transit> tfls = tokenflows.get(t.getId());
+        Map<String, Transit> tfls = transits.get(t.getId());
         if (tfls == null) {
             tfls = new HashMap<>();
-            tokenflows.put(t.getId(), tfls);
+            transits.put(t.getId(), tfls);
         }
         Set<Place> postSet = new HashSet<>();
         Transit tfl = null;
@@ -260,7 +262,7 @@ public class PetriNetWithTransits extends PetriNet {
         return tfl;
     }
 
-    public Transit createInitialTokenFlow(Transition t, Place... postset) {
+    public Transit createInitialTransit(Transition t, Place... postset) {
         if (t == null) {
             throw new IllegalArgumentException("t == null");
         }
@@ -270,10 +272,10 @@ public class PetriNetWithTransits extends PetriNet {
         if (postset.length == 0) {
             throw new IllegalArgumentException("post.length == 0");
         }
-        Map<String, Transit> tfls = tokenflows.get(t.getId());
+        Map<String, Transit> tfls = transits.get(t.getId());
         if (tfls == null) {
             tfls = new HashMap<>();
-            tokenflows.put(t.getId(), tfls);
+            transits.put(t.getId(), tfls);
         }
         Set<Place> postSet = new HashSet<>();
         Transit tfl = null;
@@ -297,7 +299,7 @@ public class PetriNetWithTransits extends PetriNet {
         return tfl;
     }
 
-    public Transit createInitialTokenFlow(String transitionID, String... postsetIDs) {
+    public Transit createInitialTransit(String transitionID, String... postsetIDs) {
         if (transitionID == null) {
             throw new IllegalArgumentException("t == null");
         }
@@ -308,10 +310,10 @@ public class PetriNetWithTransits extends PetriNet {
         for (int i = 0; i < postsetIDs.length; i++) {
             postset[i] = getPlace(postsetIDs[i]);
         }
-        return createInitialTokenFlow(getTransition(transitionID), postset);
+        return createInitialTransit(getTransition(transitionID), postset);
     }
 
-//    public boolean removeTokenFlow(String sourceId, String transitionId, String targetId) {
+//    public boolean removeTransit(String sourceId, String transitionId, String targetId) {
 //        if (sourceId == null) {
 //            throw new IllegalArgumentException("sourcetId == null");
 //        }
@@ -331,34 +333,34 @@ public class PetriNetWithTransits extends PetriNet {
 //        }
 //        return ret;
 //    }
-    public void removeTokenFlow(Flow f) {
+    public void removeTransit(Flow f) {
         if (f == null) {
             throw new IllegalArgumentException("f == null");
         }
-        removeTokenFlow(f.getSource().getId(), f.getTarget().getId());
+        PetriNetWithTransits.this.removeTransit(f.getSource().getId(), f.getTarget().getId());
     }
 
-    public void removeTokenFlow(Place source, Transition target) {
+    public void removeTransit(Place source, Transition target) {
         if (source == null) {
             throw new IllegalArgumentException("source == null");
         }
         if (target == null) {
             throw new IllegalArgumentException("target == null");
         }
-        removeTokenFlow(source.getId(), target.getId());
+        PetriNetWithTransits.this.removeTransit(source.getId(), target.getId());
     }
 
-    public void removeTokenFlow(Transition source, Place target) {
+    public void removeTransit(Transition source, Place target) {
         if (source == null) {
             throw new IllegalArgumentException("source == null");
         }
         if (target == null) {
             throw new IllegalArgumentException("target == null");
         }
-        removeTokenFlow(source.getId(), target.getId());
+        PetriNetWithTransits.this.removeTransit(source.getId(), target.getId());
     }
 
-    public void removeTokenFlow(String sourceId, String targetId) {
+    public void removeTransit(String sourceId, String targetId) {
         if (sourceId == null) {
             throw new IllegalArgumentException("sourceId == null");
         }
@@ -369,7 +371,7 @@ public class PetriNetWithTransits extends PetriNet {
             throw new InconsistencyException(targetId + " is not in the postset of  " + sourceId);
         }
         if (containsTransition(sourceId) && containsPlace(targetId)) { // transition -> place
-            Map<String, Transit> tfls = tokenflows.get(sourceId);
+            Map<String, Transit> tfls = transits.get(sourceId);
             List<String> del = new ArrayList<>();
             for (Map.Entry<String, Transit> tfl : tfls.entrySet()) {
                 tfl.getValue().removePostsetPlace(targetId);
@@ -381,24 +383,24 @@ public class PetriNetWithTransits extends PetriNet {
                 tfls.remove(plID);
             }
         } else if (containsPlace(sourceId) && containsTransition(targetId)) { // place -> transition
-            Map<String, Transit> tfls = tokenflows.get(targetId);
+            Map<String, Transit> tfls = transits.get(targetId);
             tfls.remove(sourceId);
         } else {
             throw new NoSuchTransitException(this, sourceId, targetId);
         }
     }
 
-    public void removeInitialTokenFlow(Transition source, Place target) {
+    public void removeInitialTransit(Transition source, Place target) {
         if (source == null) {
             throw new IllegalArgumentException("source == null");
         }
         if (target == null) {
             throw new IllegalArgumentException("target == null");
         }
-        removeInitialTokenFlow(source.getId(), target.getId());
+        PetriNetWithTransits.this.removeInitialTransit(source.getId(), target.getId());
     }
 
-    public void removeInitialTokenFlow(String transitionId, String targetId) {
+    public void removeInitialTransit(String transitionId, String targetId) {
         if (transitionId == null) {
             throw new IllegalArgumentException("transitionId == null");
         }
@@ -406,29 +408,29 @@ public class PetriNetWithTransits extends PetriNet {
             throw new IllegalArgumentException("targetId == null");
         }
         getTransition(transitionId);
-        Transit tf = tokenflows.get(transitionId).get(Transit.INIT_KEY);
+        Transit tf = transits.get(transitionId).get(Transit.INIT_KEY);
         tf.removePostsetPlace(targetId);
         if (tf.getPostset().isEmpty()) {
-            tokenflows.get(transitionId).remove(Transit.INIT_KEY);
+            transits.get(transitionId).remove(Transit.INIT_KEY);
         }
     }
 
-    public Transit getTokenFlow(Transition t, Place preset) {
-        return tokenflows.get(t.getId()).get(preset.getId());
+    public Transit getTransit(Transition t, Place preset) {
+        return transits.get(t.getId()).get(preset.getId());
     }
 
-    public Collection<Transit> getTokenFlows(Transition t) {
-        return Collections.unmodifiableCollection(tokenflows.get(t.getId()).values());
+    public Collection<Transit> getTransits(Transition t) {
+        return Collections.unmodifiableCollection(transits.get(t.getId()).values());
     }
 
-    public Transit getInitialTokenFlows(Transition t) {
-        return tokenflows.get(t.getId()).get(Transit.INIT_KEY);
+    public Transit getInitialTransit(Transition t) {
+        return transits.get(t.getId()).get(Transit.INIT_KEY);
     }
 
-    public boolean hasTokenFlow(Transition t) {
+    public boolean hasTransit(Transition t) {
 //        Map<String, Transit> tfls = tokenflows.get(t.getId());
 //        return tfls != null && !tfls.isEmpty();
-        return !tokenflows.get(t.getId()).isEmpty();
+        return !transits.get(t.getId()).isEmpty();
     }
 
     public CoverabilityGraph getReachabilityGraph() {
@@ -458,6 +460,10 @@ public class PetriNetWithTransits extends PetriNet {
         }
     }
 
+    public String toAPT(boolean withAnnotationPartition, boolean withCoordinates) throws RenderException {
+        return PNWTTools.getAPT(this, withAnnotationPartition, withCoordinates);
+    }
+
     // Overriden methods to handle tokenflow
     /**
      * The others methods do not have to be overriden since all fall back to
@@ -469,7 +475,7 @@ public class PetriNetWithTransits extends PetriNet {
     @Override
     public Transition createTransition(String id, String label) {
         Transition t = super.createTransition(id, label);
-        tokenflows.put(t.getId(), new HashMap<>());
+        transits.put(t.getId(), new HashMap<>());
         return t;
     }
 
@@ -482,7 +488,7 @@ public class PetriNetWithTransits extends PetriNet {
     @Override
     public void removeTransition(String id) {
         super.removeTransition(id);
-        tokenflows.remove(id);
+        transits.remove(id);
     }
 
     /**
@@ -494,7 +500,7 @@ public class PetriNetWithTransits extends PetriNet {
      */
     @Override
     public void removeFlow(String sourceId, String targetId) {
-        removeTokenFlow(sourceId, targetId);
+        PetriNetWithTransits.this.removeTransit(sourceId, targetId);
         super.removeFlow(sourceId, targetId);
     }
 
@@ -553,7 +559,7 @@ public class PetriNetWithTransits extends PetriNet {
         PetriNetWithTransitsExtensionHandler.setBuchi(place);
     }
 
-    public boolean isInitialTokenflow(Place place) {
+    public boolean isInitialTransit(Place place) {
         return PetriNetWithTransitsExtensionHandler.isInitialTokenflow(place);
     }
 

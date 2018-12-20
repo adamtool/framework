@@ -12,7 +12,7 @@ package uniolunisaar.adam.util;
  * @author Manuel Gieseking
  */
 public enum AdamExtensions {
-    winningCondition,
+    condition,
     partialObservation,
     env,
     token,

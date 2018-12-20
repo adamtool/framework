@@ -147,22 +147,6 @@ class PetriNetWithTransitsExtensionHandler {
         t.removeExtension(AdamExtensions.weakFair.name());
     }
 
-    public static boolean hasTokenFlowAnnotation(Transition t) {
-        return t.hasExtension(AdamExtensions.tfl.name());
-    }
-
-    public static String getTokenFlowAnnotation(Transition t) {
-        String tfl = (String) t.getExtension(AdamExtensions.tfl.name());
-        if (tfl.equals(AdamExtensions.tfl.name())) {
-            tfl = "";
-        }
-        return tfl;
-    }
-
-    public static void setTokenFlowAnnotation(Transition t, String text) {
-        t.putExtension(AdamExtensions.tfl.name(), text, ExtensionProperty.WRITE_TO_FILE);
-    }
-
 // %%%%%%%%%%%%%%%%%%%%%%%%%% FLOW EXTENSIONS
     static boolean isInhibitor(Flow f) {
         return f.hasExtension(AdamExtensions.inhibitor.name());

@@ -59,9 +59,9 @@ public class TransitListener extends TransitFormatBaseListener {
             ++i;
         }
         if (ctx.preset.GR() != null) {
-            tokenflows.add(net.createInitialTokenFlow(t, postset));
+            tokenflows.add(net.createInitialTransit(t, postset));
         } else if (ctx.preset.obj() != null) {
-            tokenflows.add(net.createTokenFlow(net.getPlace(ctx.preset.obj().getText()), t, postset));
+            tokenflows.add(net.createTransit(net.getPlace(ctx.preset.obj().getText()), t, postset));
         }
     }
 
