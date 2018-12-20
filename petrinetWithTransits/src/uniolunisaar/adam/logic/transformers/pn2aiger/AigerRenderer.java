@@ -4,9 +4,9 @@ import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
-import uniolunisaar.adam.ds.petrigame.PetriGame;
 import uniolunisaar.adam.ds.circuits.AigerFile;
 import static uniolunisaar.adam.ds.circuits.AigerFile.NEW_VALUE_OF_LATCH_SUFFIX;
+import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 
 /**
  *
@@ -75,8 +75,8 @@ public class AigerRenderer {
         String[] inputs = new String[t.getPreset().size()];
         int i = 0;
         for (Flow e : t.getPresetEdges()) {
-            //todo: change this, when the time was there to create a net with tokenflows and extensions and so on
-            PetriGame game = new PetriGame("buf");
+            //todo: change this (either add a  intermediate class PetriNetWithInhibitor or have an more general extensionhandler which is accessable outside)
+            PetriNetWithTransits game = new PetriNetWithTransits("buf");
             if (game.isInhibitor(e)) {
                 inputs[i++] = "!" + e.getPlace().getId();
             } else {
