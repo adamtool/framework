@@ -21,12 +21,12 @@
 		<path refid="classpath" />
 		<pathelement location="${testclassesfolder}"/>
 		<path refid="testng.classpath" />
-		<resourcelist id="subprojects.tests.libs">
+		<resourcelist id="subproject.tests.libs">
 			<file file="${subproject.basedir}/testlibs.res"/>
 		</resourcelist>
 	</path>
 
-	<target name="tests.javac" depends="javac" description="Compile test code">
+	<target name="tests.javac"  description="Compile test code">
 		<depend srcdir="${testfolder}" destdir="${testclassesfolder}" classpath="${classesfolder}"/>
 		<invoke-javac
 			dependencies="tests.libs"
@@ -34,7 +34,7 @@
 			src="${macros.basedir}/test/src"
 			output="${testclassesfolder}" />
 		<invoke-javac
-			dependencies="subprojects.tests.libs"
+			dependencies="subproject.tests.libs"
 			classpath="tests.classpath"
 			src="${testfolder}"
 			output="${testclassesfolder}" />
