@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import uniol.apt.io.parser.ParseException;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
-import uniolunisaar.adam.logic.modelchecking.sdnencoding.TopologyToPN;
+import uniolunisaar.adam.generators.pnwt.util.sdnencoding.TopologyToPN;
 
 /**
  *
