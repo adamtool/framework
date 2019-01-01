@@ -71,11 +71,11 @@ public class PNWTTools {
         }
     }
 
-    private static boolean hasTransitAnnotation(Transition t) {
+    static boolean hasTransitAnnotation(Transition t) {
         return t.hasExtension(AdamExtensions.tfl.name());
     }
 
-    private static String getTransitAnnotation(Transition t) {
+    static String getTransitAnnotation(Transition t) {
         String tfl = (String) t.getExtension(AdamExtensions.tfl.name());
         if (tfl.equals(AdamExtensions.tfl.name())) {
             tfl = "";
@@ -133,6 +133,44 @@ public class PNWTTools {
                 }
             }
         }
+    }
+
+    /**
+     * Creates a PetriNetWithTransits from the string in apt format given in
+     * content.
+     *
+     * @param content
+     * @param skipTests
+     * @param withAutomatic
+     * @return
+     * @throws ParseException
+     * @throws IOException
+     */
+    public static PetriNetWithTransits getPetriNetWithTransits(String content, boolean skipTests, boolean withAutomatic) throws ParseException, IOException {
+        PetriNet pn = Tools.getPetriNetFromString(content);
+        return getPetriNetWithTransitsFromParsedPetriNet(pn, skipTests, withAutomatic);
+    }
+
+    public static PetriNetWithTransits getPetriNetWithTransitsFromParsedPetriNet(PetriNet net, boolean skipTests, boolean withAutomatic) throws ParseException {
+//        Condition.Condition win = parseConditionFromNetExtensionText(net);
+        PetriNetWithTransits pnwt = new PetriNetWithTransits(net);
+        parseAndCreateTransitsFromTransitionExtensionText(pnwt, withAutomatic);
+//        if (win == Condition.Condition.E_SAFETY
+//                || win == Condition.Condition.A_REACHABILITY
+//                || win == Condition.Condition.E_BUCHI
+//                || win == Condition.Condition.A_BUCHI
+//                || win == Condition.Condition.E_PARITY
+//                || win == Condition.Condition.A_PARITY) {
+//        PetriGameAnnotator.parseAndAnnotateTokenflow(game, true);
+//        } else if (win == Condition.Condition.A_SAFETY
+//                || win == Condition.Condition.E_REACHABILITY) {
+////            try {
+////                parseAndAnnotateTokenflow(net);
+////            } catch (ParseException pe) {
+////
+////            }
+//        }
+        return pnwt;
     }
 
     public static void saveAPT(String path, PetriNetWithTransits net, boolean withAnnotationPartition) throws RenderException, FileNotFoundException {
