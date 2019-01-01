@@ -320,23 +320,25 @@ public class PNWTTools {
             sb.append(", xlabel=").append("\"").append(place.getId()).append("\"");
             sb.append(", label=").append("\"").append(tokenString).append("\"");
 
-            int t = net.getPartition(place);
-            if (t != 0) {  // should it be colored?
-                sb.append(", style=\"filled");
-                if (net.isInitialTransit(place)) {
-                    sb.append(", dashed");
+            if (net.hasPartition(place)) {
+                int t = net.getPartition(place);
+                if (t != 0) {  // should it be colored?
+                    sb.append(", style=\"filled");
+                    if (net.isInitialTransit(place)) {
+                        sb.append(", dashed");
+                    }
+                    sb.append("\", fillcolor=");
+                    if (tokencount == null) {
+                        sb.append("gray");
+                    } else {
+                        sb.append("\"");
+                        float val = ((t + 1) * 1.f) / (tokencount * 1.f);
+                        sb.append(val).append(" ").append(val).append(" ").append(val);
+                        sb.append("\"");
+                    }
+                } else if (net.isInitialTransit(place)) {
+                    sb.append(", style=dashed");
                 }
-                sb.append("\", fillcolor=");
-                if (tokencount == null) {
-                    sb.append("gray");
-                } else {
-                    sb.append("\"");
-                    float val = ((t + 1) * 1.f) / (tokencount * 1.f);
-                    sb.append(val).append(" ").append(val).append(" ").append(val);
-                    sb.append("\"");
-                }
-            } else if (net.isInitialTransit(place)) {
-                sb.append(", style=dashed");
             }
             sb.append("];\n");
         }

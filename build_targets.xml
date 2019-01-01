@@ -26,7 +26,7 @@
 		</resourcelist>
 	</path>
 
-	<target name="tests.javac"  description="Compile test code">
+	<target name="tests.javac"  depends="javac" description="Compile test code">
 		<depend srcdir="${testfolder}" destdir="${testclassesfolder}" classpath="${classesfolder}"/>
 		<invoke-javac
 			dependencies="tests.libs"
