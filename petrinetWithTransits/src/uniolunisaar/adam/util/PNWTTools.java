@@ -44,9 +44,10 @@ public class PNWTTools {
         return (String) net.getExtension(AdamExtensions.condition.name());
     }
 
-//    private static void setConditionAnnotation(PetriNet net, Condition.Objective con) {
-//        net.putExtension(AdamExtensions.condition.name(), con.name(), ExtensionProperty.WRITE_TO_FILE);
-//    }
+    public static void setConditionAnnotation(PetriNet net, Condition.Objective con) {
+        net.putExtension(AdamExtensions.condition.name(), con.name(), ExtensionProperty.WRITE_TO_FILE);
+    }
+
     public static Condition.Objective parseConditionFromNetExtensionText(PetriNetWithTransits net) throws CouldNotFindSuitableConditionException {
         if (hasConditionAnnotation(net)) {
             try {
