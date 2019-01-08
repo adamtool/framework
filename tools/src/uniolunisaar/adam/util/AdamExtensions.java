@@ -13,6 +13,7 @@ package uniolunisaar.adam.util;
  */
 public enum AdamExtensions {
     condition,
+    winningCondition, // todo: this is only for the fallback to the just-sythesis-version.
     partialObservation,
     env,
     token,

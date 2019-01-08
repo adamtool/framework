@@ -37,7 +37,9 @@ import uniolunisaar.adam.tools.Tools;
 public class PNWTTools {
 
     private static boolean hasConditionAnnotation(PetriNet net) {
-        return net.hasExtension(AdamExtensions.condition.name());
+        return net.hasExtension(AdamExtensions.condition.name())
+                || net.hasExtension(AdamExtensions.winningCondition.name())// todo: this is only for the fallback to the just-sythesis-version.
+                ;
     }
 
     private static String getConditionAnnotation(PetriNet net) {
@@ -51,7 +53,15 @@ public class PNWTTools {
     public static Condition.Objective parseConditionFromNetExtensionText(PetriNetWithTransits net) throws CouldNotFindSuitableConditionException {
         if (hasConditionAnnotation(net)) {
             try {
-                Condition.Objective winCon = Condition.Objective.valueOf(getConditionAnnotation(net));
+                // todo: this is only for the fallback to the just-sythesis-version.
+                String con;
+                if (net.hasExtension(AdamExtensions.winningCondition.name())) {
+                    con = (String) net.getExtension(AdamExtensions.winningCondition.name());
+                    net.putExtension(AdamExtensions.condition.name(), con);
+                } else {
+                    con = getConditionAnnotation(net);
+                }
+                Condition.Objective winCon = Condition.Objective.valueOf(con);
                 return winCon;
             } catch (ClassCastException | IllegalArgumentException e) {
                 String con = getConditionAnnotation(net);
