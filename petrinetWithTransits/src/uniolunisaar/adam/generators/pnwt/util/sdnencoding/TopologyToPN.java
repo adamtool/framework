@@ -20,6 +20,12 @@ import uniol.apt.io.parser.impl.AptLTSParser;
 import uniol.apt.util.Pair;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 
+/**
+ * 
+ * @author Jesko Hecking-Harbusch
+ *
+ */
+
 public class TopologyToPN {
 	private TransitionSystem ts;
 	

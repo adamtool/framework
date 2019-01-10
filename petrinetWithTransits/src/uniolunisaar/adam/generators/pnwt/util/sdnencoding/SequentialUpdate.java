@@ -5,6 +5,12 @@ import java.util.List;
 import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 
+/**
+ * 
+ * @author Jesko Hecking-Harbusch
+ *
+ */
+
 public class SequentialUpdate implements Update {
 
 	List<Update> sequential;
