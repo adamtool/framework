@@ -130,5 +130,75 @@ public class SmartFactory {
         pn.createTransit(start, w, work);
         pn.createTransit(work, f, end);
     }
-    
+
+    /**
+     * Creates a smart factory which can create 'nb_products' products. There
+     * are 'nb_shared_machines' machines which are shared by all products, and
+     * 'nb_special_machines' machines which are just responsable for the
+     * creation of one type of product.
+     *
+     * The special machines are added (as long as one is left) behind each
+     * product type one. If there are more the last product type receives all
+     * lasting special machines.
+     *
+     * @param nb_products
+     * @param nb_shared_machines
+     * @param nb_special_machines
+     * @return
+     */
+    public static PetriNetWithTransits createFactory(int nb_products, int nb_shared_machines, int nb_special_machines) {
+        if (nb_products < 1) {
+            throw new RuntimeException("It does not make sense to create a smart factory which does not create any product.");
+        }
+        PetriNetWithTransits net = new PetriNetWithTransits("SmartFactory");
+        // scanning process
+        Place scan = net.createPlace("scan");
+        scan.setInitialToken(1);
+        // create machines
+        for (int i = 0; i < nb_shared_machines; i++) {
+            addMachine("share" + i, net);
+        }
+        for (int i = 0; i < nb_special_machines; i++) {
+            addMachine("spec" + i, net);
+        }
+        // create types
+        int count_spec_machines = 0;
+        Place start = null; // at least one product is created in each case
+        for (int i = 0; i < nb_products; i++) {
+            start = net.createPlace("s_0_" + i);
+            start.setInitialToken(1);
+            // scanning
+            Transition tscan = net.createTransition();
+            net.createFlow(scan, tscan);
+            net.createFlow(start, tscan);
+            net.createFlow(tscan, scan);
+            net.createFlow(tscan, start);
+            net.createTransit(start, tscan, start);
+            net.createInitialTransit(tscan, start);
+            // shared machines
+            for (int j = 0; j < nb_shared_machines; j++) {
+                Place work = net.createPlace("w_" + j + "_" + i);
+                Place finish = net.createPlace("s_" + j + "_" + i);
+                finish.setInitialToken(1);
+                connectMachine("m" + j, start, work, finish, net, i);
+                start = finish;
+            }
+            if (count_spec_machines < nb_special_machines) {
+                Place work = net.createPlace("w_s" + count_spec_machines + "_" + i);
+                Place finish = net.createPlace("s_s" + count_spec_machines + "_" + i);
+                finish.setInitialToken(1);
+                connectMachine("m_spec" + count_spec_machines, start, work, finish, net, i);
+                start = finish;
+                ++count_spec_machines;
+            }
+        }
+        for (int i = count_spec_machines; i < nb_special_machines; i++) {
+            Place work = net.createPlace("w_s" + i + "_" + (nb_products - 1));
+            Place finish = net.createPlace("s_s" + i + "_" + (nb_products - 1));
+            finish.setInitialToken(1);
+            connectMachine("m_spec" + i, start, work, finish, net, (nb_products - 1));
+            start = finish;
+        }
+        return net;
+    }
 }
