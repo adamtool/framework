@@ -14,7 +14,7 @@ public class AccessControl {
 	
 	public static PetriNetWithTransits createAccessControlExample() { 
 		PetriNetWithTransits net = new PetriNetWithTransits("AccessControl");
-		Place outside = addRoom(net, "start", true);
+		Place outside = addRoom(net, "outside", true);
 		Place lobby = addRoom(net, "lobby", false);
 		Place corridor = addRoom(net, "corridor", false);
 		Place meetingRoom = addRoom(net, "meetingroom", false);
@@ -36,11 +36,11 @@ public class AccessControl {
 	}
 	
 	public static void addConnectionOneWay(PetriNetWithTransits net, Place from, Place to, boolean open) {
-		Transition connection = net.createTransition("Door:" + from.getId() + "->" + to.getId());
+		Transition connection = net.createTransition("DOOR" + from.getId() + "TO" + to.getId());
 		net.createFlow(from, connection);
 		net.createFlow(connection, to);
 		net.createTransit(from, connection, to);
-		Place control = net.createPlace("Control:" + from.getId() + "->" + to.getId());
+		Place control = net.createPlace("CONTROL" + from.getId() + "TO" + to.getId());
 		if (open) {
 			control.setInitialToken(1);
 		}
@@ -50,6 +50,6 @@ public class AccessControl {
 	
 	public static void addConnectionBothWays(PetriNetWithTransits net, Place p1, Place p2, boolean firstDirection, boolean secondDirection) {
 		addConnectionOneWay(net, p1, p2, firstDirection);
-		addConnectionOneWay(net, p1, p2, secondDirection);
+		addConnectionOneWay(net, p2, p1, secondDirection);
 	}
 }
