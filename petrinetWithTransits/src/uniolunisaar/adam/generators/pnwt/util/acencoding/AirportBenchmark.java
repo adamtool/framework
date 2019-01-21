@@ -7,6 +7,12 @@ import java.util.Set;
 
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 
+/**
+ * 
+ * @author Jesko Hecking-Harbusch
+ *
+ */
+
 public class AirportBenchmark {
 	
 	public static PetriNetWithTransits generateAirport() {
