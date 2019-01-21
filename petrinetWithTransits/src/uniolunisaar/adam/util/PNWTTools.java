@@ -100,11 +100,20 @@ public class PNWTTools {
 
     private static void parseAndCreateTransitsFromTransitionExtensionText(PetriNetWithTransits net, boolean withAutomatic) throws ParseException {
         //todo: hack. change it, when the new implemenation of the flows is implmemented
-        if (net.getExtension("winningCondition").equals("A_SAFETY")
-                || net.getExtension("winningCondition").equals("SAFETY")
-                || net.getExtension("winningCondition").equals("E_REACHABILITY")
-                || net.getExtension("winningCondition").equals("REACHABILITY")) {
-            return;
+        if (net.hasExtension(AdamExtensions.condition.name())) {
+            if (net.getExtension(AdamExtensions.condition.name()).equals("A_SAFETY")
+                    || net.getExtension(AdamExtensions.condition.name()).equals("SAFETY")
+                    || net.getExtension(AdamExtensions.condition.name()).equals("E_REACHABILITY")
+                    || net.getExtension(AdamExtensions.condition.name()).equals("REACHABILITY")) {
+                return;
+            }
+        } else if (net.hasExtension(AdamExtensions.winningCondition.name())) { // todo: this is only for the fallback to the just-sythesis-version.
+            if (net.getExtension(AdamExtensions.winningCondition.name()).equals("A_SAFETY")
+                    || net.getExtension(AdamExtensions.winningCondition.name()).equals("SAFETY")
+                    || net.getExtension(AdamExtensions.winningCondition.name()).equals("E_REACHABILITY")
+                    || net.getExtension(AdamExtensions.winningCondition.name()).equals("REACHABILITY")) {
+                return;
+            }
         }
 
         for (Transition t : net.getTransitions()) {
