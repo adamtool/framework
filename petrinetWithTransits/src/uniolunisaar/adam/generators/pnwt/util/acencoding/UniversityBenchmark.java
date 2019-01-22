@@ -66,7 +66,7 @@ public class UniversityBenchmark {
 		connections.put("r48", "r50");
 		connections.put("r48", "r51");
 		
-		return new AccessControl(name, groups, locations, starts).createAccessControlExample();
+		return new AccessControl(name, groups, locations, starts, null, null).createAccessControlExample();
 		
 		// studentMix:
 		//	for (int i = 0; i < 21; ++i) 

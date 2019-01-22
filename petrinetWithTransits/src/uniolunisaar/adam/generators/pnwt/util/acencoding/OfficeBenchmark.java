@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import uniol.apt.util.Pair;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 
 /**
@@ -50,14 +51,90 @@ public class OfficeBenchmark {
 		
 		Map<String, String> starts = generateStarts();
 		
-		Map<String, String> connections = new HashMap<>();
-		connections.put("out", "lob");
-		connections.put("out", "cor");
-		connections.put("lob", "cor");
-		connections.put("cor", "mr");
-		connections.put("cor", "bur");
+		Set<Pair<String, String>> connections = new HashSet<>();
+		connections.add(new Pair<String, String>("out", "lob"));
+		connections.add(new Pair<String, String>("lob", "out"));
 		
-		return new AccessControl(name, groups, locations, starts).createAccessControlExample();
+		connections.add(new Pair<String, String>("out", "cor"));
+		connections.add(new Pair<String, String>("cor", "out"));
+		
+		connections.add(new Pair<String, String>("lob", "cor"));
+		connections.add(new Pair<String, String>("cor", "lob"));
+
+		connections.add(new Pair<String, String>("cor", "mr"));
+		connections.add(new Pair<String, String>("mr", "cor"));
+		
+		connections.add(new Pair<String, String>("cor", "bur"));
+		connections.add(new Pair<String, String>("bur", "cor"));
+		
+		Map<String, Set<Pair<String, String>>> open = new HashMap<>();
+		
+		Set<Pair<String, String>> visitorOpen = new HashSet<>();
+		visitorOpen.add(new Pair<String, String>("out", "lob"));
+		visitorOpen.add(new Pair<String, String>("lob", "out"));
+		//visitorOpen.add(new Pair<String, String>("out", "cor"));
+		visitorOpen.add(new Pair<String, String>("cor", "out"));
+		visitorOpen.add(new Pair<String, String>("lob", "cor"));
+		visitorOpen.add(new Pair<String, String>("cor", "lob"));
+		visitorOpen.add(new Pair<String, String>("cor", "mr"));
+		visitorOpen.add(new Pair<String, String>("mr", "cor"));
+		//visitorOpen.add(new Pair<String, String>("cor", "bur"));
+		visitorOpen.add(new Pair<String, String>("bur", "cor"));
+		open.put("visitor", visitorOpen);
+		
+		Set<Pair<String, String>> hrOpen = new HashSet<>();
+		hrOpen.add(new Pair<String, String>("out", "lob"));
+		hrOpen.add(new Pair<String, String>("lob", "out"));
+		hrOpen.add(new Pair<String, String>("out", "cor"));
+		hrOpen.add(new Pair<String, String>("cor", "out"));
+		hrOpen.add(new Pair<String, String>("lob", "cor"));
+		hrOpen.add(new Pair<String, String>("cor", "lob"));
+		hrOpen.add(new Pair<String, String>("cor", "mr"));
+		hrOpen.add(new Pair<String, String>("mr", "cor"));
+		hrOpen.add(new Pair<String, String>("cor", "bur"));
+		hrOpen.add(new Pair<String, String>("bur", "cor"));
+		open.put("hr", hrOpen);
+		
+		Set<Pair<String, String>> researcherOpen = new HashSet<>();
+		researcherOpen.add(new Pair<String, String>("out", "lob"));
+		researcherOpen.add(new Pair<String, String>("lob", "out"));
+		researcherOpen.add(new Pair<String, String>("out", "cor"));
+		researcherOpen.add(new Pair<String, String>("cor", "out"));
+		researcherOpen.add(new Pair<String, String>("lob", "cor"));
+		researcherOpen.add(new Pair<String, String>("cor", "lob"));
+		researcherOpen.add(new Pair<String, String>("cor", "mr"));
+		researcherOpen.add(new Pair<String, String>("mr", "cor"));
+		researcherOpen.add(new Pair<String, String>("cor", "bur"));
+		researcherOpen.add(new Pair<String, String>("bur", "cor"));
+		open.put("researcher", researcherOpen);
+		
+		Set<Pair<String, String>> itOpen = new HashSet<>();
+		itOpen.add(new Pair<String, String>("out", "lob"));
+		itOpen.add(new Pair<String, String>("lob", "out"));
+		itOpen.add(new Pair<String, String>("out", "cor"));
+		itOpen.add(new Pair<String, String>("cor", "out"));
+		itOpen.add(new Pair<String, String>("lob", "cor"));
+		itOpen.add(new Pair<String, String>("cor", "lob"));
+		itOpen.add(new Pair<String, String>("cor", "mr"));
+		itOpen.add(new Pair<String, String>("mr", "cor"));
+		itOpen.add(new Pair<String, String>("cor", "bur"));
+		itOpen.add(new Pair<String, String>("bur", "cor"));
+		open.put("it", itOpen);
+		
+		Set<Pair<String, String>> postmanOpen = new HashSet<>();
+		postmanOpen.add(new Pair<String, String>("out", "lob"));
+		postmanOpen.add(new Pair<String, String>("lob", "out"));
+		postmanOpen.add(new Pair<String, String>("out", "cor"));
+		postmanOpen.add(new Pair<String, String>("cor", "out"));
+		postmanOpen.add(new Pair<String, String>("lob", "cor"));
+		postmanOpen.add(new Pair<String, String>("cor", "lob"));
+		postmanOpen.add(new Pair<String, String>("cor", "mr"));
+		postmanOpen.add(new Pair<String, String>("mr", "cor"));
+		postmanOpen.add(new Pair<String, String>("cor", "bur"));
+		postmanOpen.add(new Pair<String, String>("bur", "cor"));
+		open.put("postman", postmanOpen);
+		
+		return new AccessControl(name, groups, locations, starts, connections, open).createAccessControlExample();
 	}
 	
 	public static PetriNetWithTransits generateOfficeNormal() {
@@ -111,7 +188,7 @@ public class OfficeBenchmark {
 		connections.put("co2", "pos");
 		connections.put("co2", "ele");				// access controll happens on other level
 		
-		return new AccessControl(name, groups, locations, starts).createAccessControlExample();
+		return new AccessControl(name, groups, locations, starts, null, null).createAccessControlExample();
 	}
 }
 		// visitorDay:

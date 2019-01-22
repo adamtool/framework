@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import uniol.apt.util.Pair;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 
 /**
@@ -42,25 +43,25 @@ public class AirportBenchmark {
 		starts.put("economy", "out");
 		starts.put("priority", "out");
 		
-		Map<String, String> connections = new HashMap<>();
-		connections.put("out", "eco");
-		connections.put("out", "pri");
-		connections.put("eco", "co1");
-		connections.put("pri", "co2");
-		connections.put("co1", "cp2");
-		connections.put("co2", "se1");
-		connections.put("co2", "se2");
-		connections.put("co2", "se3");
-		connections.put("co2", "se4");
-		connections.put("co3", "se1");
-		connections.put("co3", "se2");
-		connections.put("co3", "se3");
-		connections.put("co3", "se4");
-		connections.put("co3", "el1");
-		connections.put("co3", "sho");
-		connections.put("sho", "el2");
+		Set<Pair<String, String>> connections = new HashSet<>();
+		connections.add(new Pair<>("out", "eco"));
+		connections.add(new Pair<>("out", "pri"));
+		connections.add(new Pair<>("eco", "co1"));
+		connections.add(new Pair<>("pri", "co2"));
+		connections.add(new Pair<>("co1", "cp2"));
+		connections.add(new Pair<>("co2", "se1"));
+		connections.add(new Pair<>("co2", "se2"));
+		connections.add(new Pair<>("co2", "se3"));
+		connections.add(new Pair<>("co2", "se4"));
+		connections.add(new Pair<>("co3", "se1"));
+		connections.add(new Pair<>("co3", "se2"));
+		connections.add(new Pair<>("co3", "se3"));
+		connections.add(new Pair<>("co3", "se4"));
+		connections.add(new Pair<>("co3", "el1"));
+		connections.add(new Pair<>("co3", "sho"));
+		connections.add(new Pair<>("sho", "el2"));
 	
-		return new AccessControl(name, groups, locations, starts).createAccessControlExample();
+		return new AccessControl(name, groups, locations, starts, null, null).createAccessControlExample();
 		
 		// staff:
 		// and:
