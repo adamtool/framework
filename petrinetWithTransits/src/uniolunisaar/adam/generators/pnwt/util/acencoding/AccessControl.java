@@ -47,6 +47,7 @@ public class AccessControl {
 			}
 		}
 		// TODO door configuration
+		// TODO shared doors, limited throughput door
 		return net;
 	}
 	
