@@ -1,9 +1,13 @@
 package uniolunisaar.adam.ds.circuits;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import uniol.apt.util.Pair;
 import uniolunisaar.adam.tools.Logger;
 
@@ -30,6 +34,12 @@ public class AigerFile {
         idx += 2;
     }
 
+    public void addInputs(String... in) {
+        for (int i = 0; i < in.length; i++) {
+            addInput(in[i]);
+        }
+    }
+
     public void addUncontrollableInput(String in) {
         uncontrollable_inputs.put(in, idx);
         idx += 2;
@@ -40,21 +50,36 @@ public class AigerFile {
         idx += 2;
     }
 
+    public void addLatches(String... latches) {
+        for (int i = 0; i < latches.length; i++) {
+            addLatch(latches[i]);
+        }
+    }
+
     public boolean addOutput(String out) {
         return outputs.add(out);
     }
 
+    public void addOutputs(String... out) {
+        for (int i = 0; i < out.length; i++) {
+            addOutput(out[i]);
+        }
+    }
+
     public void addGate(String out, String... in) {
-        if (in.length == 0) {
+          // first delete dublicates
+            Set<String> ids = new HashSet<>(Arrays.asList(in));
+        if (ids.isEmpty()) {
             copyValues(out, TRUE);
             Logger.getInstance().addMessage("[WARNING] Created gates without inputs. Output: " + out, true);
-        } else if (in.length == 1) {
+        } else if (ids.size() == 1) {
             copyValues(out, in[0]);
-        } else {
-            String in1 = in[0];
-            for (int i = 1; i < in.length; i++) {
-                String internalOut = (i == (in.length - 1)) ? out : out + "_#" + uniqueIdentifier++;
-                addGate(new Gate(internalOut, in1, in[i]));
+        } else {         
+            Iterator<String> it = ids.iterator();
+            String in1 = it.next();
+            for (int i = 1; i < ids.size(); i++) {
+                String internalOut = (i == (ids.size() - 1)) ? out : out + "_#" + uniqueIdentifier++;
+                addGate(new Gate(internalOut, in1, it.next()));
                 in1 = internalOut;
             }
         }
@@ -106,7 +131,9 @@ public class AigerFile {
             outs.append(getIndex(outputs.get(j))).append("\n");
             symbols.append("o").append(j).append(" ").append(outputs.get(j)).append("\n");
         }
-        symbols.deleteCharAt(symbols.lastIndexOf("\n"));
+        if (!outputs.isEmpty()) {
+            symbols.deleteCharAt(symbols.lastIndexOf("\n"));
+        }
         // gates
         StringBuilder gates = new StringBuilder();
         for (Map.Entry<String, Pair<Gate, Integer>> entry : andGates.entrySet()) {
