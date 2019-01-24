@@ -20,11 +20,11 @@ public class OfficeBenchmark {
 	
 	private static Set<String> generateGroups() {
 		Set<String> groups = new HashSet<>();
-		groups.add("visitor");
-		groups.add("hr");
-		groups.add("researcher");
-		groups.add("it");
-		groups.add("postman");
+		groups.add("visitor");		// only: 15 sec
+		groups.add("hr");			// two:
+		//groups.add("researcher");
+		//groups.add("it");
+		//groups.add("postman");
 		return groups;
 	}
 	
@@ -36,6 +36,68 @@ public class OfficeBenchmark {
 		starts.put("it", "out");
 		starts.put("postman", "out");
 		return starts;
+	}
+	
+	public static PetriNetWithTransits generateOfficeToy() {
+		String name = "officeVeryToy";
+		Set<String> groups = generateGroups();
+		Set<String> locations = new HashSet<>();
+		locations.add("out");
+		locations.add("in1");
+		locations.add("in2");
+		locations.add("in3");
+		
+		Map<String, String> starts = generateStarts();
+		
+		Set<Pair<String, String>> connections = new HashSet<>();
+		connections.add(new Pair<String, String>("out", "in1"));
+		connections.add(new Pair<String, String>("in1", "out"));
+		
+		connections.add(new Pair<String, String>("out", "in2"));
+		connections.add(new Pair<String, String>("in2", "out"));
+		
+		connections.add(new Pair<String, String>("in2", "in3"));
+		connections.add(new Pair<String, String>("in3", "in2"));
+		
+		Map<String, Set<Pair<String, String>>> open = new HashMap<>();
+		
+		Set<Pair<String, String>> visitorOpen = new HashSet<>();
+		//visitorOpen.add(new Pair<String, String>("out", "in1"));
+		visitorOpen.add(new Pair<String, String>("in1", "out"));
+		visitorOpen.add(new Pair<String, String>("out", "in2"));
+		visitorOpen.add(new Pair<String, String>("in2", "out"));
+		visitorOpen.add(new Pair<String, String>("in2", "in3"));
+		visitorOpen.add(new Pair<String, String>("in3", "in2"));
+		open.put("visitor", visitorOpen);
+		
+		Set<Pair<String, String>> hrOpen = new HashSet<>();
+		hrOpen.add(new Pair<String, String>("out", "in1"));
+		hrOpen.add(new Pair<String, String>("in1", "out"));
+		hrOpen.add(new Pair<String, String>("out", "in2"));
+		hrOpen.add(new Pair<String, String>("in2", "out"));
+		hrOpen.add(new Pair<String, String>("in2", "in3"));
+		hrOpen.add(new Pair<String, String>("in3", "in2"));
+		open.put("hr", hrOpen);
+		
+		Set<Pair<String, String>> researcherOpen = new HashSet<>();
+		researcherOpen.add(new Pair<String, String>("out", "in1"));
+		researcherOpen.add(new Pair<String, String>("in1", "out"));
+		researcherOpen.add(new Pair<String, String>("out", "in2"));
+		researcherOpen.add(new Pair<String, String>("in2", "out"));
+		researcherOpen.add(new Pair<String, String>("in2", "in3"));
+		researcherOpen.add(new Pair<String, String>("in3", "in2"));
+		open.put("researcher", researcherOpen);
+		
+		Set<Pair<String, String>> itOpen = new HashSet<>();
+		itOpen.add(new Pair<String, String>("out", "in1"));
+		itOpen.add(new Pair<String, String>("in1", "out"));
+		itOpen.add(new Pair<String, String>("out", "in2"));
+		itOpen.add(new Pair<String, String>("in2", "out"));
+		itOpen.add(new Pair<String, String>("in2", "in3"));
+		itOpen.add(new Pair<String, String>("in3", "in2"));
+		open.put("it", itOpen);
+		
+		return new AccessControl(name, groups, locations, starts, connections, open).createAccessControlExample();
 	}
 	
 	public static PetriNetWithTransits generateOfficeSmall() {
