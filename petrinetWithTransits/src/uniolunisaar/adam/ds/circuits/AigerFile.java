@@ -67,14 +67,14 @@ public class AigerFile {
     }
 
     public void addGate(String out, String... in) {
-          // first delete dublicates
-            Set<String> ids = new HashSet<>(Arrays.asList(in));
+        // first delete dublicates
+        Set<String> ids = new HashSet<>(Arrays.asList(in));
         if (ids.isEmpty()) {
             copyValues(out, TRUE);
             Logger.getInstance().addMessage("[WARNING] Created gates without inputs. Output: " + out, true);
         } else if (ids.size() == 1) {
             copyValues(out, in[0]);
-        } else {         
+        } else {
             Iterator<String> it = ids.iterator();
             String in1 = it.next();
             for (int i = 1; i < ids.size(); i++) {
