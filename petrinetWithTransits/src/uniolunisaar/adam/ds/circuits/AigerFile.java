@@ -15,6 +15,7 @@ import uniolunisaar.adam.tools.Logger;
  *
  * @author Manuel Gieseking
  */
+@Deprecated
 public class AigerFile {
 
     public static final String NEW_VALUE_OF_LATCH_SUFFIX = "_#new#";
@@ -185,6 +186,13 @@ public class AigerFile {
         return gates;
     }
 
+    /**
+     * The problem is that we reduce the number of gates, i.e. lines we write
+     * into the file, but do not reduce the number of indices we use.
+     *
+     * @param gates
+     * @return
+     */
     private List<IntGate> optimizeGates(List<IntGate> gates) {
         List<Pair<Integer, IntGate>> toRemove = new ArrayList<>();
         do { // if there is still s.th. to remove repeat

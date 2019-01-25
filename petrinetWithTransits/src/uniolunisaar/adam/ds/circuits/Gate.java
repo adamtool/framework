@@ -6,8 +6,8 @@ package uniolunisaar.adam.ds.circuits;
  */
 public class Gate {
 
-    private final String in1;
-    private final String in2;
+    private String in1;
+    private String in2;
     private final String out;
 
     public Gate(String out, String in1, String in2) {
@@ -27,4 +27,13 @@ public class Gate {
     public String getOut() {
         return out;
     }
+
+    public void setIn1(String in1) {
+        this.in1 = in1;
+    }
+
+    public void setIn2(String in2) {
+        this.in2 = in2;
+    }
+
 }
