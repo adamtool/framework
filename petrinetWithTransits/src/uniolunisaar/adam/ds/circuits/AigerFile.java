@@ -218,9 +218,9 @@ public class AigerFile {
         identifier = pair.getFirst();
         int sub = (pair.getSecond() % 2 == 0) ? 0 : -1;
         if (identifier.equals(TRUE)) {
-            return 1;
+            return 1 - sub;
         } else if (identifier.equals(FALSE)) {
-            return 0;
+            return 0 - sub;
         }
         int output;
         if (inputs.containsKey(identifier)) {
