@@ -15,7 +15,8 @@ import uniolunisaar.adam.tools.Logger;
  *
  * @author Manuel Gieseking
  */
-public class AigerFile {
+@Deprecated
+public class UnOptimizedAigerFile {
 
     public static final String NEW_VALUE_OF_LATCH_SUFFIX = "_#new#";
     public static final String TRUE = "true";
@@ -24,7 +25,7 @@ public class AigerFile {
     private final Map<String, Integer> uncontrollable_inputs = new HashMap<>();
     private final Map<String, Integer> latches = new HashMap<>();
     private final List<String> outputs = new ArrayList<>();
-    private final Map<String, Gate> andGates = new HashMap<>();
+    private final Map<String, Pair<Gate, Integer>> andGates = new HashMap<>();
     private final Map<String, String> copy = new HashMap<>();
     private int idx = 2;
     private static int uniqueIdentifier = 0;
@@ -93,10 +94,15 @@ public class AigerFile {
             String in1 = it.next();
             for (int i = 1; i < ids.size(); i++) {
                 String internalOut = (i == (ids.size() - 1)) ? out : out + "_#" + uniqueIdentifier++;
-                andGates.put(internalOut, new Gate(internalOut, in1, it.next()));
+                addGate(new Gate(internalOut, in1, it.next()));
                 in1 = internalOut;
             }
         }
+    }
+
+    private void addGate(Gate gat) {
+        andGates.put(gat.getOut(), new Pair<>(gat, idx));
+        idx += 2;
     }
 
     public void copyValues(String to, String from) {
@@ -105,10 +111,7 @@ public class AigerFile {
 
     @Override
     public String toString() {
-//        lists2BaseIdentifiers();
-//        optimizeGatelist();
-        Map<String, Pair<Gate, Integer>> gates = createGateIds(idx);
-//          System.out.println(this.andGates.toString());
+//        System.out.println(this.andGates.toString());
         StringBuilder symbols = new StringBuilder();
         // inputs
         StringBuilder ins = new StringBuilder();
@@ -133,124 +136,92 @@ public class AigerFile {
         for (Map.Entry<String, Integer> entry : latches.entrySet()) {
             String key = entry.getKey();
             Integer value = entry.getValue();
-            latis.append(value).append(" ").append(getIndex(key + NEW_VALUE_OF_LATCH_SUFFIX, gates)).append("\n");
+            latis.append(value).append(" ").append(getIndex(key + NEW_VALUE_OF_LATCH_SUFFIX)).append("\n");
             symbols.append("l").append(i++).append(" ").append(key).append("\n");
 //            latis.append(value).append(" ").append(getIndex(key)).append("\n");
         }
         //outputs
         StringBuilder outs = new StringBuilder();
         for (int j = 0; j < outputs.size(); j++) {
-            outs.append(getIndex(outputs.get(j), gates)).append("\n");
+            outs.append(getIndex(outputs.get(j))).append("\n");
             symbols.append("o").append(j).append(" ").append(outputs.get(j)).append("\n");
         }
         if (!outputs.isEmpty()) {
             symbols.deleteCharAt(symbols.lastIndexOf("\n"));
         }
         // gates
-        //   OLD VERSION: directly output the set of gates
-        StringBuilder gateStrings = new StringBuilder();
-        for (Map.Entry<String, Pair<Gate, Integer>> entry : gates.entrySet()) {
+        // OLD VERSION: directly output the set of gates
+        StringBuilder gates = new StringBuilder();
+        for (Map.Entry<String, Pair<Gate, Integer>> entry : andGates.entrySet()) {
             Pair<Gate, Integer> value = entry.getValue();
-            gateStrings.append(value.getSecond()).append(" ").append(getIndex(value.getFirst().getIn1(), gates)).append(" ").append(getIndex(value.getFirst().getIn2(), gates)).append("\n");
+            gates.append(value.getSecond()).append(" ").append(getIndex(value.getFirst().getIn1())).append(" ").append(getIndex(value.getFirst().getIn2())).append("\n");
         }
+        // NEW Version first delete some unneccessary gates
+//        List<IntGate> gates = getIntGates();
+////        gates = optimizeGates(gates);
+//        StringBuilder gateStrings = new StringBuilder();
+//        for (IntGate gate : gates) {
+//            gateStrings.append(gate.out).append(" ").append(gate.in1).append(" ").append(gate.in2).append("\n");
+//        }
 
         StringBuilder sb = new StringBuilder();
-        int total = ((idx - 2) + gates.size() * 2) / 2;
-        sb.append("aag ").append(total).append(" ").append(inputs.size())
+        sb.append("aag ").append(idx / 2).append(" ").append(inputs.size())
                 .append(" ").append(latches.size())
                 .append(" ").append(outputs.size())
-                .append(" ").append(gates.size()).append("\n");
+                .append(" ").append(andGates.size()).append("\n");
         sb.append(ins.toString());
         sb.append(latis.toString());
         sb.append(outs.toString());
-        sb.append(gateStrings.toString());
+        sb.append(gates.toString());
         sb.append(symbols.toString());
         return sb.toString();
     }
 
-    private void lists2BaseIdentifiers() {
-        for (Gate gate : andGates.values()) {
-            Pair<String, Integer> pair = getBaseIdentifier(gate.getIn1(), 0);
-            String neg = (pair.getSecond() % 2 == 0) ? "" : "!";
-            gate.setIn1(neg + pair.getFirst());
-            pair = getBaseIdentifier(gate.getIn2(), 0);
-            neg = (pair.getSecond() % 2 == 0) ? "" : "!";
-            gate.setIn2(neg + pair.getFirst());
-        }
-    }
-
-    private void optimizeGatelist() {
-        List<Pair<String, Gate>> toRemove = new ArrayList<>();
-        do { // if there is still s.th. to remove repeat
-            // safely (i.e. replace all the output of the gate using indizes with the replacement) delete all gates
-            for (Pair<String, Gate> pair : toRemove) {
-                String out = pair.getSecond().getOut();
-                boolean test = andGates.remove(out, pair.getSecond());
-                if (!test) {
-                    throw new RuntimeException("whooooaaat?");
-                }
-                replace(out, pair.getFirst());
-            }
-            toRemove.clear();
-            // find gates with the same inputs
-            for (Gate gate : andGates.values()) {
-                if (gate.getIn1().equals(gate.getIn2())) {
-//                    toRemove.add(new Pair<>(gate.getIn1(), gate));
-                }
-            }
-            // find gates where one input is zero or one
-            // find gates where one input is the negation of the other            
-            // find gates which are commutativ or equal to another
-
-        } while (!toRemove.isEmpty());
-    }
-
-    private void replace(String id, String with) {
-        // in gates
-        for (Gate gate : andGates.values()) {
-            if (gate.getIn1().equals(id)) {
-                gate.setIn1(with);
-            }
-            if (gate.getIn2().equals(id)) {
-                gate.setIn2(with);
-            }
-            if (gate.getIn1().equals("!" + id)) {
-                gate.setIn1("!" + with);
-            }
-            if (gate.getIn2().equals("!" + id)) {
-                gate.setIn2("!" + with);
-            }
-        }
-        // in copy
-        for (Map.Entry<String, String> entry : copy.entrySet()) {
-            if (entry.getValue().equals(id)) {
-                copy.put(entry.getKey(), with);
-            }
-            if (entry.getValue().equals("!" + id)) {
-                copy.put(entry.getKey(), "!" + with);
-            }
-        }
-    }
-
-    private Map<String, Pair<Gate, Integer>> createGateIds(int idx) {
-        Map<String, Pair<Gate, Integer>> gates = new HashMap<>();
-        for (Map.Entry<String, Gate> entry : andGates.entrySet()) {
-            gates.put(entry.getKey(), new Pair<>(entry.getValue(), idx));
-            idx += 2;
+    private List<IntGate> getIntGates() {
+        List<IntGate> gates = new ArrayList<>();
+        for (Map.Entry<String, Pair<Gate, Integer>> entry : andGates.entrySet()) {
+            Pair<Gate, Integer> value = entry.getValue();
+            gates.add(new IntGate(value.getSecond(), getIndex(value.getFirst().getIn1()), getIndex(value.getFirst().getIn2())));
         }
         return gates;
     }
-//
-//    private List<IntGate> getIntGates() {
-//        List<IntGate> gates = new ArrayList<>();
-//        for (Map.Entry<String, Pair<Gate, Integer>> entry : andGates.entrySet()) {
-//            Pair<Gate, Integer> value = entry.getValue();
-//            gates.add(new IntGate(value.getSecond(), getIndex(value.getFirst().getIn1()), getIndex(value.getFirst().getIn2())));
-//        }
-//        return gates;
-//    }
 
-    private int getIndex(String identifier, Map<String, Pair<Gate, Integer>> gates) {
+    /**
+     * The problem is that we reduce the number of gates, i.e. lines we write
+     * into the file, but do not reduce the number of indices we use.
+     *
+     * @param gates
+     * @return
+     */
+    private List<IntGate> optimizeGates(List<IntGate> gates) {
+        List<Pair<Integer, IntGate>> toRemove = new ArrayList<>();
+        do { // if there is still s.th. to remove repeat
+            // safely (i.e. replace all the output of the gate using indizes with the replacement) delete all gates
+            for (Pair<Integer, IntGate> pair : toRemove) {
+                gates.remove(pair.getSecond());
+                int out = pair.getSecond().out;
+                int replace = pair.getFirst();
+                for (IntGate gate : gates) {
+                    if (gate.in1 == out) {
+                        gate.in1 = replace;
+                    }
+                    if (gate.in2 == out) {
+                        gate.in2 = replace;
+                    }
+                }
+            }
+            toRemove.clear();
+            // find gates with the same inputs
+            for (IntGate gate : gates) {
+                if (gate.in1 == gate.in2) {
+                    toRemove.add(new Pair<>(gate.out, gate));
+                }
+            }
+        } while (!toRemove.isEmpty());
+        return gates;
+    }
+
+    private int getIndex(String identifier) {
         Pair<String, Integer> pair = getBaseIdentifier(identifier, 0);
         identifier = pair.getFirst();
         int sub = (pair.getSecond() % 2 == 0) ? 0 : -1;
@@ -265,7 +236,7 @@ public class AigerFile {
         } else if (latches.containsKey(identifier)) {
             output = latches.get(identifier);
         } else if (andGates.containsKey(identifier)) {
-            output = gates.get(identifier).getSecond();
+            output = andGates.get(identifier).getSecond();
         } else {
             throw new RuntimeException("Couldn't find an index for identifier " + identifier);
         }
