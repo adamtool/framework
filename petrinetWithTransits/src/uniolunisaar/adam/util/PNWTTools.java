@@ -27,7 +27,8 @@ import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.logic.parser.transits.TransitParser;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
-import uniolunisaar.adam.tools.ProcessNotStartedException;
+import uniolunisaar.adam.exceptions.ProcessNotStartedException;
+import uniolunisaar.adam.tools.ProcessPool;
 import uniolunisaar.adam.tools.Tools;
 
 /**
@@ -495,7 +496,7 @@ public class PNWTTools {
     }
 
     public static void savePnwt2Dot(String path, PetriNetWithTransits net, boolean withLabel, Integer tokencount) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(path + ".dot")) {
+        try ( PrintStream out = new PrintStream(path + ".dot")) {
             if (tokencount == -1) {
                 out.println(pnwt2Dot(net, withLabel));
             } else {
@@ -522,6 +523,7 @@ public class PNWTTools {
         }
         String[] command = {"dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
         ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
+        ProcessPool.getInstance().putProcess(net.getName() + "#dot", procH);
         // start it in an extra thread
         Thread thread = new Thread(() -> {
             try {

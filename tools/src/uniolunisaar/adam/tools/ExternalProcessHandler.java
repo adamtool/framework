@@ -1,5 +1,6 @@
 package uniolunisaar.adam.tools;
 
+import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -8,7 +9,9 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Using the idea of
@@ -29,6 +32,8 @@ public class ExternalProcessHandler {
     private ProcessOutputReaderThread out;
     private ProcessOutputReaderThread error;
     private Process proc;
+
+    private List<IProcessListener> listeners = new ArrayList<>();
 
     public ExternalProcessHandler(String... command) {
         this(null, command);
@@ -92,6 +97,9 @@ public class ExternalProcessHandler {
         status = proc.waitFor();
         out.join();
         error.join();
+        for (IProcessListener listener : listeners) {
+            listener.processFinished(proc);
+        }
         return status;
     }
 
@@ -113,6 +121,18 @@ public class ExternalProcessHandler {
         start(outputStream, errorStream);
         waitFor();
         return status;
+    }
+
+    public boolean isAlive() {
+        return proc.isAlive();
+    }
+
+    public void destroy() {
+        proc.destroy();
+    }
+
+    public Process destroyForcibly() {
+        return proc.destroyForcibly();
     }
 
     public String getErrors() throws ProcessNotStartedException {
@@ -140,6 +160,14 @@ public class ExternalProcessHandler {
         return status;
     }
 
+    public boolean addListener(IProcessListener listener) {
+        return listeners.add(listener);
+    }
+
+    public boolean removeListener(IProcessListener listener) {
+        return listeners.remove(listener);
+    }
+
     //todo: when we have java9 take ProcessHandle to get the CPU time of the process and so on.
     class ProcessOutputReaderThread extends Thread {
 
@@ -161,7 +189,7 @@ public class ExternalProcessHandler {
 
         @Override
         public void run() {
-            try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            try ( BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     // send it to the given output
