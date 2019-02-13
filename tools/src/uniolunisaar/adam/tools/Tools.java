@@ -16,6 +16,7 @@ import uniol.apt.io.parser.impl.AptPNParser;
 import uniol.apt.io.renderer.RenderException;
 import uniol.apt.io.renderer.impl.AptPNRenderer;
 import uniol.apt.module.exception.ModuleException;
+import uniol.apt.util.Pair;
 
 /**
  *
@@ -140,21 +141,21 @@ public class Tools {
 
     public static void savePN(String path, PetriNet net) throws FileNotFoundException, ModuleException {
         String file = getPN(net);
-        try (PrintStream out = new PrintStream(path + ".apt")) {
+        try ( PrintStream out = new PrintStream(path + ".apt")) {
             out.println(file);
         }
         Logger.getInstance().addMessage("Saved to: " + path + ".apt", false);
     }
 
     public static void saveFile(String path, String content) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(path)) {
+        try ( PrintStream out = new PrintStream(path)) {
             out.println(content);
             Logger.getInstance().addMessage("Saved to: " + path, false);
         }
     }
 
     public static void saveFile(String path, byte[] content) throws FileNotFoundException, IOException {
-        try (OutputStream out = new FileOutputStream(path)) {
+        try ( OutputStream out = new FileOutputStream(path)) {
             out.write(content);
             Logger.getInstance().addMessage("Saved to: " + path, false);
         }
@@ -167,6 +168,28 @@ public class Tools {
     public static void deleteFile(String path) {
         new File(path).delete();
         Logger.getInstance().addMessage("Deleted: " + path, true);
+    }
+
+    /**
+     * Returns the concrete line and column of the occurrence of the error of
+     * the given ParseException.
+     *
+     * @param e
+     * @return The first value is the line, the second the column. If there are
+     * no lines or columns given, -1 is returned.
+     */
+    public static Pair<Integer, Integer> getErrorLocation(ParseException e) {
+        int line = -1;
+        int col = -1;
+        String[] msg = e.getMessage().split("line ");
+        if (msg.length > 1) {
+            msg = msg[1].split(" col ");
+            if (msg.length > 1) {
+                line = Integer.parseInt(msg[0]);
+                col = Integer.parseInt(msg[1].substring(0, msg[1].indexOf(":")));
+            }
+        }
+        return new Pair<>(line, col);
     }
 
 }
