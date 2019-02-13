@@ -254,7 +254,7 @@ public class Logger {
     }
 
     public void addMessageStream(String key, PrintStream messsageStream) {
-        this.messageStreams.put(key, errorStream);
+        this.messageStreams.put(key, messsageStream);
     }
 
     public PrintStream getMessageStream(String key) {
