@@ -57,12 +57,12 @@ public class PetriNetWithTransits extends PetriNet {
     /**
      * Copy-Constructor
      *
-     * @param game
+     * @param pnwt
      */
-    public PetriNetWithTransits(PetriNetWithTransits game) {
-        super(game);
+    public PetriNetWithTransits(PetriNetWithTransits pnwt) {
+        super(pnwt);
         // COPY token flows
-        for (Map.Entry<String, Map<String, Transit>> entry : game.transits.entrySet()) {
+        for (Map.Entry<String, Map<String, Transit>> entry : pnwt.transits.entrySet()) {
             Map<String, Transit> map = entry.getValue();
             if (map.isEmpty()) {
                 transits.put(entry.getKey(), new TreeMap<>());

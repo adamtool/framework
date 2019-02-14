@@ -11,6 +11,8 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Transition;
+import uniol.apt.analysis.bounded.Bounded;
+import uniol.apt.analysis.bounded.BoundedResult;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.io.parser.impl.AptPNParser;
 import uniol.apt.io.renderer.RenderException;
@@ -141,21 +143,21 @@ public class Tools {
 
     public static void savePN(String path, PetriNet net) throws FileNotFoundException, ModuleException {
         String file = getPN(net);
-        try ( PrintStream out = new PrintStream(path + ".apt")) {
+        try (PrintStream out = new PrintStream(path + ".apt")) {
             out.println(file);
         }
         Logger.getInstance().addMessage("Saved to: " + path + ".apt", false);
     }
 
     public static void saveFile(String path, String content) throws FileNotFoundException {
-        try ( PrintStream out = new PrintStream(path)) {
+        try (PrintStream out = new PrintStream(path)) {
             out.println(content);
             Logger.getInstance().addMessage("Saved to: " + path, false);
         }
     }
 
     public static void saveFile(String path, byte[] content) throws FileNotFoundException, IOException {
-        try ( OutputStream out = new FileOutputStream(path)) {
+        try (OutputStream out = new FileOutputStream(path)) {
             out.write(content);
             Logger.getInstance().addMessage("Saved to: " + path, false);
         }
@@ -192,4 +194,11 @@ public class Tools {
         return new Pair<>(line, col);
     }
 
+    public static BoundedResult getBounded(PetriNet net) {
+        return Bounded.checkBounded(net);
+    }
+
+    public static boolean isSafe(PetriNet net) {
+        return getBounded(net).isSafe();
+    }
 }
