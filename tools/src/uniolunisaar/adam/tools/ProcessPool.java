@@ -1,6 +1,8 @@
 package uniolunisaar.adam.tools;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,10 +31,14 @@ public class ProcessPool implements IProcessListener {
     }
 
     public void clean() {
+        List<String> toRemove = new ArrayList<>();
         for (Map.Entry<String, ExternalProcessHandler> entry : processes.entrySet()) {
             if (!entry.getValue().isAlive()) {
-                processes.remove(entry.getKey(), entry.getValue());
+                toRemove.add(entry.getKey());
             }
+        }
+        for (String key : toRemove) {
+            processes.remove(key);
         }
     }
 
