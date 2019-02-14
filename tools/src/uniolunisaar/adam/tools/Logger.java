@@ -33,7 +33,7 @@ public class Logger {
         this.file = null;
         this.systemOutput = System.out;
         this.shortMessageStream = System.out;
-        this.verboseMessageStream = System.out;
+        this.verboseMessageStream = emptyStream;
         this.errorStream = System.err;
         this.warningStream = System.out;
     }
