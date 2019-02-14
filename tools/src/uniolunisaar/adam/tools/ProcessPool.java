@@ -33,7 +33,7 @@ public class ProcessPool implements IProcessListener {
     public void clean() {
         List<String> toRemove = new ArrayList<>();
         for (Map.Entry<String, ExternalProcessHandler> entry : processes.entrySet()) {
-            if (!entry.getValue().isAlive()) {
+            if (entry.getValue() != null && !entry.getValue().isAlive()) {
                 toRemove.add(entry.getKey());
             }
         }
