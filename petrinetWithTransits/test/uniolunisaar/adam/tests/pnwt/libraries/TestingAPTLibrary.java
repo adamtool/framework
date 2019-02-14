@@ -178,7 +178,7 @@ public class TestingAPTLibrary {
     @Test(expectedExceptions = {NoSuchNodeException.class}, expectedExceptionsMessageRegExp = "Node 't1' does not exist in graph 'burglar.net'")
     public void testTokenflow() throws IOException, ParseException {
         final String path = System.getProperty("examplesfolder") + "/safety/burglar/burglar.apt";
-        PetriNetWithTransits game = PNWTTools.getPetriNetWithTransitsFromParsedPetriNet(Tools.getPetriNet(path), true, true);
+        PetriNetWithTransits game = PNWTTools.getPetriNetWithTransitsFromParsedPetriNet(Tools.getPetriNet(path), true);
         game.removeNode(game.getTransition("t1"));
         game.getTransition("t1");
     }

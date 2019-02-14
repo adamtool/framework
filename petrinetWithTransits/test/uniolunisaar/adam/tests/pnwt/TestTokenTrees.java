@@ -28,7 +28,7 @@ public class TestTokenTrees {
     private void testExample(String name, List<List<String>> expected) throws IOException, InterruptedException, ParseException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
         final String path = inputDir + File.separator;
         PetriNet net = Tools.getPetriNet(path + name + ".apt");
-        PetriNetWithTransits game = PNWTTools.getPetriNetWithTransitsFromParsedPetriNet(net, false, true);
+        PetriNetWithTransits game = PNWTTools.getPetriNetWithTransitsFromParsedPetriNet(net, true);
 //        TokenTreeCreator.createAndAnnotateTokenTree(game);
 //        List<TokenTree> trees = TokenTreeCreator.getTokenTrees(game);
 //        testTrees(trees, expected);

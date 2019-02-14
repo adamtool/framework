@@ -167,12 +167,12 @@ public class PNWTTools {
      * @throws ParseException
      * @throws IOException
      */
-    public static PetriNetWithTransits getPetriNetWithTransits(String content, boolean skipTests, boolean withAutomatic) throws ParseException, IOException {
+    public static PetriNetWithTransits getPetriNetWithTransits(String content, boolean withAutomatic) throws ParseException, IOException {
         PetriNet pn = Tools.getPetriNetFromString(content);
-        return getPetriNetWithTransitsFromParsedPetriNet(pn, skipTests, withAutomatic);
+        return getPetriNetWithTransitsFromParsedPetriNet(pn, withAutomatic);
     }
 
-    public static PetriNetWithTransits getPetriNetWithTransitsFromParsedPetriNet(PetriNet net, boolean skipTests, boolean withAutomatic) throws ParseException {
+    public static PetriNetWithTransits getPetriNetWithTransitsFromParsedPetriNet(PetriNet net, boolean withAutomatic) throws ParseException {
 //        Condition.Condition win = parseConditionFromNetExtensionText(net);
         PetriNetWithTransits pnwt = new PetriNetWithTransits(net);
         parseAndCreateTransitsFromTransitionExtensionText(pnwt, withAutomatic);
@@ -496,7 +496,7 @@ public class PNWTTools {
     }
 
     public static void savePnwt2Dot(String path, PetriNetWithTransits net, boolean withLabel, Integer tokencount) throws FileNotFoundException {
-        try ( PrintStream out = new PrintStream(path + ".dot")) {
+        try (PrintStream out = new PrintStream(path + ".dot")) {
             if (tokencount == -1) {
                 out.println(pnwt2Dot(net, withLabel));
             } else {
@@ -507,7 +507,7 @@ public class PNWTTools {
     }
 
     public static Thread savePnwt2DotAndPDF(String input, String output, boolean withLabel) throws IOException, InterruptedException, ParseException {
-        PetriNetWithTransits net = new PetriNetWithTransits(new AptPNParser().parseFile(input));
+        PetriNetWithTransits net = getPetriNetWithTransitsFromParsedPetriNet(new AptPNParser().parseFile(input), false);
         return savePnwt2DotAndPDF(output, net, withLabel);
     }
 
