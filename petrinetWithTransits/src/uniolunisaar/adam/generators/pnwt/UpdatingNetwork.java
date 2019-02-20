@@ -1,6 +1,7 @@
 package uniolunisaar.adam.generators.pnwt;
 
 import java.util.Random;
+import uniol.apt.adt.extension.ExtensionProperty;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
@@ -19,13 +20,16 @@ public class UpdatingNetwork {
      * @return
      */
     public static PetriNetWithTransits create(int nb_nodes) {
+        if (nb_nodes < 3) {
+            throw new RuntimeException("Not a meaningful example.");
+        }
         Random rand = new Random(1);
         return create(nb_nodes, rand.nextInt(nb_nodes - 2) + 1);
     }
 
     public static PetriNetWithTransits create(int nb_nodes, int failing_node) {
         if (failing_node > nb_nodes - 2 || failing_node < 1) {
-            throw new RuntimeException("The failing node " + failing_node + "is not in a suitable range: [1,"+(nb_nodes-2)+"]");
+            throw new RuntimeException("The failing node " + failing_node + "is not in a suitable range: [1," + (nb_nodes - 2) + "]");
         }
         if (nb_nodes < 3) {
             throw new RuntimeException("Not a meaningful example.");
@@ -80,4 +84,13 @@ public class UpdatingNetwork {
         return net;
     }
 
+    public static void addConnectivity(PetriNetWithTransits pnwt) {
+        Place reach = null;
+        for (Place place : pnwt.getPlaces()) {
+            if (pnwt.isReach(place)) {
+                reach = place;
+            }
+        }
+        pnwt.putExtension("formula", "A F " + reach.getId(), ExtensionProperty.WRITE_TO_FILE);
+    }
 }

@@ -1,5 +1,6 @@
 package uniolunisaar.adam.generators.pnwt;
 
+import uniol.apt.adt.extension.ExtensionProperty;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
@@ -61,11 +62,12 @@ public class RedundantNetwork {
     }
 
     /**
-     * This one has the token flows for the mutex transitions which enables 
-     * back the pipeline. This ist OK when we don't have infinitly many updates.
+     * This one has the token flows for the mutex transitions which enables back
+     * the pipeline. This ist OK when we don't have infinitly many updates.
+     *
      * @param nb_nodeInBetweenU
      * @param nb_nodeInBetweenD
-     * @return 
+     * @return
      */
     public static PetriNetWithTransits getUpdatingStillNotFixedMutexNetwork(int nb_nodeInBetweenU, int nb_nodeInBetweenD) {
         if (nb_nodeInBetweenU < 1 || nb_nodeInBetweenD < 1) {
@@ -101,6 +103,7 @@ public class RedundantNetwork {
         // output
         Place out = net.createPlace("out");
         out.setInitialToken(1);
+        net.setReach(out);
 
         // create the initializing of flows
         Transition tin = net.createTransition("createFlows");
@@ -252,9 +255,10 @@ public class RedundantNetwork {
 
     /**
      * Adds the token flow for the mutex giving back the token.
+     *
      * @param net
      * @param nb_nodesInBetweenU
-     * @return 
+     * @return
      */
     private static PetriNetWithTransits stillNofixMutex(PetriNetWithTransits net, int nb_nodesInBetweenU) {
         net.setName(net.getName() + "_not_fixed");
@@ -272,12 +276,13 @@ public class RedundantNetwork {
     /**
      * Creates a token flow from the input place, but that's still not enough
      * since also the place of the other line where an update could have happen
-     * can have the tokenflows which will infinitly cycle.
-     * One would need to take all chains from all nodes till the update date (included)
-     * from the other pipeline to have a correct update
+     * can have the tokenflows which will infinitly cycle. One would need to
+     * take all chains from all nodes till the update date (included) from the
+     * other pipeline to have a correct update
+     *
      * @param net
      * @param nb_nodesInBetweenU
-     * @return 
+     * @return
      */
     private static PetriNetWithTransits alsoNotTheFinalFixMutex(PetriNetWithTransits net, int nb_nodesInBetweenU) {
         net.setName(net.getName() + "_FIXED");
@@ -293,5 +298,15 @@ public class RedundantNetwork {
         net.createFlow(mtD, in);
         net.createTransit(in, mtD, pD0);
         return net;
+    }
+
+    public static void addConnectivity(PetriNetWithTransits pnwt) {
+        Place reach = null;
+        for (Place place : pnwt.getPlaces()) {
+            if (pnwt.isReach(place)) {
+                reach = place;
+            }
+        }
+        pnwt.putExtension("formula", "A F " + reach.getId(), ExtensionProperty.WRITE_TO_FILE);
     }
 }
