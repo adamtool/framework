@@ -528,6 +528,7 @@ public class PNWTTools {
         Thread thread = new Thread(() -> {
             try {
                 procH.startAndWaitFor();
+                Logger.getInstance().addMessage("Saved to: " + path + ".pdf", true);
 //                    if (deleteDot) {
 //                        // Delete dot file
 //                        new File(path + ".dot").delete();
