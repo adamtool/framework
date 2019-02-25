@@ -30,6 +30,7 @@ import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 public class TopologyToPN {
 	private TransitionSystem ts;
 	private String formula;
+	private Set<String> switches = new HashSet<>();
 	
 	public TopologyToPN(File file) throws ParseException, IOException {
 		ts = new AptLTSParser().parseFile(file);
@@ -73,6 +74,7 @@ public class TopologyToPN {
 		int seed = 42;
 		String ingress = "";
 		String egress = "";
+		// allConfigurations.size() < 1000 to prevent HeapSpaceError
 		while (allConfigurations.size() < 2 && seed < 100) {
 			allConfigurations.clear();
 			Pair<String, String> ingressAndEgress = chooseIngressAndEgress(seed++);
@@ -184,13 +186,40 @@ public class TopologyToPN {
 			}
 		}
 		
-		List<String> pathOne = getSwitchesOfConfiguration(initialConfiguration);
-		List<String> pathTwo = getSwitchesOfConfiguration(finalConfiguration);
-		
 		System.out.println("INITIAL CONFIG: " + initialConfiguration);
-		System.out.println("FINAL CONFIG: " + finalConfiguration);	
+		System.out.println("FINAL CONFIG: " + finalConfiguration);
 		
-		formula = "A (G" + orSwitches(pathOne) +" OR G" + orSwitches(pathTwo) + ")";
+		// TODO choose one
+		
+		// packet coherence
+		/*List<String> pathOne = getSwitchesOfConfiguration(initialConfiguration);
+		List<String> pathTwo = getSwitchesOfConfiguration(finalConfiguration);
+		formula = "A (G" + orSwitches(pathOne) +" OR G" + orSwitches(pathTwo) + ")";*/
+		
+		// loop freedom
+		/*List<String> implications = new LinkedList<>();
+		for (String sw : switches) {
+			if (egress.equals("sw000") && sw.equals("sw001")) { // ingress
+				String add = "( NEG sw000 OR (sw000 U NEG sw000))";
+				implications.add(add);
+			} else if ( ! sw.equals(egress)) {
+				String add = "( NEG " + sw + " OR (" + sw + " U NEG " + sw +"))";
+				implications.add(add);
+			}
+		}
+		formula = "A G " + andSwitches(implications);*/
+		
+		// drop freedom
+		List<String> forward = new LinkedList<>();
+		forward.add("pOut");
+		forward.add("ingress" + ingress);
+		for (Arc arc : ts.getEdges()) {
+			forward.add("fwd" + arc.getSourceId() + "to" + arc.getTargetId());
+			forward.add("fwd" + arc.getTargetId() + "to" + arc.getSourceId());
+			
+		}
+		formula = "A G " + orSwitches(forward);
+			
 		pn.putExtension("formula", formula, ExtensionProperty.WRITE_TO_FILE);
 		
 		// Set tokens for initial configuration
@@ -232,10 +261,12 @@ public class TopologyToPN {
 		for (Arc arc : ts.getEdges()) {
 			if (!pn.containsPlace(arc.getSourceId())) {
 				Place sw = pn.createPlace(arc.getSourceId());
+				switches.add(arc.getSourceId());
 				sw.setInitialToken(1);
 			}
 			if (!pn.containsPlace(arc.getTargetId())) {
 				Place sw = pn.createPlace(arc.getTargetId());
+				switches.add(arc.getTargetId());
 				sw.setInitialToken(1);
 			}
 			createTransition(pn, arc.getSourceId(), arc.getTargetId());
@@ -255,13 +286,27 @@ public class TopologyToPN {
 		return result;
 	}
 	
-	// make or tree for packet coherence
+	// make OR tree
 	private String orSwitches (List<String> switches) {
 		if (switches.size() == 1) {
 			return switches.get(0);
 		} else if (switches.size() > 1) {
 			int middle = switches.size() / 2;
 			return "(" + orSwitches(switches.subList(0, middle)) + " OR " + orSwitches(switches.subList(middle, switches.size())) + ")"; 
+		} else {
+			// size 0 should not happy and error should be thrown
+		}
+		
+		return null;
+	}
+	
+	// make AND tree
+	private String andSwitches (List<String> switches) {
+		if (switches.size() == 1) {
+			return switches.get(0);
+		} else if (switches.size() > 1) {
+			int middle = switches.size() / 2;
+			return "(" + andSwitches(switches.subList(0, middle)) + " OR " + andSwitches(switches.subList(middle, switches.size())) + ")"; 
 		} else {
 			// size 0 should not happy and error should be thrown
 		}
