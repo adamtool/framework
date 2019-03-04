@@ -124,7 +124,7 @@ public class ExternalProcessHandler {
     }
 
     public boolean isAlive() {
-        return proc.isAlive();
+        return proc != null && proc.isAlive();
     }
 
     public void destroy() {
@@ -189,7 +189,7 @@ public class ExternalProcessHandler {
 
         @Override
         public void run() {
-            try ( BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(is))) {
                 String line;
                 while ((line = br.readLine()) != null) {
                     // send it to the given output
