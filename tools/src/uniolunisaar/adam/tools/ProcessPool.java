@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -12,6 +14,7 @@ import java.util.Map;
 public class ProcessPool implements IProcessListener {
 
     private static ProcessPool instance = null;
+    private static boolean mutex = false;
 
     public static ProcessPool getInstance() {
         if (instance == null) {
@@ -31,6 +34,7 @@ public class ProcessPool implements IProcessListener {
     }
 
     public void clean() {
+        mutex = true;
         List<String> toRemove = new ArrayList<>();
         for (Map.Entry<String, ExternalProcessHandler> entry : processes.entrySet()) {
             if (entry.getValue() != null && !entry.getValue().isAlive()) {
@@ -40,6 +44,7 @@ public class ProcessPool implements IProcessListener {
         for (String key : toRemove) {
             processes.remove(key);
         }
+        mutex = false;
     }
 
     public void destroyProcessesOfNet(String id) {
@@ -60,6 +65,12 @@ public class ProcessPool implements IProcessListener {
 
     @Override
     public void processFinished(Process process) {
+        while(mutex) {
+            try {
+                Thread.sleep(50);
+            } catch (InterruptedException ex) {
+            }
+        }
         clean();
     }
 }
