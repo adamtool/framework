@@ -32,5 +32,6 @@ public enum AdamExtensions {
     yCoord,
     strongFair,
     weakFair,
-    inhibitor
+    inhibitor,
+    colorDomain
 }
