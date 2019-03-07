@@ -35,5 +35,6 @@ public enum AdamExtensions {
     inhibitor,
     colorDomain,
     colorToken,
-    predicate
+    predicate,
+    arcExpression
 }
