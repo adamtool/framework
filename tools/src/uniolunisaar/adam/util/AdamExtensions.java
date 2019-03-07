@@ -34,5 +34,6 @@ public enum AdamExtensions {
     weakFair,
     inhibitor,
     colorDomain,
+    colorToken,
     predicate
 }
