@@ -66,6 +66,8 @@ public class CartesianProduct<T> implements Iterable<List<T>> {
             // from this index set all other lists to the first index
             for (int i = pos + 1; i < idxs.length; i++) {
                 idxs[i] = 0;
+                // update the tuple
+                currentTuple.set(i, lists.get(i).get(0));
             }
             // for the list itself do one step
             idxs[pos]++;
