@@ -521,7 +521,7 @@ public class PNWTTools {
         } else {
             savePnwt2Dot(path, net, withLabel, tokencount);
         }
-        String[] command = {"dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
+        String[] command = {"/usr/local/bin/dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
         ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
         ProcessPool.getInstance().putProcess(net.getName() + "#dot", procH);
         // start it in an extra thread
