@@ -36,5 +36,8 @@ public enum AdamExtensions {
     colorDomain,
     colorTokens,
     predicate,
-    arcExpression
+    arcExpression,
+    convOrigID,
+    convColors,
+    convValuation
 }
