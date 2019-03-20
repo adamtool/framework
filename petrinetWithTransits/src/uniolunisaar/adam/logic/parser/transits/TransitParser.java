@@ -1,5 +1,6 @@
 package uniolunisaar.adam.logic.parser.transits;
 
+import uniolunisaar.adam.exceptions.pnwt.TransitParseException;
 import java.util.List;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;

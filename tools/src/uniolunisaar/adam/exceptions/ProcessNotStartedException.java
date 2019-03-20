@@ -1,4 +1,4 @@
-package uniolunisaar.adam.tools;
+package uniolunisaar.adam.exceptions;
 
 /**
  *

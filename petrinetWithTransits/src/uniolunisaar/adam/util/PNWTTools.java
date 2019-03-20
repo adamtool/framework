@@ -27,7 +27,8 @@ import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.logic.parser.transits.TransitParser;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
-import uniolunisaar.adam.tools.ProcessNotStartedException;
+import uniolunisaar.adam.exceptions.ProcessNotStartedException;
+import uniolunisaar.adam.tools.ProcessPool;
 import uniolunisaar.adam.tools.Tools;
 
 /**
@@ -166,12 +167,12 @@ public class PNWTTools {
      * @throws ParseException
      * @throws IOException
      */
-    public static PetriNetWithTransits getPetriNetWithTransits(String content, boolean skipTests, boolean withAutomatic) throws ParseException, IOException {
+    public static PetriNetWithTransits getPetriNetWithTransits(String content, boolean withAutomatic) throws ParseException, IOException {
         PetriNet pn = Tools.getPetriNetFromString(content);
-        return getPetriNetWithTransitsFromParsedPetriNet(pn, skipTests, withAutomatic);
+        return getPetriNetWithTransitsFromParsedPetriNet(pn, withAutomatic);
     }
 
-    public static PetriNetWithTransits getPetriNetWithTransitsFromParsedPetriNet(PetriNet net, boolean skipTests, boolean withAutomatic) throws ParseException {
+    public static PetriNetWithTransits getPetriNetWithTransitsFromParsedPetriNet(PetriNet net, boolean withAutomatic) throws ParseException {
 //        Condition.Condition win = parseConditionFromNetExtensionText(net);
         PetriNetWithTransits pnwt = new PetriNetWithTransits(net);
         parseAndCreateTransitsFromTransitionExtensionText(pnwt, withAutomatic);
@@ -505,16 +506,16 @@ public class PNWTTools {
         Logger.getInstance().addMessage("Saved to: " + path + ".dot", true);
     }
 
-    public static Thread savePnwt2DotAndPDF(String input, String output, boolean withLabel) throws IOException, InterruptedException, ParseException {
-        PetriNetWithTransits net = new PetriNetWithTransits(new AptPNParser().parseFile(input));
+    public static Thread savePnwt2DotAndPDF(String input, String output, boolean withLabel) throws FileNotFoundException, ParseException, IOException {
+        PetriNetWithTransits net = getPetriNetWithTransitsFromParsedPetriNet(new AptPNParser().parseFile(input), false);
         return savePnwt2DotAndPDF(output, net, withLabel);
     }
 
-    public static Thread savePnwt2DotAndPDF(String path, PetriNetWithTransits net, boolean withLabel) throws IOException, InterruptedException {
+    public static Thread savePnwt2DotAndPDF(String path, PetriNetWithTransits net, boolean withLabel) throws FileNotFoundException {
         return savePnwt2DotAndPDF(path, net, withLabel, -1);
     }
 
-    public static Thread savePnwt2DotAndPDF(String path, PetriNetWithTransits net, boolean withLabel, Integer tokencount) throws IOException, InterruptedException {
+    public static Thread savePnwt2DotAndPDF(String path, PetriNetWithTransits net, boolean withLabel, Integer tokencount) throws FileNotFoundException {
         if (tokencount == -1) {
             savePnwt2Dot(path, net, withLabel);
         } else {
@@ -522,10 +523,12 @@ public class PNWTTools {
         }
         String[] command = {"dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
         ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
+        ProcessPool.getInstance().putProcess(net.getName() + "#dot", procH);
         // start it in an extra thread
         Thread thread = new Thread(() -> {
             try {
                 procH.startAndWaitFor();
+                Logger.getInstance().addMessage("Saved to: " + path + ".pdf", true);
 //                    if (deleteDot) {
 //                        // Delete dot file
 //                        new File(path + ".dot").delete();
@@ -562,11 +565,11 @@ public class PNWTTools {
 //        Logger.getInstance().addMessage("Saved to: " + path + ".pdf", true);
     }
 
-    public static Thread savePnwt2PDF(String path, PetriNetWithTransits net, boolean withLabel) throws IOException, InterruptedException {
+    public static Thread savePnwt2PDF(String path, PetriNetWithTransits net, boolean withLabel) throws FileNotFoundException {
         return savePnwt2PDF(path, net, withLabel, -1);
     }
 
-    public static Thread savePnwt2PDF(String path, PetriNetWithTransits net, boolean withLabel, Integer tokencount) throws IOException, InterruptedException {
+    public static Thread savePnwt2PDF(String path, PetriNetWithTransits net, boolean withLabel, Integer tokencount) throws FileNotFoundException {
         String bufferpath = path + "_" + System.currentTimeMillis();
         Thread dot;
         if (tokencount == -1) {

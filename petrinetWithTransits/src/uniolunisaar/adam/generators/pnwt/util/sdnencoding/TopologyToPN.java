@@ -10,6 +10,7 @@ import java.util.Queue;
 import java.util.Random;
 import java.util.Set;
 
+import uniol.apt.adt.extension.ExtensionProperty;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.adt.ts.Arc;
@@ -28,52 +29,35 @@ import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 
 public class TopologyToPN {
 	private TransitionSystem ts;
-	
-	static boolean simpleUpdate = false;
-	static boolean shortenNets = false;
-	static int numberOfSwitches = 7;
-	
-	// TODO bug ingress can be sw000
+	private String formula;
+	private Set<String> switches = new HashSet<>();
 	
 	public TopologyToPN(File file) throws ParseException, IOException {
 		ts = new AptLTSParser().parseFile(file);
-		if (shortenNets) {
-			List<Arc> edgeCopy = new ArrayList<Arc>(ts.getEdges());
-			for (int i = 0; i < edgeCopy.size(); ++i) {
-				Arc edge = edgeCopy.get(i);
-				if (Integer.parseInt(edge.getSourceId().substring(2, 5)) > numberOfSwitches || Integer.parseInt(edge.getTargetId().substring(2, 5)) > numberOfSwitches) {
-					ts.removeArc(edge);
-				} 
-			}
-			List<State> nodesCopy = new ArrayList<>(ts.getNodes());
-			for (int i = 0; i < nodesCopy.size(); ++i) {
-				State state = nodesCopy.get(i);
-				if (Integer.parseInt(state.getId().substring(2, 5)) > numberOfSwitches) {
-					ts.removeState(state);
-				}	
-			}
-		}
 	}
 	
 	private Pair<String, String> chooseIngressAndEgress(int seed) {
 		Random random = new Random(seed);
 		String ingress = "";
 		String egress = "";
-		// find ingress
 		int size = ts.getEdges().size();
-		int item = random.nextInt(size);
-		int i = 0;
-		for(Arc arc : ts.getEdges()) {
-			if (i == item) {
-		        ingress = arc.getSourceId();
+		
+		// find ingress (and egress) different from sw000 as it should be unreachable; TODO still path could go through it?
+		while (ingress.equals("") || ingress.equals("sw000")) {
+			int item = random.nextInt(size);
+			int i = 0;
+			for(Arc arc : ts.getEdges()) {
+				if (i == item) {
+					ingress = arc.getSourceId();
+				}
+			    i++;
 			}
-		    i++;
 		}
 		
 		// search for different egress
 		while (egress.equals("") || ingress.equals(egress)) {
-			item = random.nextInt(size);
-			i = 0;
+			int item = random.nextInt(size);
+			int i = 0;
 			for(Arc arc : ts.getEdges()) {
 				if (i == item) {
 			        egress = arc.getTargetId();
@@ -90,13 +74,12 @@ public class TopologyToPN {
 		int seed = 42;
 		String ingress = "";
 		String egress = "";
+		// allConfigurations.size() < 1000 to prevent HeapSpaceError
 		while (allConfigurations.size() < 2 && seed < 100) {
 			allConfigurations.clear();
 			Pair<String, String> ingressAndEgress = chooseIngressAndEgress(seed++);
 			ingress = ingressAndEgress.getFirst();
 			egress = ingressAndEgress.getSecond();
-			
-			System.out.println("FROM: " + ingress + " TO: " + egress);
 			
 			State start = ts.getNode(ingress);
 			State end = ts.getNode(egress);
@@ -167,31 +150,14 @@ public class TopologyToPN {
 		return updateList;
 	}
 	
-	private List<Update> getPathADDUpdate(PetriNetWithTransits pn, List<String> initialConfiguration, List<String> finalConfiguration) {
-		List<Update> updateList = new ArrayList<>();
-		for (int i = finalConfiguration.size() - 1; i >= 0; --i) {
-			String update = finalConfiguration.get(i);
-			String sw = update.substring(0, 5);
-			String destination = update.substring(update.length() - 5, update.length());
-			if (pn.getPlace(sw + "fwdTo" + destination).getInitialToken().getValue() == 0) {
-				updateList.add(new AddUpdate(sw, destination));
-			} else {
-				updateList.add(new SwitchUpdate(sw, destination, destination));
-			}
-		}
-		return updateList;
-	}
-	
 	public String setUpdate(PetriNetWithTransits pn) {
 		Pair<Pair<String,String>,Set<List<String>>> result = getAllConfigurations();
 		String ingress = result.getFirst().getFirst();
 		String egress = result.getFirst().getSecond();
 		Set<List<String>> allConfigurations = result.getSecond();
 		
-		System.out.println("CONSIDERED UPDATES: " + allConfigurations);
-		
 		if (allConfigurations.size() < 2) {
-			throw new Error("Even after 50 seeds, no two points with more than one route could be found, this example is weird...");
+			throw new Error(pn.getName() + ": Even after 50 seeds, no two points with more than one route could be found, this example is weird...");
 		}
 		
 		// find initial and final configuration
@@ -223,6 +189,39 @@ public class TopologyToPN {
 		System.out.println("INITIAL CONFIG: " + initialConfiguration);
 		System.out.println("FINAL CONFIG: " + finalConfiguration);
 		
+		// TODO choose one
+		
+		// packet coherence
+		/*List<String> pathOne = getSwitchesOfConfiguration(initialConfiguration);
+		List<String> pathTwo = getSwitchesOfConfiguration(finalConfiguration);
+		formula = "A (G" + orSwitches(pathOne) +" OR G" + orSwitches(pathTwo) + ")";*/
+		
+		// loop freedom
+		/*List<String> implications = new LinkedList<>();
+		for (String sw : switches) {
+			if (egress.equals("sw000") && sw.equals("sw001")) { // ingress
+				String add = "( NEG sw000 OR (sw000 U NEG sw000))";
+				implications.add(add);
+			} else if ( ! sw.equals(egress)) {
+				String add = "( NEG " + sw + " OR (" + sw + " U NEG " + sw +"))";
+				implications.add(add);
+			}
+		}
+		formula = "A G " + andSwitches(implications);*/
+		
+		// drop freedom
+		List<String> forward = new LinkedList<>();
+		forward.add("pOut");
+		forward.add("ingress" + ingress);
+		for (Arc arc : ts.getEdges()) {
+			forward.add("fwd" + arc.getSourceId() + "to" + arc.getTargetId());
+			forward.add("fwd" + arc.getTargetId() + "to" + arc.getSourceId());
+			
+		}
+		formula = "A G " + orSwitches(forward);
+			
+		pn.putExtension("formula", formula, ExtensionProperty.WRITE_TO_FILE);
+		
 		// Set tokens for initial configuration
 		for (String inital : initialConfiguration) {
 			pn.getPlace(inital).setInitialToken(1);
@@ -231,11 +230,7 @@ public class TopologyToPN {
 		// Calculate update
 		
 		List<Update> updateList;
-		if (simpleUpdate) {
-			updateList = getPathADDUpdate(pn, initialConfiguration, finalConfiguration);
-		} else {
-			updateList = getPathCHANGEUpdate(pn, initialConfiguration, finalConfiguration);
-		}
+		updateList = getPathCHANGEUpdate(pn, initialConfiguration, finalConfiguration);
 		
 		Place updateStart = pn.createPlace("updateStart");
 		updateStart.setInitialToken(1);
@@ -252,6 +247,7 @@ public class TopologyToPN {
 		
 		pn.rename(pn.getPlace(egress), "pOut");
 		pn.getPlace("pOut").setInitialToken(1);
+		// sw000 can be renamed to pOut for connectivity, we still need it for unreachablity and therefore rename sw001
 		if (egress.equals("sw000")) {
 			pn.rename(pn.getPlace("sw001"), "sw000");
 			pn.getPlace("sw000").setInitialToken(1);
@@ -260,20 +256,62 @@ public class TopologyToPN {
 	}	
 	
 	public PetriNetWithTransits generatePetriNet() {
-		PetriNetWithTransits pn = new PetriNetWithTransits("");
+		PetriNetWithTransits pn = new PetriNetWithTransits(ts.getName());
 //		PetriGameExtensionHandler.setWinningConditionAnnotation(pn, Condition.Objective.LTL);
 		for (Arc arc : ts.getEdges()) {
 			if (!pn.containsPlace(arc.getSourceId())) {
 				Place sw = pn.createPlace(arc.getSourceId());
+				switches.add(arc.getSourceId());
 				sw.setInitialToken(1);
 			}
 			if (!pn.containsPlace(arc.getTargetId())) {
 				Place sw = pn.createPlace(arc.getTargetId());
+				switches.add(arc.getTargetId());
 				sw.setInitialToken(1);
 			}
 			createTransition(pn, arc.getSourceId(), arc.getTargetId());
 		}
 		return pn;
+	}
+	
+	
+	// get set of packets for packet coherence
+	private List<String> getSwitchesOfConfiguration(List<String> configuration) {
+		List<String> result = new LinkedList<>();
+		for (String forwarding : configuration) {
+			result.add(forwarding.substring(0, 5));
+		}
+		
+		result.add("pOut");
+		return result;
+	}
+	
+	// make OR tree
+	private String orSwitches (List<String> switches) {
+		if (switches.size() == 1) {
+			return switches.get(0);
+		} else if (switches.size() > 1) {
+			int middle = switches.size() / 2;
+			return "(" + orSwitches(switches.subList(0, middle)) + " OR " + orSwitches(switches.subList(middle, switches.size())) + ")"; 
+		} else {
+			// size 0 should not happy and error should be thrown
+		}
+		
+		return null;
+	}
+	
+	// make AND tree
+	private String andSwitches (List<String> switches) {
+		if (switches.size() == 1) {
+			return switches.get(0);
+		} else if (switches.size() > 1) {
+			int middle = switches.size() / 2;
+			return "(" + andSwitches(switches.subList(0, middle)) + " OR " + andSwitches(switches.subList(middle, switches.size())) + ")"; 
+		} else {
+			// size 0 should not happy and error should be thrown
+		}
+		
+		return null;
 	}
 
 	private void createTransition(PetriNetWithTransits pn, String pre, String post) {

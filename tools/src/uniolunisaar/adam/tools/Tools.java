@@ -11,11 +11,14 @@ import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Transition;
+import uniol.apt.analysis.bounded.Bounded;
+import uniol.apt.analysis.bounded.BoundedResult;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.io.parser.impl.AptPNParser;
 import uniol.apt.io.renderer.RenderException;
 import uniol.apt.io.renderer.impl.AptPNRenderer;
 import uniol.apt.module.exception.ModuleException;
+import uniol.apt.util.Pair;
 
 /**
  *
@@ -169,4 +172,33 @@ public class Tools {
         Logger.getInstance().addMessage("Deleted: " + path, true);
     }
 
+    /**
+     * Returns the concrete line and column of the occurrence of the error of
+     * the given ParseException.
+     *
+     * @param e
+     * @return The first value is the line, the second the column. If there are
+     * no lines or columns given, -1 is returned.
+     */
+    public static Pair<Integer, Integer> getErrorLocation(ParseException e) {
+        int line = -1;
+        int col = -1;
+        String[] msg = e.getMessage().split("line ");
+        if (msg.length > 1) {
+            msg = msg[1].split(" col ");
+            if (msg.length > 1) {
+                line = Integer.parseInt(msg[0]);
+                col = Integer.parseInt(msg[1].substring(0, msg[1].indexOf(":")));
+            }
+        }
+        return new Pair<>(line, col);
+    }
+
+    public static BoundedResult getBounded(PetriNet net) {
+        return Bounded.checkBounded(net);
+    }
+
+    public static boolean isSafe(PetriNet net) {
+        return getBounded(net).isSafe();
+    }
 }

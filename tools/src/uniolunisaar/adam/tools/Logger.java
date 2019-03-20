@@ -33,7 +33,7 @@ public class Logger {
         this.file = null;
         this.systemOutput = System.out;
         this.shortMessageStream = System.out;
-        this.verboseMessageStream = System.out;
+        this.verboseMessageStream = emptyStream;
         this.errorStream = System.err;
         this.warningStream = System.out;
     }
@@ -254,7 +254,7 @@ public class Logger {
     }
 
     public void addMessageStream(String key, PrintStream messsageStream) {
-        this.messageStreams.put(key, errorStream);
+        this.messageStreams.put(key, messsageStream);
     }
 
     public PrintStream getMessageStream(String key) {
@@ -262,18 +262,34 @@ public class Logger {
     }
 
     public void setErrorStream(PrintStream errorStream) {
-        this.errorStream = errorStream;
+        if (errorStream == null) {
+            this.errorStream = emptyStream;
+        } else {
+            this.errorStream = errorStream;
+        }
     }
 
     public void setWarningStream(PrintStream warningStream) {
-        this.warningStream = warningStream;
+        if (warningStream == null) {
+            this.warningStream = emptyStream;
+        } else {
+            this.warningStream = warningStream;
+        }
     }
 
     public void setShortMessageStream(PrintStream shortMessageStream) {
-        this.shortMessageStream = shortMessageStream;
+        if (shortMessageStream == null) {
+            this.shortMessageStream = emptyStream;
+        } else {
+            this.shortMessageStream = shortMessageStream;
+        }
     }
 
     public void setVerboseMessageStream(PrintStream verboseMessageStream) {
-        this.verboseMessageStream = verboseMessageStream;
+        if (verboseMessageStream == null) {
+            this.verboseMessageStream = emptyStream;
+        } else {
+            this.verboseMessageStream = verboseMessageStream;
+        }
     }
 }
