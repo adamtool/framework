@@ -20,14 +20,38 @@ public class UpdatingNetwork {
      * @return
      */
     public static PetriNetWithTransits create(int nb_nodes) {
+        return create(nb_nodes, false);
+    }
+
+    /**
+     * Creates a sequential network with 'nb_nodes' nodes where one random node
+     * can be removed via a network update.
+     *
+     * @param nb_nodes
+     * @param withGuidance
+     * @return
+     */
+    public static PetriNetWithTransits create(int nb_nodes, boolean withGuidance) {
         if (nb_nodes < 3) {
             throw new RuntimeException("Not a meaningful example.");
         }
         Random rand = new Random(1);
-        return create(nb_nodes, rand.nextInt(nb_nodes - 2) + 1);
+        return create(nb_nodes, rand.nextInt(nb_nodes - 2) + 1, withGuidance);
     }
 
     public static PetriNetWithTransits create(int nb_nodes, int failing_node) {
+        return create(nb_nodes, failing_node, false);
+    }
+
+    /**
+     * todo: finished the withGuidance case
+     *
+     * @param nb_nodes
+     * @param failing_node
+     * @param withGuidance
+     * @return
+     */
+    public static PetriNetWithTransits create(int nb_nodes, int failing_node, boolean withGuidance) {
         if (failing_node > nb_nodes - 2 || failing_node < 1) {
             throw new RuntimeException("The failing node " + failing_node + "is not in a suitable range: [1," + (nb_nodes - 2) + "]");
         }
@@ -56,6 +80,10 @@ public class UpdatingNetwork {
             net.createFlow(t, p);
             net.createTransit(pre, t, p);
             net.createTransit(p, t, p);
+            if (withGuidance) {
+                Place pCond = net.createPlace(t.getId() + "_cond");
+                net.createFlow(pCond, t);
+            }
             if (i == failing_node) {
                 Transition tr = net.createTransition();
 //                net.setWeakFair(tr); net.setWeakFair(tin); not necessary since it is tested on all runs
