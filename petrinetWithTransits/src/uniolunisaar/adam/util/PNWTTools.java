@@ -330,7 +330,7 @@ public class PNWTTools {
 //            start = 65; //A
 //            id -= 25;
 //        } else {
-//            start = 
+//            start =
 //        }
 //        return String.valueOf(start + id);
 //    }
@@ -522,6 +522,8 @@ public class PNWTTools {
             savePnwt2Dot(path, net, withLabel, tokencount);
         }
         String[] command = {"dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
+        // Mac:
+        //String[] command = {"/usr/local/bin/dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
         ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
         ProcessPool.getInstance().putProcess(net.getName() + "#dot", procH);
         // start it in an extra thread
@@ -583,7 +585,7 @@ public class PNWTTools {
                 // Delete dot file
                 new File(bufferpath + ".dot").delete();
                 Logger.getInstance().addMessage("Deleted: " + bufferpath + ".dot", true);
-                // move to original name 
+                // move to original name
                 Files.move(new File(bufferpath + ".pdf").toPath(), new File(path + ".pdf").toPath(), REPLACE_EXISTING);
                 Logger.getInstance().addMessage("Moved: " + bufferpath + ".pdf --> " + path + ".pdf", true);
             } catch (IOException | InterruptedException ex) {
