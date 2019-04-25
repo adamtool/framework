@@ -27,6 +27,8 @@ import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
  *
  */
 
+// TODO debug why 40 55 65 161 234 237 238 244 246 248 take so long and/or HeapSpaceError?
+
 public class TopologyToPN {
 	private TransitionSystem ts;
 	private String formula;
@@ -194,8 +196,16 @@ public class TopologyToPN {
 			}
 		}
 		
-		System.out.println("INITIAL CONFIG: " + initialConfiguration);
-		System.out.println("FINAL CONFIG: " + finalConfiguration);
+		if (initialConfiguration.size() <= 25) {
+			System.out.println("INITIAL CONFIG: " + initialConfiguration);
+		} else {
+			System.out.println("INITIAL CONFIG is very long: " + initialConfiguration.size());
+		}
+		if (finalConfiguration.size() <= 25) {
+			System.out.println("INITIAL CONFIG: " + finalConfiguration);
+		} else {
+			System.out.println("INITIAL CONFIG is very long: " + finalConfiguration.size());
+		}
 	
 		
 		// packet coherence
@@ -256,13 +266,38 @@ public class TopologyToPN {
 		new SequentialUpdate(updateList).addUpdate(pn, updateStart);
 		
 		
-		Transition transition = pn.createTransition("ingress" + ingress);
-		String transitionID = transition.getId();
-		pn.createFlow(ingress, transitionID);
-		pn.createFlow(transitionID, ingress);
-		pn.createInitialTransit(transition, pn.getPlace(ingress));
-		pn.createTransit(ingress, transitionID, ingress);
-		pn.setWeakFair(transition);
+		if (useEmptyFull) {
+			// empty -> full
+			Transition transition = pn.createTransition("ingress" + ingress + "_1");
+			String transitionID = transition.getId();
+			pn.createFlow(ingress, transitionID);
+			pn.createFlow(transitionID, ingress);
+			pn.createInitialTransit(transition, pn.getPlace(ingress));
+			pn.createTransit(ingress, transitionID, ingress);
+			pn.setWeakFair(transition);
+			pn.createFlow(ingress + "_empty", transitionID);
+			pn.createFlow(transitionID, ingress + "_full");
+			// full -> full
+			Transition transition2 = pn.createTransition("ingress" + ingress + "_2");
+			String transition2ID = transition2.getId();
+			pn.createFlow(ingress, transition2ID);
+			pn.createFlow(transition2ID, ingress);
+			pn.createInitialTransit(transition2, pn.getPlace(ingress));
+			pn.createTransit(ingress, transition2ID, ingress);
+			pn.setWeakFair(transition2);
+			pn.createFlow(ingress + "_empty", transition2ID);
+			pn.createFlow(transition2ID, ingress + "_full");
+		} else {
+			Transition transition = pn.createTransition("ingress" + ingress);
+			String transitionID = transition.getId();
+			pn.createFlow(ingress, transitionID);
+			pn.createFlow(transitionID, ingress);
+			pn.createInitialTransit(transition, pn.getPlace(ingress));
+			pn.createTransit(ingress, transitionID, ingress);
+			pn.setWeakFair(transition);
+		}
+		
+		
 		
 		pn.rename(pn.getPlace(egress), "pOut");
 		pn.getPlace("pOut").setInitialToken(1);
