@@ -12,6 +12,8 @@ public class AdamProperties {
     private static Properties props;
     private static final String PROPERTY_FILE = "PROPERTY_FILE";
     public static final String LIBRARY_FOLDER = "libraryFolder";
+    // Mac:
+    // public static final String LIBRARY_FOLDER = "lib/";
     public static final String AIGER_TOOLS = "aigertools";
     public static final String MC_HYPER = "mcHyper";
     public static final String ABC = "abcBin";

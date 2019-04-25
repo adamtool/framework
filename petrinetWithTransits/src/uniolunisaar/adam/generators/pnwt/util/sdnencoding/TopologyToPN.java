@@ -31,6 +31,14 @@ public class TopologyToPN {
 	private TransitionSystem ts;
 	private String formula;
 	private Set<String> switches = new HashSet<>();
+
+	static boolean useEmptyFull = true;
+	
+	// TODO XOR between these or none for connectivity
+	static boolean packetCoherence = false;
+	static boolean loopFreedom = false;
+	static boolean dropFreedom = false;
+	static boolean eventualDropFreedom = false;
 	
 	public TopologyToPN(File file) throws ParseException, IOException {
 		ts = new AptLTSParser().parseFile(file);
@@ -188,39 +196,50 @@ public class TopologyToPN {
 		
 		System.out.println("INITIAL CONFIG: " + initialConfiguration);
 		System.out.println("FINAL CONFIG: " + finalConfiguration);
-		
-		// TODO choose one
+	
 		
 		// packet coherence
-		/*List<String> pathOne = getSwitchesOfConfiguration(initialConfiguration);
-		List<String> pathTwo = getSwitchesOfConfiguration(finalConfiguration);
-		formula = "A (G" + orSwitches(pathOne) +" OR G" + orSwitches(pathTwo) + ")";*/
+		if (packetCoherence) {
+			List<String> pathOne = getSwitchesOfConfiguration(initialConfiguration);
+			List<String> pathTwo = getSwitchesOfConfiguration(finalConfiguration);
+			formula = "A (G" + orSwitches(pathOne) +" OR G" + orSwitches(pathTwo) + ")";
+		}
 		
 		// loop freedom
-		/*List<String> implications = new LinkedList<>();
-		for (String sw : switches) {
-			if (egress.equals("sw000") && sw.equals("sw001")) { // ingress
-				String add = "( NEG sw000 OR (sw000 U NEG sw000))";
-				implications.add(add);
-			} else if ( ! sw.equals(egress)) {
-				String add = "( NEG " + sw + " OR (" + sw + " U NEG " + sw +"))";
-				implications.add(add);
+		if (loopFreedom) {
+			List<String> implications = new LinkedList<>();
+			for (String sw : switches) {
+				if (egress.equals("sw000") && sw.equals("sw001")) { // ingress
+					String add = "( NEG sw000 OR (sw000 U NEG sw000))";
+					implications.add(add);
+				} else if ( ! sw.equals(egress)) {
+					String add = "( NEG " + sw + " OR (" + sw + " U NEG " + sw +"))";
+					implications.add(add);
+				}
 			}
+			formula = "A G " + andSwitches(implications);
 		}
-		formula = "A G " + andSwitches(implications);*/
 		
 		// drop freedom
-		List<String> forward = new LinkedList<>();
-		forward.add("pOut");
-		forward.add("ingress" + ingress);
-		for (Arc arc : ts.getEdges()) {
-			forward.add("fwd" + arc.getSourceId() + "to" + arc.getTargetId());
-			forward.add("fwd" + arc.getTargetId() + "to" + arc.getSourceId());
-			
+		if (dropFreedom || eventualDropFreedom) {
+			List<String> forward = new LinkedList<>();
+			forward.add("pOut");
+			forward.add("ingress" + ingress);
+			for (Arc arc : ts.getEdges()) {
+				forward.add("fwd" + arc.getSourceId() + "to" + arc.getTargetId());
+				forward.add("fwd" + arc.getTargetId() + "to" + arc.getSourceId());
+			}
+			if (dropFreedom) {
+				formula = "A G " + orSwitches(forward);
+			} else {
+				// eventualDropFreedom
+				formula = "A F G " + orSwitches(forward);
+			}
 		}
-		formula = "A G " + orSwitches(forward);
-			
-		pn.putExtension("formula", formula, ExtensionProperty.WRITE_TO_FILE);
+		
+		if (packetCoherence || loopFreedom || dropFreedom || eventualDropFreedom) {
+			pn.putExtension("formula", formula, ExtensionProperty.WRITE_TO_FILE);
+		}
 		
 		// Set tokens for initial configuration
 		for (String inital : initialConfiguration) {
@@ -254,26 +273,6 @@ public class TopologyToPN {
 		}
 		return egress;
 	}	
-	
-	public PetriNetWithTransits generatePetriNet() {
-		PetriNetWithTransits pn = new PetriNetWithTransits(ts.getName());
-//		PetriGameExtensionHandler.setWinningConditionAnnotation(pn, Condition.Objective.LTL);
-		for (Arc arc : ts.getEdges()) {
-			if (!pn.containsPlace(arc.getSourceId())) {
-				Place sw = pn.createPlace(arc.getSourceId());
-				switches.add(arc.getSourceId());
-				sw.setInitialToken(1);
-			}
-			if (!pn.containsPlace(arc.getTargetId())) {
-				Place sw = pn.createPlace(arc.getTargetId());
-				switches.add(arc.getTargetId());
-				sw.setInitialToken(1);
-			}
-			createTransition(pn, arc.getSourceId(), arc.getTargetId());
-		}
-		return pn;
-	}
-	
 	
 	// get set of packets for packet coherence
 	private List<String> getSwitchesOfConfiguration(List<String> configuration) {
@@ -313,6 +312,39 @@ public class TopologyToPN {
 		
 		return null;
 	}
+	
+	public PetriNetWithTransits generatePetriNet() {
+		PetriNetWithTransits pn = new PetriNetWithTransits(ts.getName());
+		// PetriGameExtensionHandler.setWinningConditionAnnotation(pn, Condition.Objective.LTL);
+		for (Arc arc : ts.getEdges()) {
+			if (!pn.containsPlace(arc.getSourceId())) {
+				if (useEmptyFull) {
+					createSwitchWithEmpty(pn, arc.getSourceId());
+				} else {
+					createSwitch(pn, arc.getSourceId());
+				}
+			}
+			if (!pn.containsPlace(arc.getTargetId())) {
+				if (useEmptyFull) {
+					createSwitchWithEmpty(pn, arc.getTargetId());
+				} else {
+					createSwitch(pn, arc.getTargetId());
+				}
+			}
+			if (useEmptyFull) {
+				createTransitionWithEmpty(pn, arc.getSourceId(), arc.getTargetId());
+			} else {
+				createTransition(pn, arc.getSourceId(), arc.getTargetId());
+			}
+		}
+		return pn;
+	}
+	
+	private void createSwitch(PetriNetWithTransits pn, String id) {
+		Place sw = pn.createPlace(id);
+		switches.add(id);
+		sw.setInitialToken(1);
+	}
 
 	private void createTransition(PetriNetWithTransits pn, String pre, String post) {
 		Transition transition = pn.createTransition("fwd" + pre + "to" + post);
@@ -327,5 +359,55 @@ public class TopologyToPN {
 		pn.createFlow(transition, place);
 		pn.createTransit(pre, transitionID, post);
 		pn.createTransit(post, transitionID, post);
+	}
+	
+	// Create two additional places (empty and full) per switch between which a token
+	// changes depending on whether there are data flows in the switch
+	private void createSwitchWithEmpty(PetriNetWithTransits pn, String id) {
+		Place sw = pn.createPlace(id);
+		switches.add(id);
+		sw.setInitialToken(1);
+		Place swEmpty = pn.createPlace(id + "_empty");
+		switches.add(id + "_empty");
+		swEmpty.setInitialToken(1);
+		pn.createPlace(id + "_full");
+		switches.add(id + "_full");
+		swEmpty.setInitialToken(1);
+	}
+	
+	private void createTransitionWithEmpty(PetriNetWithTransits pn, String pre, String post) {
+		// empty -> full (at post)
+		Transition transition = pn.createTransition("fwd" + pre + "to" + post + "_1");
+		pn.setWeakFair(transition);
+		String transitionID = transition.getId();
+		pn.createFlow(pre, transitionID);
+		pn.createFlow(transitionID, pre);
+		pn.createFlow(post, transitionID);
+		pn.createFlow(transitionID, post);
+		pn.createFlow(pre + "_full", transitionID);
+		pn.createFlow(transitionID, pre + "_empty");
+		pn.createFlow(post + "_empty", transitionID);
+		pn.createFlow(transitionID, post + "_full");
+		Place place = pn.createPlace(pre + "fwdTo" + post);
+		pn.createFlow(place, transition);
+		pn.createFlow(transition, place);
+		pn.createTransit(pre, transitionID, post);
+		pn.createTransit(post, transitionID, post);
+		// full -> full (at post)
+		Transition transition2 = pn.createTransition("fwd" + pre + "to" + post + "_2");
+		pn.setWeakFair(transition2);
+		String transition2ID = transition2.getId();
+		pn.createFlow(pre, transition2ID);
+		pn.createFlow(transition2ID, pre);
+		pn.createFlow(post, transition2ID);
+		pn.createFlow(transition2ID, post);
+		pn.createFlow(pre + "_full", transition2ID);
+		pn.createFlow(transition2ID, pre + "_empty");
+		pn.createFlow(post + "_full", transition2ID);
+		pn.createFlow(transition2ID, post + "_full");
+		pn.createFlow(place, transition2);
+		pn.createFlow(transition2, place);
+		pn.createTransit(pre, transition2ID, post);
+		pn.createTransit(post, transition2ID, post);
 	}
 }
