@@ -58,6 +58,7 @@ public class PNWTTools {
                 String con;
                 if (net.hasExtension(AdamExtensions.winningCondition.name())) {
                     con = (String) net.getExtension(AdamExtensions.winningCondition.name());
+                    net.removeExtension(AdamExtensions.winningCondition.name());
                     net.putExtension(AdamExtensions.condition.name(), con);
                 } else {
                     con = getConditionAnnotation(net);

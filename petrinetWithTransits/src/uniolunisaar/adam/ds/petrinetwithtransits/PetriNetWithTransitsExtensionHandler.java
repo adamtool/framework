@@ -5,6 +5,7 @@ import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Node;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
+import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.util.AdamExtensions;
 
 /**
@@ -32,6 +33,23 @@ class PetriNetWithTransitsExtensionHandler {
         return place.hasExtension(AdamExtensions.bad.name())
                 || place.hasExtension(AdamExtensions.reach.name())
                 || place.hasExtension(AdamExtensions.buchi.name());
+    }
+
+    static void setSpecial(Place place, Condition.Objective con) {
+        switch (con) {
+            case A_SAFETY:
+            case E_SAFETY:
+                setBad(place);
+                break;
+            case A_REACHABILITY:
+            case E_REACHABILITY:
+                setReach(place);
+                break;
+            case A_BUCHI:
+            case E_BUCHI:
+                setBuchi(place);
+                break;
+        }
     }
 
     static boolean isBad(Place place) {

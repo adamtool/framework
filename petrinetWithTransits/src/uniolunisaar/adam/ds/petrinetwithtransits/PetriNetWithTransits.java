@@ -17,6 +17,7 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.analysis.coverability.CoverabilityGraph;
 import uniol.apt.io.renderer.RenderException;
+import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.exceptions.pnwt.InconsistencyException;
 import uniolunisaar.adam.exceptions.pnwt.NoSuchTransitException;
 import uniolunisaar.adam.exceptions.pnwt.NotInitialPlaceException;
@@ -533,6 +534,10 @@ public class PetriNetWithTransits extends PetriNet {
     // For places    
     public boolean isSpecial(Place place) {
         return PetriNetWithTransitsExtensionHandler.isSpecial(place);
+    }
+
+    public void setSpecial(Place place, Condition.Objective con) {
+        PetriNetWithTransitsExtensionHandler.setSpecial(place, con);
     }
 
     public boolean isBad(Place place) {
