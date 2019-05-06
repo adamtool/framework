@@ -12,7 +12,7 @@ import java.util.Map;
 public class ProcessPool implements IProcessListener {
 
     private static ProcessPool instance = null;
-    private static boolean mutex = false;
+//    private static final Semaphore semaphore = new Semaphore(1);
 
     public static ProcessPool getInstance() {
         if (instance == null) {
@@ -26,13 +26,16 @@ public class ProcessPool implements IProcessListener {
 
     private final Map<String, ExternalProcessHandler> processes = new HashMap<>();
 
-    public ExternalProcessHandler putProcess(String key, ExternalProcessHandler value) {
+    public synchronized ExternalProcessHandler putProcess(String key, ExternalProcessHandler value) { //throws InterruptedException {
         value.addListener(this);
-        return processes.put(key, value);
+//        semaphore.acquire();
+        ExternalProcessHandler h = processes.put(key, value);
+//        semaphore.release();
+        return h;
     }
 
-    public void clean() {
-        mutex = true;
+    public synchronized void clean() { //throws InterruptedException {
+//        semaphore.acquire();
         List<String> toRemove = new ArrayList<>();
         for (Map.Entry<String, ExternalProcessHandler> entry : processes.entrySet()) {
             if (entry.getValue() != null && !entry.getValue().isAlive()) {
@@ -42,33 +45,34 @@ public class ProcessPool implements IProcessListener {
         for (String key : toRemove) {
             processes.remove(key);
         }
-        mutex = false;
+//        semaphore.release();
     }
 
-    public void destroyProcessesOfNet(String id) {
+    public synchronized void destroyProcessesOfNet(String id) { //throws InterruptedException {
+//        semaphore.acquire();
         for (Map.Entry<String, ExternalProcessHandler> entry : processes.entrySet()) {
             if (entry.getKey().startsWith(id + "#")) {
                 entry.getValue().destroy();
             }
         }
+//        semaphore.release();
     }
 
-    public void destroyForciblyProcessesOfNet(String id) {
+    public synchronized void destroyForciblyProcessesOfNet(String id) throws InterruptedException {
+//        semaphore.acquire();
         for (Map.Entry<String, ExternalProcessHandler> entry : processes.entrySet()) {
             if (entry.getKey().startsWith(id + "#")) {
                 entry.getValue().destroyForcibly();
             }
         }
+//        semaphore.release();
     }
 
     @Override
     public void processFinished(Process process) {
-        while(mutex) {
-            try {
-                Thread.sleep(50);
-            } catch (InterruptedException ex) {
-            }
-        }
+//        try {
         clean();
+//        } catch (InterruptedException ex) {
+//        }
     }
 }
