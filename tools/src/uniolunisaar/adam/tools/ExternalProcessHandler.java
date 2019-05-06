@@ -58,7 +58,7 @@ public class ExternalProcessHandler {
     }
 
     /**
-     * Start with ommitting the output.
+     * Start with omitting the output.
      *
      * @throws IOException
      */
@@ -68,7 +68,7 @@ public class ExternalProcessHandler {
 
     /**
      * Start with sending the error and output to the given streams. When they
-     * are null, the output is ommitted.
+     * are null, the output is omitted.
      *
      * @param outputStream
      * @param errorStream
@@ -109,7 +109,7 @@ public class ExternalProcessHandler {
 
     /**
      * Start with sending the error and output to the given streams. When they
-     * are null, the output is ommitted.
+     * are null, the output is omitted.
      *
      * @param outputStream
      * @param errorStream
