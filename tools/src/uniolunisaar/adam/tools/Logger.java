@@ -7,9 +7,13 @@ import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Semaphore;
+import uniolunisaar.adam.exceptions.AcquiringInterruptedException;
 
 /**
  *
@@ -24,7 +28,8 @@ public class Logger {
         STREAMS_AND_FILE,
         CLIENT
     }
-    private static Logger instance = null;
+    private static final Map<ThreadGroup, Logger> instances = new HashMap<>();
+    private static final Semaphore semaphore = new Semaphore(1);
 
     private Logger() {
         this.silent = false;
@@ -38,11 +43,45 @@ public class Logger {
         this.warningStream = System.out;
     }
 
+    /**
+     * Returns a Logger for the ThreadGroup of the current thread.
+     *
+     * @return
+     */
     public static Logger getInstance() {
-        if (instance == null) {
-            instance = new Logger();
+        ThreadGroup cThreadGroup = Thread.currentThread().getThreadGroup();
+        if (!instances.containsKey(cThreadGroup)) {
+            instances.put(cThreadGroup, new Logger());
+            cleanLoggerList();
         }
-        return instance;
+        return instances.get(cThreadGroup);
+    }
+
+    private static void cleanLoggerList() {
+        try {
+            semaphore.acquire();
+//            List<Thread> toRemove = new ArrayList<>();
+//            for (Thread thread : instances.keySet()) {
+//                if (!Thread.getAllStackTraces().keySet().contains(thread)) {
+//                    toRemove.add(thread);
+//                }
+//            }
+//            for (Thread thread : toRemove) {
+//                instances.remove(thread);
+//            }
+            List<ThreadGroup> toRemove = new ArrayList<>();
+            for (ThreadGroup threadGroup : instances.keySet()) {
+                if (threadGroup.activeCount() <= 0) {
+                    toRemove.add(threadGroup);
+                }
+            }
+            for (ThreadGroup threadGroup : toRemove) {
+                instances.remove(threadGroup);
+            }
+            semaphore.release();
+        } catch (InterruptedException e) {
+            throw new AcquiringInterruptedException(e);
+        }
     }
 
     private PrintStream errorStream;

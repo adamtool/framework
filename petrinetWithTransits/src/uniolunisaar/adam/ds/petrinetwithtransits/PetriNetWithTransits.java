@@ -21,6 +21,7 @@ import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.exceptions.pnwt.InconsistencyException;
 import uniolunisaar.adam.exceptions.pnwt.NoSuchTransitException;
 import uniolunisaar.adam.exceptions.pnwt.NotInitialPlaceException;
+import uniolunisaar.adam.tools.PetriNetExtensionHandler;
 import uniolunisaar.adam.util.PNWTTools;
 
 /**
@@ -38,10 +39,12 @@ public class PetriNetWithTransits extends PetriNet {
      */
     public PetriNetWithTransits(String name) {
         super(name);
+        PetriNetExtensionHandler.setProcessFamilyID(this, name + Thread.currentThread().getName());
     }
 
     public PetriNetWithTransits(PetriNet pn) {
         super(pn);
+        PetriNetExtensionHandler.setProcessFamilyID(this, pn.getName() + Thread.currentThread().getName());
         // Check if the initial flow places are marked correctly
         // todo: should this still be necessary?
         for (Place p : getPlaces()) {

@@ -1,7 +1,11 @@
 package uniolunisaar.adam.tools;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 import org.testng.Assert;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.io.parser.ParseException;
@@ -13,6 +17,15 @@ import uniol.apt.util.Pair;
  */
 @Test
 public class TestTools {
+
+    @BeforeMethod
+    public void silence() {
+        Logger.getInstance().setVerbose(false);
+        Logger.getInstance().setShortMessageStream(null);
+        Logger.getInstance().setVerboseMessageStream(null);
+        Logger.getInstance().setWarningStream(null);
+//        System.out.println("Thread in before method" + Thread.currentThread());
+    }
 
     @Test
     public void testParseExceptionParsing() throws IOException {
@@ -65,4 +78,71 @@ public class TestTools {
         }
     }
 
+    @Test(timeOut = (60 * 1000) / 2) // 30 sec
+    public void testLoggerWithTimeout() {
+//        System.out.println("Thread in timeout class" + Thread.currentThread());
+    }
+
+    @Test
+    public void testThreads() {
+        Thread first = new Thread();
+        ThreadGroup threadGroup = new ThreadGroup("peter");
+        Thread a = new Thread(threadGroup, () -> {
+//            System.out.println("A " + Thread.currentThread());
+//            System.out.println(Thread.currentThread().getThreadGroup().toString());
+            Thread b = new Thread(() -> {
+//                System.out.println("B " + Thread.currentThread());
+//                System.out.println(Thread.currentThread().getThreadGroup().toString());
+                Thread c = new Thread(() -> {
+//                    System.out.println("C " + Thread.currentThread());
+//                    System.out.println(Thread.currentThread().getThreadGroup().toString());
+                });
+                c.start();
+            });
+            b.start();
+        });
+        a.start();
+    }
+
+    @Test
+    public void testLogger() throws InterruptedException {
+//        System.out.println("count " +  Logger.instances.size());
+//        System.out.println("%%%%%%%%%%%%% LOGGER ");
+        ByteArrayOutputStream ob1 = new ByteArrayOutputStream();
+        PrintStream streamA = new PrintStream(ob1);
+        ThreadGroup first = new ThreadGroup("first");
+        Thread calcA = new Thread(first, () -> {
+            Logger.getInstance().setShortMessageStream(streamA);
+            Logger.getInstance().addMessage("A go for it");
+        });
+        calcA.start();
+
+        ByteArrayOutputStream ob2 = new ByteArrayOutputStream();
+        PrintStream streamB = new PrintStream(ob2);
+        ThreadGroup second = new ThreadGroup("second");
+        Thread calcB = new Thread(second, () -> {
+            Logger.getInstance().setShortMessageStream(streamB);
+            Logger.getInstance().addMessage("B go for it");
+        });
+        calcB.start();
+
+//        System.out.println("count " +  Logger.instances.size());
+        calcA.join();
+        calcB.join();
+
+//        System.out.println("This is A");
+        streamA.flush();
+        String data = new String(ob1.toByteArray(), StandardCharsets.UTF_8);
+//        System.out.println(data);
+//        
+//        System.out.println("This is B");
+        streamB.flush();
+        data = new String(ob2.toByteArray(), StandardCharsets.UTF_8);
+//        System.out.println(data);
+//        System.out.println("%%%%%%%%%%% finished");
+//        
+//        System.out.println("count " +  Logger.instances.size());
+//        Logger.getInstance();
+//        System.out.println("count " +  Logger.instances.size());
+    }
 }

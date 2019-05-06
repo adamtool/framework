@@ -28,6 +28,7 @@ import uniolunisaar.adam.logic.parser.transits.TransitParser;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
+import uniolunisaar.adam.tools.PetriNetExtensionHandler;
 import uniolunisaar.adam.tools.ProcessPool;
 import uniolunisaar.adam.tools.Tools;
 
@@ -526,7 +527,7 @@ public class PNWTTools {
         // Mac:
         //String[] command = {"/usr/local/bin/dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
         ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
-        ProcessPool.getInstance().putProcess(net.getName() + "#dot", procH);
+        ProcessPool.getInstance().putProcess(PetriNetExtensionHandler.getProcessFamilyID(net) + "#dot", procH);
         // start it in an extra thread
         Thread thread = new Thread(() -> {
             try {
@@ -592,7 +593,7 @@ public class PNWTTools {
             } catch (IOException | InterruptedException ex) {
                 Logger.getInstance().addError("Deleting the buffer files and moving the pdf failed", ex);
             }
-        });
+        });        
         mvPdf.start();
         return mvPdf;
     }
