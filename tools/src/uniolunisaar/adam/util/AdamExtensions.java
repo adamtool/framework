@@ -33,5 +33,12 @@ public enum AdamExtensions {
     strongFair,
     weakFair,
     inhibitor,
+    colorDomain,
+    colorTokens,
+    predicate,
+    arcExpression,
+    convOrigID,
+    convColors,
+    convValuation,
     processFamilyID
 }
