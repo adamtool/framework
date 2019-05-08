@@ -60,7 +60,7 @@ public class PNWTTools {
                 if (net.hasExtension(AdamExtensions.winningCondition.name())) {
                     con = (String) net.getExtension(AdamExtensions.winningCondition.name());
                     net.removeExtension(AdamExtensions.winningCondition.name());
-                    net.putExtension(AdamExtensions.condition.name(), con);
+                    net.putExtension(AdamExtensions.condition.name(), con, ExtensionProperty.WRITE_TO_FILE);
                 } else {
                     con = getConditionAnnotation(net);
                 }
@@ -163,7 +163,6 @@ public class PNWTTools {
      * content.
      *
      * @param content
-     * @param skipTests
      * @param withAutomatic
      * @return
      * @throws ParseException
