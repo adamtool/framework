@@ -52,12 +52,33 @@ class PetriNetWithTransitsExtensionHandler {
         }
     }
 
+    static void removeSpecial(Place place, Condition.Objective con) {
+        switch (con) {
+            case A_SAFETY:
+            case E_SAFETY:
+                removeBad(place);
+                break;
+            case A_REACHABILITY:
+            case E_REACHABILITY:
+                removeReach(place);
+                break;
+            case A_BUCHI:
+            case E_BUCHI:
+                removeBuchi(place);
+                break;
+        }
+    }
+
     static boolean isBad(Place place) {
         return place.hasExtension(AdamExtensions.bad.name());
     }
 
     static void setBad(Place place) {
         place.putExtension(AdamExtensions.bad.name(), true, ExtensionProperty.WRITE_TO_FILE);
+    }
+
+    static void removeBad(Place place) {
+        place.removeExtension(AdamExtensions.bad.name());
     }
 
     static boolean isReach(Place place) {
@@ -68,12 +89,20 @@ class PetriNetWithTransitsExtensionHandler {
         place.putExtension(AdamExtensions.reach.name(), true, ExtensionProperty.WRITE_TO_FILE);
     }
 
+    static void removeReach(Place place) {
+        place.removeExtension(AdamExtensions.reach.name());
+    }
+
     static boolean isBuchi(Place place) {
         return place.hasExtension(AdamExtensions.buchi.name());
     }
 
     static void setBuchi(Place place) {
         place.putExtension(AdamExtensions.buchi.name(), true, ExtensionProperty.WRITE_TO_FILE);
+    }
+
+    static void removeBuchi(Place place) {
+        place.removeExtension(AdamExtensions.buchi.name());
     }
 
     static boolean isInitialTokenflow(Place place) {

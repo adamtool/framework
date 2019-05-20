@@ -543,6 +543,10 @@ public class PetriNetWithTransits extends PetriNet {
         PetriNetWithTransitsExtensionHandler.setSpecial(place, con);
     }
 
+    public void removeSpecial(Place place, Condition.Objective con) {
+        PetriNetWithTransitsExtensionHandler.removeSpecial(place, con);
+    }
+
     public boolean isBad(Place place) {
         return PetriNetWithTransitsExtensionHandler.isBad(place);
     }
