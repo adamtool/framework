@@ -225,7 +225,7 @@ public class Logger {
         msg = "[WARNING] " + msg;
         if (output != OUTPUT.CLIENT) {
             warningStream.println(msg);
-            verboseMessageStream.println(msg);
+//            verboseMessageStream.println(msg);
         }
         if (output == OUTPUT.FILE || output == OUTPUT.STREAMS_AND_FILE) {
             file.append(msg).append(System.lineSeparator());
