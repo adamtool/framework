@@ -28,6 +28,7 @@ import uniolunisaar.adam.logic.parser.transits.TransitParser;
 import uniolunisaar.adam.tools.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
+import uniolunisaar.adam.tools.AdamProperties;
 import uniolunisaar.adam.tools.PetriNetExtensionHandler;
 import uniolunisaar.adam.tools.ProcessPool;
 import uniolunisaar.adam.tools.Tools;
@@ -522,7 +523,8 @@ public class PNWTTools {
         } else {
             savePnwt2Dot(path, net, withLabel, tokencount);
         }
-        String[] command = {"dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
+        String dot = AdamProperties.getInstance().getProperty(AdamProperties.DOT);
+        String[] command = {dot, "-Tpdf", path + ".dot", "-o", path + ".pdf"};
         // Mac:
         //String[] command = {"/usr/local/bin/dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
         ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
