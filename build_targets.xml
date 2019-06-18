@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="adam_targets" default="jar">
 <!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% SRC %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-	<path id="classpath">
-		<pathelement location="${classesfolder}"/>
-		<resourcelist id="libs">
-			<file file="${subproject.basedir}/libs.res"/>
-		</resourcelist>
-	</path>
-	
 	<target name="javac" description="Compile code">
+        <!--<condition property="libFile" else="libs.res">
+            <isset property="libFile"/>
+        </condition>
+        This was added to separated the MC from the synthesis appraoch.
+        This would also need to only select the files which should be compiled from the ui
+        package. Easier to compile all and add the end only pack the needed files into the jar.
+        -->
+        <path id="classpath">
+	        <pathelement location="${classesfolder}"/>
+	        <resourcelist id="libs">
+<!--		        <file file="${subproject.basedir}/${libFile}"/>-->
+		        <file file="${subproject.basedir}/libs.res"/>
+	        </resourcelist>
+        </path>
 		<invoke-javac 
 			dependencies="libs" 
 			classpath="classpath"
