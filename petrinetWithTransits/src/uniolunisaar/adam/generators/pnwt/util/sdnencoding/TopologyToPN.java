@@ -34,7 +34,7 @@ public class TopologyToPN {
 	private String formula;
 	private Set<String> switches = new HashSet<>();
 
-	static boolean useEmptyFull = true;
+	static boolean useEmptyFull = false;
 	
 	// TODO XOR between these or none for connectivity
 	static boolean packetCoherence = false;
