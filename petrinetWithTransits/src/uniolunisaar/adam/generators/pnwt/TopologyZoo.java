@@ -23,14 +23,14 @@ public class TopologyZoo {
         int max = 0;
         for (Place place : pn.getPlaces()) {
             String id = place.getId();
-            if (id.startsWith("sw")) {
+            if (id.startsWith("sw") && !id.endsWith("_empty") && !id.endsWith("_full") && !id.contains("fwd")) {
                 int nb = Integer.parseInt(id.substring(2));
                 if (nb > max) {
                     max = nb;
                 }
             }
         }
-        pn.putExtension("nb_switches", max, ExtensionProperty.WRITE_TO_FILE);
+        pn.putExtension("nb_switches", max + 1, ExtensionProperty.WRITE_TO_FILE);
         return pn;
     }
 
