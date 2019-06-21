@@ -59,7 +59,7 @@ public class UpdatingNetwork {
             throw new RuntimeException("Not a meaningful example.");
         }
         PetriNetWithTransits net = new PetriNetWithTransits("network_" + nb_nodes);
-        net.putExtension("nb_switches", nb_nodes + 1);
+        net.putExtension("nb_switches", nb_nodes + 1, ExtensionProperty.WRITE_TO_FILE);
 //        PetriGameExtensionHandler.setWinningConditionAnnotation(net, Condition.Objective.LTL);
         Transition tin = net.createTransition("createFlows");
 //        net.setWeakFair(tin); not necessary since it is tested on all runs
