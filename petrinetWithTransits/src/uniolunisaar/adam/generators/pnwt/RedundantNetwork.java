@@ -16,6 +16,8 @@ public class RedundantNetwork {
             throw new RuntimeException("less than 1 node inbetween does not make sense.");
         }
         PetriNetWithTransits net = createBasis(nb_nodeInBetweenU, nb_nodeInBetweenD);
+        net.putExtension("nb_switches", nb_nodeInBetweenD + nb_nodeInBetweenU + 2,
+                ExtensionProperty.WRITE_TO_FILE);
 //        for (Transition t : net.getTransitions()) {
 //            net.setStrongFair(t);
 //        }
@@ -28,6 +30,8 @@ public class RedundantNetwork {
         }
         PetriNetWithTransits net = createBasis(nb_nodeInBetweenU, nb_nodeInBetweenD);
         addUpdate(net, nb_nodeInBetweenU);
+        net.putExtension("nb_switches", nb_nodeInBetweenD + nb_nodeInBetweenU + 2 + 2,
+                ExtensionProperty.WRITE_TO_FILE);
 //        for (Transition t : net.getTransitions()) {
 //            net.setStrongFair(t);
 //        }
@@ -63,7 +67,7 @@ public class RedundantNetwork {
 
     /**
      * This one has the token flows for the mutex transitions which enables back
-     * the pipeline. This ist OK when we don't have infinitly many updates.
+     * the pipeline. This is OK when we don't have infinitely many updates.
      *
      * @param nb_nodeInBetweenU
      * @param nb_nodeInBetweenD
@@ -78,6 +82,9 @@ public class RedundantNetwork {
         addMutex(net);
         incorrectFixMutex(net, nb_nodeInBetweenU);
         stillNofixMutex(net, nb_nodeInBetweenU);
+
+        net.putExtension("nb_switches", nb_nodeInBetweenD + nb_nodeInBetweenU + 2 + 2,
+                ExtensionProperty.WRITE_TO_FILE);
         return net;
     }
 
