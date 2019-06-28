@@ -15,8 +15,7 @@ import uniolunisaar.adam.tools.Logger;
  *
  * @author Manuel Gieseking
  */
-@Deprecated
-public class AigerFile {
+public abstract class AigerFile {
 
     public static final String NEW_VALUE_OF_LATCH_SUFFIX = "_#new#";
     public static final String TRUE = "true";
@@ -25,12 +24,15 @@ public class AigerFile {
     private final Map<String, Integer> uncontrollable_inputs = new HashMap<>();
     private final Map<String, Integer> latches = new HashMap<>();
     private final List<String> outputs = new ArrayList<>();
-    private final Map<String, Pair<Gate, Integer>> andGates = new HashMap<>();
     private final Map<String, String> copy = new HashMap<>();
-    private int idx = 2;
+    int idx = 2;
     private static int uniqueIdentifier = 0;
 
-    private class IntGate {
+    abstract void putGate(String out, String in1, String in2);
+
+    public abstract int getNbOfGates();
+
+    class IntGate {
 
         int in1;
         int in2;
@@ -42,6 +44,10 @@ public class AigerFile {
             this.out = out;
         }
 
+        @Override
+        public String toString() {
+            return "IntGate{" + "in1=" + in1 + ", in2=" + in2 + ", out=" + out + '}';
+        }
     }
 
     public void addInput(String in) {
@@ -94,20 +100,17 @@ public class AigerFile {
             String in1 = it.next();
             for (int i = 1; i < ids.size(); i++) {
                 String internalOut = (i == (ids.size() - 1)) ? out : out + "_#" + uniqueIdentifier++;
-                addGate(new Gate(internalOut, in1, it.next()));
+                putGate(internalOut, in1, it.next());
                 in1 = internalOut;
             }
         }
     }
 
-    private void addGate(Gate gat) {
-        andGates.put(gat.getOut(), new Pair<>(gat, idx));
-        idx += 2;
-    }
-
     public void copyValues(String to, String from) {
         copy.put(to, from);
     }
+
+    abstract List<IntGate> getGates();
 
     @Override
     public String toString() {
@@ -150,25 +153,18 @@ public class AigerFile {
             symbols.deleteCharAt(symbols.lastIndexOf("\n"));
         }
         // gates
-        // OLD VERSION: directly output the set of gates
-//        StringBuilder gates = new StringBuilder();
-//        for (Map.Entry<String, Pair<Gate, Integer>> entry : andGates.entrySet()) {
-//            Pair<Gate, Integer> value = entry.getValue();
-//            gates.append(value.getSecond()).append(" ").append(getIndex(value.getFirst().getIn1())).append(" ").append(getIndex(value.getFirst().getIn2())).append("\n");
-//        }      
-        // NEW Version first delete some unneccessary gates
-        List<IntGate> gates = getIntGates();
-//        gates = optimizeGates(gates);
+        List<IntGate> gates = getGates();
         StringBuilder gateStrings = new StringBuilder();
         for (IntGate gate : gates) {
             gateStrings.append(gate.out).append(" ").append(gate.in1).append(" ").append(gate.in2).append("\n");
         }
 
+        int maxVarIdx = getMaxVarIdx(gates);
         StringBuilder sb = new StringBuilder();
-        sb.append("aag ").append(idx / 2).append(" ").append(inputs.size())
+        sb.append("aag ").append(maxVarIdx).append(" ").append(inputs.size())
                 .append(" ").append(latches.size())
                 .append(" ").append(outputs.size())
-                .append(" ").append(gates.size()).append("\n");
+                .append(" ").append(getNbOfGates()).append("\n");
         sb.append(ins.toString());
         sb.append(latis.toString());
         sb.append(outs.toString());
@@ -177,51 +173,13 @@ public class AigerFile {
         return sb.toString();
     }
 
-    private List<IntGate> getIntGates() {
-        List<IntGate> gates = new ArrayList<>();
-        for (Map.Entry<String, Pair<Gate, Integer>> entry : andGates.entrySet()) {
-            Pair<Gate, Integer> value = entry.getValue();
-            gates.add(new IntGate(value.getSecond(), getIndex(value.getFirst().getIn1()), getIndex(value.getFirst().getIn2())));
-        }
-        return gates;
+    int getMaxVarIdx(List<IntGate> gates) {
+        return idx / 2 - 1;
     }
 
-    /**
-     * The problem is that we reduce the number of gates, i.e. lines we write
-     * into the file, but do not reduce the number of indices we use.
-     *
-     * @param gates
-     * @return
-     */
-    private List<IntGate> optimizeGates(List<IntGate> gates) {
-        List<Pair<Integer, IntGate>> toRemove = new ArrayList<>();
-        do { // if there is still s.th. to remove repeat
-            // safely (i.e. replace all the output of the gate using indizes with the replacement) delete all gates
-            for (Pair<Integer, IntGate> pair : toRemove) {
-                gates.remove(pair.getSecond());
-                int out = pair.getSecond().out;
-                int replace = pair.getFirst();
-                for (IntGate gate : gates) {
-                    if (gate.in1 == out) {
-                        gate.in1 = replace;
-                    }
-                    if (gate.in2 == out) {
-                        gate.in2 = replace;
-                    }
-                }
-            }
-            toRemove.clear();
-            // find gates with the same inputs
-            for (IntGate gate : gates) {
-                if (gate.in1 == gate.in2) {
-                    toRemove.add(new Pair<>(gate.out, gate));
-                }
-            }
-        } while (!toRemove.isEmpty());
-        return gates;
-    }
+    abstract int getGateIndex(String identifier);
 
-    private int getIndex(String identifier) {
+    int getIndex(String identifier) {
         Pair<String, Integer> pair = getBaseIdentifier(identifier, 0);
         identifier = pair.getFirst();
         int sub = (pair.getSecond() % 2 == 0) ? 0 : -1;
@@ -231,19 +189,20 @@ public class AigerFile {
             return 0 - sub;
         }
         int output;
+        int gateIdx = getGateIndex(identifier);
         if (inputs.containsKey(identifier)) {
             output = inputs.get(identifier);
         } else if (latches.containsKey(identifier)) {
             output = latches.get(identifier);
-        } else if (andGates.containsKey(identifier)) {
-            output = andGates.get(identifier).getSecond();
+        } else if (gateIdx != -1) {
+            output = gateIdx;
         } else {
             throw new RuntimeException("Couldn't find an index for identifier " + identifier);
         }
         return output - sub;
     }
 
-    private Pair<String, Integer> getBaseIdentifier(String identifier, int countNegations) {
+    Pair<String, Integer> getBaseIdentifier(String identifier, int countNegations) {
         while (identifier.startsWith("!")) {
             identifier = identifier.substring(1);
             ++countNegations;
@@ -260,8 +219,8 @@ public class AigerFile {
         return latches.size();
     }
 
-    public int getNbOfGates() {
-        return andGates.entrySet().size();
+    Map<String, Integer> getInputs() {
+        return inputs;
     }
 
 }

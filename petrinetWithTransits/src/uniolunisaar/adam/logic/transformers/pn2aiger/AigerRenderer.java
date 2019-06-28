@@ -6,6 +6,7 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.circuits.AigerFile;
 import static uniolunisaar.adam.ds.circuits.AigerFile.NEW_VALUE_OF_LATCH_SUFFIX;
+import uniolunisaar.adam.ds.circuits.AigerFileOptimizedGates;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 
 /**
@@ -201,7 +202,7 @@ public class AigerRenderer {
     }
 
     public AigerFile render(PetriNet net) {
-        AigerFile file = new AigerFile();
+        AigerFile file = new AigerFileOptimizedGates();
         //%%%%%%%%% Add inputs -> all transitions
         addInputs(file, net);
         //%%%%%%%%%% Add the latches -> init + all places

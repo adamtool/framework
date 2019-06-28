@@ -11,7 +11,11 @@ import java.nio.file.Paths;
 import java.util.stream.Collectors;
 
 /**
- *
+ * Apaches 
+ *  org.apache.commons.io.FileUtils, and 
+ *  org.apache.commons.io.IOUtils
+ * are not compatible with the GPLv2 (only with GPLv3)
+ * 
  * @author Manuel Gieseking
  */
 public class IOUtils {
