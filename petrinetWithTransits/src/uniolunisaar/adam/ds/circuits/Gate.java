@@ -36,4 +36,9 @@ public class Gate {
         this.in2 = in2;
     }
 
+    @Override
+    public String toString() {
+        return "Gate{" + "in1=" + in1 + ", in2=" + in2 + ", out=" + out + '}';
+    }
+
 }

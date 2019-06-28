@@ -39,6 +39,15 @@ public class AigerFileOptimizedGatesAndIndizes extends AigerFile {
 //        return gateStrings.toString();
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
+//
+//    private List<IntGate> getIntGates() {
+//        List<IntGate> gates = new ArrayList<>();
+//        for (Map.Entry<String, Pair<Gate, Integer>> entry : andGates.entrySet()) {
+//            Pair<Gate, Integer> value = entry.getValue();
+//            gates.add(new IntGate(value.getSecond(), getIndex(value.getFirst().getIn1()), getIndex(value.getFirst().getIn2())));
+//        }
+//        return gates;
+//    }
 
     private void gatelist2BaseIdentifiers() {
         for (Gate gate : andGates.values()) {
