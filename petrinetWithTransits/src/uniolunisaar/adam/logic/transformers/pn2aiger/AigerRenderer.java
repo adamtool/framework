@@ -7,6 +7,7 @@ import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.circuits.AigerFile;
 import static uniolunisaar.adam.ds.circuits.AigerFile.NEW_VALUE_OF_LATCH_SUFFIX;
 import uniolunisaar.adam.ds.circuits.AigerFileOptimizedGates;
+import uniolunisaar.adam.ds.circuits.AigerFileOptimizedGatesAndIndizes;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 
 /**
@@ -23,6 +24,14 @@ public class AigerRenderer {
     public static final String ALL_TRANS_NOT_TRUE = "#allTransitionsNotTrue#";
     public static final String SUCCESSOR_REGISTER_PREFIX = "#succReg#_";
     public static final String SUCCESSOR_PREFIX = "#succ#_";
+
+    public enum Optimizations {
+        NONE,
+        NB_GATES,
+        NB_GATES_AND_INDICES
+    }
+
+    private Optimizations optimizations = Optimizations.NONE;
 
     /**
      * Adds inputs for all transitions.
@@ -202,7 +211,20 @@ public class AigerRenderer {
     }
 
     public AigerFile render(PetriNet net) {
-        AigerFile file = new AigerFileOptimizedGates();
+        AigerFile file;
+        switch (optimizations) {
+            case NONE:
+                file = new AigerFileOptimizedGates(false);
+                break;
+            case NB_GATES:
+                file = new AigerFileOptimizedGates(true);
+                break;
+            case NB_GATES_AND_INDICES:
+                file = new AigerFileOptimizedGatesAndIndizes();
+                break;
+            default:
+                file = new AigerFileOptimizedGates(false);
+        }
         //%%%%%%%%% Add inputs -> all transitions
         addInputs(file, net);
         //%%%%%%%%%% Add the latches -> init + all places
@@ -232,6 +254,10 @@ public class AigerRenderer {
         setOutputs(file, net);
 
         return file;
+    }
+
+    public void setOptimizations(Optimizations optimizations) {
+        this.optimizations = optimizations;
     }
 
     /**

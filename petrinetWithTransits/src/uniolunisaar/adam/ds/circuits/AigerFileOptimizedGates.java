@@ -13,8 +13,13 @@ import uniol.apt.util.Pair;
 public class AigerFileOptimizedGates extends AigerFile {
 
     private final Map<String, Pair<Gate, Integer>> andGates = new HashMap<>();
-    private boolean withOpt = true; // currently with true the testsuite takes 6s longer
+    private boolean withOpt = true; // currently seems to do not have any real influence on the toyexamples of the test suite
     private int nb_gates = -1;
+    private final Map<Integer, Integer> replacements = new HashMap<>();
+
+    public AigerFileOptimizedGates(boolean withOpt) {
+        this.withOpt = withOpt;
+    }
 
     private List<IntGate> getIntGates() {
         List<IntGate> gates = new ArrayList<>();
@@ -44,6 +49,15 @@ public class AigerFileOptimizedGates extends AigerFile {
     }
 
     @Override
+    int getIndex(String id) {
+        int index = super.getIndex(id);
+        if (replacements.containsKey(index)) {
+            return replacements.get(index);
+        }
+        return index;
+    }
+
+    @Override
     int getGateIndex(String identifier) {
         if (andGates.containsKey(identifier)) {
             return andGates.get(identifier).getSecond();
@@ -68,22 +82,61 @@ public class AigerFileOptimizedGates extends AigerFile {
                 gates.remove(pair.getSecond());
                 int out = pair.getSecond().out;
                 int replace = pair.getFirst();
+                // check the gates
                 for (IntGate gate : gates) {
+                    // positive
                     if (gate.in1 == out) {
                         gate.in1 = replace;
+                    } else if (gate.in1 == out + 1) { // negation
+                        gate.in1 = (replace % 2 == 0) ? replace + 1 : replace - 1;
                     }
                     if (gate.in2 == out) {
                         gate.in2 = replace;
+                    } else if (gate.in2 == out + 1) { // negation
+                        gate.in2 = (replace % 2 == 0) ? replace + 1 : replace - 1;
                     }
                 }
+                // update the ids for the output and latches
+                Map<Integer, Integer> puts = new HashMap<>();
+                for (Map.Entry<Integer, Integer> entry : replacements.entrySet()) {
+                    Integer key = entry.getKey();
+                    Integer value = entry.getValue();
+                    if (value == out) {
+                        puts.put(key, replace);
+                    } else if (value == out + 1) {
+                        puts.put(key, (replace % 2 == 0) ? replace + 1 : replace - 1);
+                    }
+                }
+                puts.put(out, replace);
+                puts.put(out + 1, (replace % 2 == 0) ? replace + 1 : replace - 1);
+                replacements.putAll(puts);
             }
             toRemove.clear();
-            for (IntGate gate : gates) {
-                // find gates with the same inputs
+            for (int i = 0; i < gates.size(); i++) {
+                IntGate gate = gates.get(i);
                 if (gate.in1 == gate.in2) {
-                    toRemove.add(new Pair<>(gate.out, gate));
+                    // find gates with the same inputs
+                    toRemove.add(new Pair<>(gate.in1, gate));
+                } else if (gate.in1 % 2 == 0 && gate.in2 == gate.in1 + 1
+                        || gate.in2 % 2 == 0 && gate.in1 == gate.in2 + 1) {
+                    // find gates where one input is the negation of the other, i.e.,  
+                    // gates with in2 = !in1, ergo replace with false
+                    toRemove.add(new Pair<>(0, gate));
+                } else if (gate.in1 == 0 || gate.in2 == 0) {
+                    // find gates where one input is zero 
+                    toRemove.add(new Pair<>(0, gate));
+                } else {
+                    // find gates which are commutativ or equal to another
+                    for (int j = i + 1; j < gates.size(); j++) {
+                        IntGate gate1 = gates.get(j);
+                        if (((gate1.in1 == gate.in1 && gate1.in2 == gate.in2) // check equal
+                                || (gate1.in1 == gate.in2 && gate1.in2 == gate.in1))) // commutative
+                        {
+//                            toRemove.add(new Pair<>(gate.out, gat e1)); // the higher ids would be preserved
+                            toRemove.add(new Pair<>(gate1.out, gate));
+                        }
+                    }
                 }
-                // gates with in2 = !in1, ergo replace with false
             }
         } while (!toRemove.isEmpty());
         nb_gates = gates.size();

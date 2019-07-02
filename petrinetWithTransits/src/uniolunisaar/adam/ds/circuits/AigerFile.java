@@ -23,8 +23,8 @@ public abstract class AigerFile {
     private final Map<String, Integer> inputs = new HashMap<>();
     private final Map<String, Integer> uncontrollable_inputs = new HashMap<>();
     private final Map<String, Integer> latches = new HashMap<>();
-    private final List<String> outputs = new ArrayList<>();
-    private final Map<String, String> copy = new HashMap<>();
+    final List<String> outputs = new ArrayList<>();
+    final Map<String, String> copy = new HashMap<>();
     int idx = 2;
     private static int uniqueIdentifier = 0;
 
@@ -114,7 +114,9 @@ public abstract class AigerFile {
 
     @Override
     public String toString() {
-//        System.out.println(this.andGates.toString());
+        // Get the possibly optimized gates (do it already here because this could also
+        // mean that the output list must have been adapted)
+        List<IntGate> gates = getGates();
         StringBuilder symbols = new StringBuilder();
         // inputs
         StringBuilder ins = new StringBuilder();
@@ -153,7 +155,6 @@ public abstract class AigerFile {
             symbols.deleteCharAt(symbols.lastIndexOf("\n"));
         }
         // gates
-        List<IntGate> gates = getGates();
         StringBuilder gateStrings = new StringBuilder();
         for (IntGate gate : gates) {
             gateStrings.append(gate.out).append(" ").append(gate.in1).append(" ").append(gate.in2).append("\n");
