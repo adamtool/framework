@@ -23,6 +23,7 @@ public abstract class AigerFile {
     private final Map<String, Integer> inputs = new HashMap<>();
     private final Map<String, Integer> uncontrollable_inputs = new HashMap<>();
     private final Map<String, Integer> latches = new HashMap<>();
+    final Map<String, Gate> andGates = new HashMap<>();
     final List<String> outputs = new ArrayList<>();
     final Map<String, String> copy = new HashMap<>();
     int idx = 2;
@@ -32,23 +33,9 @@ public abstract class AigerFile {
 
     public abstract int getNbOfGates();
 
-    class IntGate {
+    abstract int getGateIndex(String identifier);
 
-        int in1;
-        int in2;
-        int out;
-
-        public IntGate(int out, int in1, int in2) {
-            this.in1 = in1;
-            this.in2 = in2;
-            this.out = out;
-        }
-
-        @Override
-        public String toString() {
-            return "IntGate{" + "in1=" + in1 + ", in2=" + in2 + ", out=" + out + '}';
-        }
-    }
+    abstract StringBuilder renderGates();
 
     public void addInput(String in) {
         inputs.put(in, idx);
@@ -110,13 +97,11 @@ public abstract class AigerFile {
         copy.put(to, from);
     }
 
-    abstract List<IntGate> getGates();
-
     @Override
     public String toString() {
-        // Get the possibly optimized gates (do it already here because this could also
-        // mean that the output list must have been adapted)
-        List<IntGate> gates = getGates();
+        // render the possibly optimized gates (do it already here because this could also
+        // mean that the output list and the latches ids must have been adapted)
+        StringBuilder gateStrings = renderGates();
         StringBuilder symbols = new StringBuilder();
         // inputs
         StringBuilder ins = new StringBuilder();
@@ -154,13 +139,8 @@ public abstract class AigerFile {
         if (!outputs.isEmpty()) {
             symbols.deleteCharAt(symbols.lastIndexOf("\n"));
         }
-        // gates
-        StringBuilder gateStrings = new StringBuilder();
-        for (IntGate gate : gates) {
-            gateStrings.append(gate.out).append(" ").append(gate.in1).append(" ").append(gate.in2).append("\n");
-        }
 
-        int maxVarIdx = getMaxVarIdx(gates);
+        int maxVarIdx = getMaxVarIdx();
         StringBuilder sb = new StringBuilder();
         sb.append("aag ").append(maxVarIdx).append(" ").append(inputs.size())
                 .append(" ").append(latches.size())
@@ -174,11 +154,9 @@ public abstract class AigerFile {
         return sb.toString();
     }
 
-    int getMaxVarIdx(List<IntGate> gates) {
+    int getMaxVarIdx() {
         return idx / 2 - 1;
     }
-
-    abstract int getGateIndex(String identifier);
 
     int getIndex(String identifier) {
         Pair<String, Integer> pair = getBaseIdentifier(identifier, 0);
@@ -222,6 +200,10 @@ public abstract class AigerFile {
 
     Map<String, Integer> getInputs() {
         return inputs;
+    }
+
+    Map<String, Integer> getLatches() {
+        return latches;
     }
 
 }

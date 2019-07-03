@@ -28,7 +28,8 @@ public class AigerRenderer {
     public enum Optimizations {
         NONE,
         NB_GATES,
-        NB_GATES_AND_INDICES
+        NB_GATES_AND_INDICES,
+        NB_GATES_AND_INDICES_EXTRA
     }
 
     private Optimizations optimizations = Optimizations.NONE;
@@ -220,7 +221,10 @@ public class AigerRenderer {
                 file = new AigerFileOptimizedGates(true);
                 break;
             case NB_GATES_AND_INDICES:
-                file = new AigerFileOptimizedGatesAndIndizes();
+                file = new AigerFileOptimizedGatesAndIndizes(false);
+                break;
+            case NB_GATES_AND_INDICES_EXTRA:
+                file = new AigerFileOptimizedGatesAndIndizes(true);
                 break;
             default:
                 file = new AigerFileOptimizedGates(false);

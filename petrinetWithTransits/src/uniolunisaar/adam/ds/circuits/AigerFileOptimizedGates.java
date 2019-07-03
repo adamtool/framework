@@ -12,10 +12,28 @@ import uniol.apt.util.Pair;
  */
 public class AigerFileOptimizedGates extends AigerFile {
 
-    private final Map<String, Pair<Gate, Integer>> andGates = new HashMap<>();
     private boolean withOpt = true; // currently seems to do not have any real influence on the toyexamples of the test suite
-    private int nb_gates = -1;
     private final Map<Integer, Integer> replacements = new HashMap<>();
+    private int maxIdxGates = -1;
+    private int nb_gates = -1;
+
+    class IntGate {
+
+        int in1;
+        int in2;
+        int out;
+
+        public IntGate(int out, int in1, int in2) {
+            this.in1 = in1;
+            this.in2 = in2;
+            this.out = out;
+        }
+
+        @Override
+        public String toString() {
+            return "IntGate{" + "in1=" + in1 + ", in2=" + in2 + ", out=" + out + '}';
+        }
+    }
 
     public AigerFileOptimizedGates(boolean withOpt) {
         this.withOpt = withOpt;
@@ -23,28 +41,30 @@ public class AigerFileOptimizedGates extends AigerFile {
 
     private List<IntGate> getIntGates() {
         List<IntGate> gates = new ArrayList<>();
-        for (Map.Entry<String, Pair<Gate, Integer>> entry : andGates.entrySet()) {
-            Pair<Gate, Integer> value = entry.getValue();
-            gates.add(new IntGate(value.getSecond(), getIndex(value.getFirst().getIn1()), getIndex(value.getFirst().getIn2())));
+        for (Map.Entry<String, Gate> entry : andGates.entrySet()) {
+            Gate value = entry.getValue();
+            gates.add(new IntGate(value.getIdx(), getIndex(value.getIn1()), getIndex(value.getIn2())));
         }
         return gates;
     }
 
     @Override
-    List<IntGate> getGates() {
-        // gates
-        // OLD VERSION: directly output the set of gates
-//        StringBuilder gates = new StringBuilder();
-//        for (Map.Entry<String, Pair<Gate, Integer>> entry : andGates.entrySet()) {
-//            Pair<Gate, Integer> value = entry.getValue();
-//            gates.append(value.getSecond()).append(" ").append(getIndex(value.getFirst().getIn1())).append(" ").append(getIndex(value.getFirst().getIn2())).append("\n");
-//        }      
-        // NEW Version first delete some unneccessary gates
-        List<IntGate> gates = getIntGates();
-        if (withOpt) {
-            gates = optimizeGates(gates);
+    StringBuilder renderGates() {
+        StringBuilder gates = new StringBuilder();
+        // directly output the set of gates
+        if (!withOpt) {
+            for (Map.Entry<String, Gate> entry : andGates.entrySet()) {
+                Gate value = entry.getValue();
+                gates.append(value.getIdx()).append(" ").append(getIndex(value.getIn1())).append(" ").append(getIndex(value.getIn2())).append("\n");
+            }
+        } else {
+            // first delete some unneccessary gates
+            List<IntGate> optGates = getIntGates();
+            optGates = optimizeGates(optGates);
+            for (IntGate optGate : optGates) {
+                gates.append(optGate.out).append(" ").append(optGate.in1).append(" ").append(optGate.in2).append("\n");
+            }
         }
-
         return gates;
     }
 
@@ -60,14 +80,12 @@ public class AigerFileOptimizedGates extends AigerFile {
     @Override
     int getGateIndex(String identifier) {
         if (andGates.containsKey(identifier)) {
-            return andGates.get(identifier).getSecond();
+            return andGates.get(identifier).getIdx();
         }
         return -1;
     }
 
     /**
-     * Currently, we only replace gates which have twice the same input.
-     *
      * The problem is that we reduce the number of gates, i.e., lines we write
      * into the file, but do not reduce the number of indices we use.
      *
@@ -140,19 +158,25 @@ public class AigerFileOptimizedGates extends AigerFile {
             }
         } while (!toRemove.isEmpty());
         nb_gates = gates.size();
+        maxIdxGates = 0;
+        for (IntGate gate : gates) {
+            if (gate.out > maxIdxGates) {
+                maxIdxGates = gate.out;
+            }
+        }
         return gates;
     }
 
     @Override
     public int getNbOfGates() {
-        if (nb_gates == -1) {
+        if (nb_gates == -1) { // it is only set in the optimization method (thus this is the results withoutOpt)
             return andGates.entrySet().size();
         }
         return nb_gates;
     }
 
     @Override
-    int getMaxVarIdx(List<IntGate> gates) {
+    int getMaxVarIdx() {
         if (withOpt) {
             // cannot do return inputs.size() + latches.size() + getNbOfGates();
             // since we don't squash the indexes
@@ -162,19 +186,24 @@ public class AigerFileOptimizedGates extends AigerFile {
                     max = value;
                 }
             }
-            for (IntGate gate : gates) {
-                if (gate.out > max) {
-                    max = gate.out;
+            for (Integer value : getLatches().values()) {
+                if (value > max) {
+                    max = value;
                 }
+            }
+            if (maxIdxGates > max) {
+                max = maxIdxGates;
             }
             return max / 2;
         }
-        return super.getMaxVarIdx(gates);
+        return super.getMaxVarIdx();
     }
 
     @Override
     void putGate(String out, String in1, String in2) {
-        andGates.put(out, new Pair<>(new Gate(out, in1, in2), idx));
+        Gate gate = new Gate(out, in1, in2);
+        gate.setIdx(idx);
+        andGates.put(out, gate);
         idx += 2;
     }
 

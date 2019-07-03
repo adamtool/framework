@@ -9,6 +9,7 @@ public class Gate {
     private String in1;
     private String in2;
     private final String out;
+    private int idx = -1;
 
     public Gate(String out, String in1, String in2) {
         this.in1 = in1;
@@ -34,6 +35,14 @@ public class Gate {
 
     public void setIn2(String in2) {
         this.in2 = in2;
+    }
+
+    public int getIdx() {
+        return idx;
+    }
+
+    public void setIdx(int idx) {
+        this.idx = idx;
     }
 
     @Override
