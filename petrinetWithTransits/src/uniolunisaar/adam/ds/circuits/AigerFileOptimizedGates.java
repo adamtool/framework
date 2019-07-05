@@ -97,7 +97,11 @@ public class AigerFileOptimizedGates extends AigerFile {
         do { // if there is still s.th. to remove repeat
             // safely (i.e. replace all the output of the gate using indizes with the replacement) delete all gates
             for (Pair<Integer, IntGate> pair : toRemove) {
-                gates.remove(pair.getSecond());
+                boolean test = gates.remove(pair.getSecond());
+                if(!test) {
+                    System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@could delte");
+                }
+                System.out.println(pair.getSecond().toString());
                 int out = pair.getSecond().out;
                 int replace = pair.getFirst();
                 // check the gates
@@ -135,20 +139,25 @@ public class AigerFileOptimizedGates extends AigerFile {
                 if (gate.in1 == gate.in2) {
                     // find gates with the same inputs
                     toRemove.add(new Pair<>(gate.in1, gate));
+                    break;
                 } else if (gate.in1 % 2 == 0 && gate.in2 == gate.in1 + 1
                         || gate.in2 % 2 == 0 && gate.in1 == gate.in2 + 1) {
                     // find gates where one input is the negation of the other, i.e.,  
                     // gates with in2 = !in1, ergo replace with false
                     toRemove.add(new Pair<>(0, gate));
+                    break;
                 } else if (gate.in1 == 0 || gate.in2 == 0) {
                     // find gates where one input is zero 
                     toRemove.add(new Pair<>(0, gate));
+                    break;
                 } else if (gate.in1 == 1) {
                     // find gates where first input is one
                     toRemove.add(new Pair<>(gate.in2, gate));
+                    break;
                 } else if (gate.in2 == 1) {
                     // find gates where second input is one
                     toRemove.add(new Pair<>(gate.in1, gate));
+                    break;
                 } else {
 //                    // find gates which are commutativ or equal to another
 //                    for (int j = i + 1; j < gates.size(); j++) {

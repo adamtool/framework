@@ -91,28 +91,32 @@ public class AigerFileOptimizedGatesAndIndizes extends AigerFile {
                 gates.remove(pair.getSecond());
                 replace(out, pair.getFirst());
                 mapping.put(out, pair.getFirst());
-
             }
-            toRemove.clear();
+            toRemove.clear();            
             for (int i = 0; i < gates.size(); i++) {
                 Gate gate = gates.get(i);
                 if (gate.getIn1().equals(gate.getIn2())) {
                     // find gates with the same inputs
                     toRemove.add(new Pair<>(gate.getIn1(), gate));
+                    break;
                 } else if (gate.getIn1().equals("!" + gate.getIn2())
                         || gate.getIn2().equals("!" + gate.getIn1())) {
                     // find gates where one input is the negation of the other,
                     // ergo replace with false
                     toRemove.add(new Pair<>(AigerFile.FALSE, gate));
+                    break;
                 } else if (gate.getIn1().equals(AigerFile.FALSE) || gate.getIn2().equals(AigerFile.FALSE)) {
                     // find gates where one input is zero 
                     toRemove.add(new Pair<>(AigerFile.FALSE, gate));
+                    break;
                 } else if (gate.getIn1().equals(AigerFile.TRUE)) {
                     // find gates where first input is one
                     toRemove.add(new Pair<>(gate.getIn2(), gate));
+                    break;
                 } else if (gate.getIn2().equals(AigerFile.TRUE)) {
                     // find gates where second input is one
                     toRemove.add(new Pair<>(gate.getIn1(), gate));
+                    break;
                 } else {
                     // find gates which are commutativ or equal to another
 //                    for (int j = i + 1; j < gates.size(); j++) {
@@ -140,7 +144,6 @@ public class AigerFileOptimizedGatesAndIndizes extends AigerFile {
                 andGates.remove(out, pair.getSecond());
                 replace(out, pair.getFirst());
                 mapping.put(out, pair.getFirst());
-
             }
             toRemove.clear();
 //            for (Gate gate : andGates.values().) {
@@ -149,20 +152,25 @@ public class AigerFileOptimizedGatesAndIndizes extends AigerFile {
                 if (gate.getIn1().equals(gate.getIn2())) {
                     // find gates with the same inputs
                     toRemove.add(new Pair<>(gate.getIn1(), gate));
+                    break;
                 } else if (gate.getIn1().equals("!" + gate.getIn2())
                         || gate.getIn2().equals("!" + gate.getIn1())) {
                     // find gates where one input is the negation of the other,
                     // ergo replace with false
                     toRemove.add(new Pair<>(AigerFile.FALSE, gate));
+                    break;
                 } else if (gate.getIn1().equals(AigerFile.FALSE) || gate.getIn2().equals(AigerFile.FALSE)) {
                     // find gates where one input is zero 
                     toRemove.add(new Pair<>(AigerFile.FALSE, gate));
+                    break;
                 } else if (gate.getIn1().equals(AigerFile.TRUE)) {
                     // find gates where first input is one
                     toRemove.add(new Pair<>(gate.getIn2(), gate));
+                    break;
                 } else if (gate.getIn2().equals(AigerFile.TRUE)) {
                     // find gates where second input is one
                     toRemove.add(new Pair<>(gate.getIn1(), gate));
+                    break;
                 } else {
 //                    // find gates which are commutativ or equal to another
 //                    // could be cheaper to convert this list before the method once and for all 
@@ -187,6 +195,11 @@ public class AigerFileOptimizedGatesAndIndizes extends AigerFile {
     }
 
     private void replace(String id, String with) {
+        String negWith = (with.equals(AigerFile.TRUE)) ? AigerFile.FALSE
+                : (with.equals(AigerFile.FALSE)) ? AigerFile.TRUE
+                : (with.startsWith("!")) ? with.substring(1) : "!" + with;
+//        String negWith = "!" + with;
+//        System.out.println(negWith);
         // in gates
         for (Gate gate : andGates.values()) {
             if (gate.getIn1().equals(id)) {
@@ -196,10 +209,10 @@ public class AigerFileOptimizedGatesAndIndizes extends AigerFile {
                 gate.setIn2(with);
             }
             if (gate.getIn1().equals("!" + id)) {
-                gate.setIn1("!" + with);
+                gate.setIn1(negWith);
             }
             if (gate.getIn2().equals("!" + id)) {
-                gate.setIn2("!" + with);
+                gate.setIn2(negWith);
             }
         }
         // in copy

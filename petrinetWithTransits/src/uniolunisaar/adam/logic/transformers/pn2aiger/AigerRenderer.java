@@ -25,15 +25,24 @@ public class AigerRenderer {
     public static final String SUCCESSOR_REGISTER_PREFIX = "#succReg#_";
     public static final String SUCCESSOR_PREFIX = "#succ#_";
 
-    public enum Optimizations {
+    public enum OptimizationsSystem {
         NONE,
         NB_GATES,
         NB_GATES_AND_INDICES,
-        NB_GATES_AND_INDICES_EXTRA,
-        NB_GATES_BY_FILE
+        NB_GATES_AND_INDICES_EXTRA
     }
 
-    private Optimizations optimizations = Optimizations.NONE;
+    public enum OptimizationsComplete {
+        NONE,
+        NB_GATES_BY_REGEX,
+        NB_GATES_BY_REGEX_WITH_IDX_SQUEEZING,
+        NB_GATES_BY_DS,
+        NB_GATES_BY_DS_WITH_IDX_SQUEEZING,
+        NB_GATES_BY_DS_WITH_IDX_SQUEEZING_AND_EXTRA_LIST
+    }
+
+    private OptimizationsSystem optimizationsSys = OptimizationsSystem.NONE;
+    private OptimizationsComplete optimizationsComplete = OptimizationsComplete.NONE;
 
     /**
      * Adds inputs for all transitions.
@@ -213,26 +222,7 @@ public class AigerRenderer {
     }
 
     public AigerFile render(PetriNet net) {
-        AigerFile file;
-        switch (optimizations) {
-            case NONE:
-                file = new AigerFileOptimizedGates(false);
-                break;
-            case NB_GATES:
-                file = new AigerFileOptimizedGates(true);
-                break;
-            case NB_GATES_AND_INDICES:
-                file = new AigerFileOptimizedGatesAndIndizes(false);
-                break;
-            case NB_GATES_AND_INDICES_EXTRA:
-                file = new AigerFileOptimizedGatesAndIndizes(true);
-                break;
-            case NB_GATES_BY_FILE:
-                file = new AigerFileOptimizedGates(false);
-                break;
-            default:
-                file = new AigerFileOptimizedGates(false);
-        }
+        AigerFile file = AigerRenderer.getFile(optimizationsSys);
         //%%%%%%%%% Add inputs -> all transitions
         addInputs(file, net);
         //%%%%%%%%%% Add the latches -> init + all places
@@ -264,16 +254,45 @@ public class AigerRenderer {
         return file;
     }
 
-    public void setOptimizations(Optimizations optimizations) {
-        this.optimizations = optimizations;
+    public static AigerFile getFile(OptimizationsSystem opt) {
+        AigerFile file;
+        switch (opt) {
+            case NONE:
+                file = new AigerFileOptimizedGates(false);
+                break;
+            case NB_GATES:
+                file = new AigerFileOptimizedGates(true);
+                break;
+            case NB_GATES_AND_INDICES:
+                file = new AigerFileOptimizedGatesAndIndizes(false);
+                break;
+            case NB_GATES_AND_INDICES_EXTRA:
+                file = new AigerFileOptimizedGatesAndIndizes(true);
+                break;
+            default:
+                file = new AigerFileOptimizedGates(false);
+        }
+        return file;
     }
 
-    public Optimizations getOptimizations() {
-        return optimizations;
+    public void setSystemOptimizations(OptimizationsSystem optimizations) {
+        this.optimizationsSys = optimizations;
+    }
+
+    public OptimizationsSystem getSystemOptimizations() {
+        return optimizationsSys;
+    }
+
+    public void setMCHyperResultOptimizations(OptimizationsComplete optimizations) {
+        this.optimizationsComplete = optimizations;
+    }
+
+    public OptimizationsComplete getMCHyperResultOptimizations() {
+        return optimizationsComplete;
     }
 
     /**
-     * Not needed in the situation when we already only chosed enabled
+     * Not needed in the situation when we already only chose enabled
      * transitions
      *
      * @param file
