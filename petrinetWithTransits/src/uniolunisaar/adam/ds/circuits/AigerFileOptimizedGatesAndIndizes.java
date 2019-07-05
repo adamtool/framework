@@ -107,17 +107,23 @@ public class AigerFileOptimizedGatesAndIndizes extends AigerFile {
                 } else if (gate.getIn1().equals(AigerFile.FALSE) || gate.getIn2().equals(AigerFile.FALSE)) {
                     // find gates where one input is zero 
                     toRemove.add(new Pair<>(AigerFile.FALSE, gate));
+                } else if (gate.getIn1().equals(AigerFile.TRUE)) {
+                    // find gates where first input is one
+                    toRemove.add(new Pair<>(gate.getIn2(), gate));
+                } else if (gate.getIn2().equals(AigerFile.TRUE)) {
+                    // find gates where second input is one
+                    toRemove.add(new Pair<>(gate.getIn1(), gate));
                 } else {
                     // find gates which are commutativ or equal to another
-                    for (int j = i + 1; j < gates.size(); j++) {
-                        Gate gate1 = gates.get(j);
-                        if (((gate1.getIn1().equals(gate.getIn1()) && gate1.getIn2().equals(gate.getIn2())) // check equal
-                                || (gate1.getIn1().equals(gate.getIn2()) && gate1.getIn2().equals(gate.getIn1())))) // commutative
-                        {
-//                            toRemove.add(new Pair<>(gate.getOut(), gate1)); // the higher ids would be preserved
-                            toRemove.add(new Pair<>(gate1.getOut(), gate));
-                        }
-                    }
+//                    for (int j = i + 1; j < gates.size(); j++) {
+//                        Gate gate1 = gates.get(j);
+//                        if (((gate1.getIn1().equals(gate.getIn1()) && gate1.getIn2().equals(gate.getIn2())) // check equal
+//                                || (gate1.getIn1().equals(gate.getIn2()) && gate1.getIn2().equals(gate.getIn1())))) // commutative
+//                        {
+////                            toRemove.add(new Pair<>(gate.getOut(), gate1)); // the higher ids would be preserved
+//                            toRemove.add(new Pair<>(gate1.getOut(), gate));
+//                        }
+//                    }
                 }
             }
 
@@ -151,23 +157,29 @@ public class AigerFileOptimizedGatesAndIndizes extends AigerFile {
                 } else if (gate.getIn1().equals(AigerFile.FALSE) || gate.getIn2().equals(AigerFile.FALSE)) {
                     // find gates where one input is zero 
                     toRemove.add(new Pair<>(AigerFile.FALSE, gate));
+                } else if (gate.getIn1().equals(AigerFile.TRUE)) {
+                    // find gates where first input is one
+                    toRemove.add(new Pair<>(gate.getIn2(), gate));
+                } else if (gate.getIn2().equals(AigerFile.TRUE)) {
+                    // find gates where second input is one
+                    toRemove.add(new Pair<>(gate.getIn1(), gate));
                 } else {
-                    // find gates which are commutativ or equal to another
-                    // could be cheaper to convert this list before the method once and for all 
-                    // and then iterate here only over the rest (compare AigerFileOptimizedGates)
-                    for (Iterator<Gate> it2 = andGates.values().iterator(); it2.hasNext();) {
-                        Gate gate1 = it2.next();
-                        if (gate1 != gate) {
-                            if (((gate1.getIn1().equals(gate.getIn1()) && gate1.getIn2().equals(gate.getIn2())) // check equal
-                                    || (gate1.getIn1().equals(gate.getIn2()) && gate1.getIn2().equals(gate.getIn1())))) // commutative
-                            {
-//                            toRemove.add(new Pair<>(gate.getOut(), gate1)); // the higher ids would be preserved
-                                if (!toRemove.contains(new Pair<>(gate.getOut(), gate1))) { // this now ensures that the commutative part is not also added.
-                                    toRemove.add(new Pair<>(gate1.getOut(), gate));
-                                }
-                            }
-                        }
-                    }
+//                    // find gates which are commutativ or equal to another
+//                    // could be cheaper to convert this list before the method once and for all 
+//                    // and then iterate here only over the rest (compare AigerFileOptimizedGates)
+//                    for (Iterator<Gate> it2 = andGates.values().iterator(); it2.hasNext();) {
+//                        Gate gate1 = it2.next();
+//                        if (gate1 != gate) {
+//                            if (((gate1.getIn1().equals(gate.getIn1()) && gate1.getIn2().equals(gate.getIn2())) // check equal
+//                                    || (gate1.getIn1().equals(gate.getIn2()) && gate1.getIn2().equals(gate.getIn1())))) // commutative
+//                            {
+////                            toRemove.add(new Pair<>(gate.getOut(), gate1)); // the higher ids would be preserved
+//                                if (!toRemove.contains(new Pair<>(gate.getOut(), gate1))) { // this now ensures that the commutative part is not also added.
+//                                    toRemove.add(new Pair<>(gate1.getOut(), gate));
+//                                }
+//                            }
+//                        }
+//                    }
                 }
             }
 

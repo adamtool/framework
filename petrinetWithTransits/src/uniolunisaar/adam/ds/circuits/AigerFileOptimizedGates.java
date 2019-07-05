@@ -143,17 +143,23 @@ public class AigerFileOptimizedGates extends AigerFile {
                 } else if (gate.in1 == 0 || gate.in2 == 0) {
                     // find gates where one input is zero 
                     toRemove.add(new Pair<>(0, gate));
+                } else if (gate.in1 == 1) {
+                    // find gates where first input is one
+                    toRemove.add(new Pair<>(gate.in2, gate));
+                } else if (gate.in2 == 1) {
+                    // find gates where second input is one
+                    toRemove.add(new Pair<>(gate.in1, gate));
                 } else {
-                    // find gates which are commutativ or equal to another
-                    for (int j = i + 1; j < gates.size(); j++) {
-                        IntGate gate1 = gates.get(j);
-                        if (((gate1.in1 == gate.in1 && gate1.in2 == gate.in2) // check equal
-                                || (gate1.in1 == gate.in2 && gate1.in2 == gate.in1))) // commutative
-                        {
-//                            toRemove.add(new Pair<>(gate.out, gat e1)); // the higher ids would be preserved
-                            toRemove.add(new Pair<>(gate1.out, gate));
-                        }
-                    }
+//                    // find gates which are commutativ or equal to another
+//                    for (int j = i + 1; j < gates.size(); j++) {
+//                        IntGate gate1 = gates.get(j);
+//                        if (((gate1.in1 == gate.in1 && gate1.in2 == gate.in2) // check equal
+//                                || (gate1.in1 == gate.in2 && gate1.in2 == gate.in1))) // commutative
+//                        {
+////                            toRemove.add(new Pair<>(gate.out, gat e1)); // the higher ids would be preserved
+//                            toRemove.add(new Pair<>(gate1.out, gate));
+//                        }
+//                    }
                 }
             }
         } while (!toRemove.isEmpty());

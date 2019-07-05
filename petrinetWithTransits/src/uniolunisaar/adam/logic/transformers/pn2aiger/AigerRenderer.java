@@ -29,7 +29,8 @@ public class AigerRenderer {
         NONE,
         NB_GATES,
         NB_GATES_AND_INDICES,
-        NB_GATES_AND_INDICES_EXTRA
+        NB_GATES_AND_INDICES_EXTRA,
+        NB_GATES_BY_FILE
     }
 
     private Optimizations optimizations = Optimizations.NONE;
@@ -226,6 +227,9 @@ public class AigerRenderer {
             case NB_GATES_AND_INDICES_EXTRA:
                 file = new AigerFileOptimizedGatesAndIndizes(true);
                 break;
+            case NB_GATES_BY_FILE:
+                file = new AigerFileOptimizedGates(false);
+                break;
             default:
                 file = new AigerFileOptimizedGates(false);
         }
@@ -262,6 +266,10 @@ public class AigerRenderer {
 
     public void setOptimizations(Optimizations optimizations) {
         this.optimizations = optimizations;
+    }
+
+    public Optimizations getOptimizations() {
+        return optimizations;
     }
 
     /**
