@@ -97,8 +97,7 @@ public abstract class AigerFile {
         copy.put(to, from);
     }
 
-    @Override
-    public String toString() {
+    public String render(boolean withSymbols) {
         // render the possibly optimized gates (do it already here because this could also
         // mean that the output list and the latches ids must have been adapted)
         StringBuilder gateStrings = renderGates();
@@ -150,8 +149,15 @@ public abstract class AigerFile {
         sb.append(latis.toString());
         sb.append(outs.toString());
         sb.append(gateStrings.toString());
-        sb.append(symbols.toString());
+        if (withSymbols) {
+            sb.append(symbols.toString());
+        }
         return sb.toString();
+    }
+
+    @Override
+    public String toString() {
+        return render(true);
     }
 
     int getMaxVarIdx() {
