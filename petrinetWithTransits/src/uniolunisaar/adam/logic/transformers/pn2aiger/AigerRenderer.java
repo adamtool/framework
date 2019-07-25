@@ -28,8 +28,11 @@ public class AigerRenderer {
     public enum OptimizationsSystem {
         NONE,
         NB_GATES,
+        NB_GATES_AND_EQCOM,
         NB_GATES_AND_INDICES,
-        NB_GATES_AND_INDICES_EXTRA
+        NB_GATES_AND_INDICES_AND_EQCOM,
+        NB_GATES_AND_INDICES_EXTRA,
+        NB_GATES_AND_INDICES_EXTRA_AND_EQCOM
     }
 
     public enum OptimizationsComplete {
@@ -258,19 +261,28 @@ public class AigerRenderer {
         AigerFile file;
         switch (opt) {
             case NONE:
-                file = new AigerFileOptimizedGates(false);
+                file = new AigerFileOptimizedGates(false, false);
                 break;
             case NB_GATES:
-                file = new AigerFileOptimizedGates(true);
+                file = new AigerFileOptimizedGates(true, false);
+                break;
+            case NB_GATES_AND_EQCOM:
+                file = new AigerFileOptimizedGates(true, true);
                 break;
             case NB_GATES_AND_INDICES:
-                file = new AigerFileOptimizedGatesAndIndizes(false);
+                file = new AigerFileOptimizedGatesAndIndizes(false, false);
+                break;
+            case NB_GATES_AND_INDICES_AND_EQCOM:
+                file = new AigerFileOptimizedGatesAndIndizes(false, true);
                 break;
             case NB_GATES_AND_INDICES_EXTRA:
-                file = new AigerFileOptimizedGatesAndIndizes(true);
+                file = new AigerFileOptimizedGatesAndIndizes(true, false);
+                break;
+            case NB_GATES_AND_INDICES_EXTRA_AND_EQCOM:
+                file = new AigerFileOptimizedGatesAndIndizes(true, true);
                 break;
             default:
-                file = new AigerFileOptimizedGates(false);
+                file = new AigerFileOptimizedGates(false, false);
         }
         return file;
     }

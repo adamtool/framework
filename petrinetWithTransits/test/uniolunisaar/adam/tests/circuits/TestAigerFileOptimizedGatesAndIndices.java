@@ -15,7 +15,7 @@ public class TestAigerFileOptimizedGatesAndIndices {
 
     @Test
     public void testDuplicateInputForGate() {
-        AigerFile f = new AigerFileOptimizedGatesAndIndizes(true);
+        AigerFile f = new AigerFileOptimizedGatesAndIndizes(true, false);
         f.addInputs("i1", "i2", "i3");
         f.addGate("out", "i1", "i2", "i1", "i3", "i2");
         Assert.assertEquals(f.toString(), "aag 5 3 0 0 2\n"
@@ -61,7 +61,7 @@ public class TestAigerFileOptimizedGatesAndIndices {
 
     @Test
     public void testFirstDuplicateInputForGate() {
-        AigerFile f = new AigerFileOptimizedGatesAndIndizes(true);
+        AigerFile f = new AigerFileOptimizedGatesAndIndizes(true, false);
         f.addInputs("i1", "i2", "i3");
         f.addOutputs("out1");
         f.addGate("out1", "i1", "i1");
@@ -176,7 +176,7 @@ public class TestAigerFileOptimizedGatesAndIndices {
                 + "i2 i3\n"
                 + "o0 out1"); // possibly the order is not deterministic?
         // here is a problem by just doing it iterativly since new is already optimized
-        AigerFile f1 = new AigerFileOptimizedGatesAndIndizes(true);
+        AigerFile f1 = new AigerFileOptimizedGatesAndIndizes(true, false);
         f1.addInputs("i1", "i2", "i3");
         f1.addOutputs("out1");
         f1.addGate("out1", "i1", "i1");
@@ -200,7 +200,7 @@ public class TestAigerFileOptimizedGatesAndIndices {
                 + "i2 i3\n"
                 + "o0 out1"); // possibly the order is not deterministic?
         // here is a problem by just doing it iterativly since new is already optimized
-        AigerFile f2 = new AigerFileOptimizedGatesAndIndizes(true);
+        AigerFile f2 = new AigerFileOptimizedGatesAndIndizes(true, false);
         f2.addInputs("i1", "i2", "i3");
         f2.addOutputs("out1");
         f2.addGate("out1", "i1", "i1");
@@ -231,7 +231,7 @@ public class TestAigerFileOptimizedGatesAndIndices {
 
     @Test
     public void testNegation() {
-        AigerFile f = new AigerFileOptimizedGatesAndIndizes(true);
+        AigerFile f = new AigerFileOptimizedGatesAndIndizes(true, false);
         f.addInputs("a1", "a2", "a3");
         f.addOutputs("out1");
         f.addGate("out1", "a1", "a2");
@@ -256,7 +256,7 @@ public class TestAigerFileOptimizedGatesAndIndices {
                 + "i1 a2\n"
                 + "i2 a3\n"
                 + "o0 out1");
-        AigerFile f1 = new AigerFileOptimizedGatesAndIndizes(true);
+        AigerFile f1 = new AigerFileOptimizedGatesAndIndizes(true, false);
         f1.addInputs("a1", "a2", "a3");
         f1.addOutputs("out1");
         f1.addGate("out1", "a1", "a2");
@@ -284,7 +284,7 @@ public class TestAigerFileOptimizedGatesAndIndices {
                 + "i1 a2\n"
                 + "i2 a3\n"
                 + "o0 out1");
-        AigerFile f2 = new AigerFileOptimizedGatesAndIndizes(true);
+        AigerFile f2 = new AigerFileOptimizedGatesAndIndizes(true, false);
         f2.addInputs("a1", "a2", "a3");
         f2.addOutputs("out1");
         f2.addGate("out1", "a1", "a2");
@@ -308,7 +308,7 @@ public class TestAigerFileOptimizedGatesAndIndices {
 
     @Test
     public void testRecursive() {
-        AigerFile f = new AigerFileOptimizedGatesAndIndizes(true);
+        AigerFile f = new AigerFileOptimizedGatesAndIndizes(true, false);
         f.addInputs("a1", "a2", "a3");
         f.addOutputs("out1");
         f.addGate("out1", "a1", "a2");
@@ -335,7 +335,7 @@ public class TestAigerFileOptimizedGatesAndIndices {
                 + "i1 a2\n"
                 + "i2 a3\n"
                 + "o0 out1");
-        AigerFile f1 = new AigerFileOptimizedGatesAndIndizes(true);
+        AigerFile f1 = new AigerFileOptimizedGatesAndIndizes(true, false);
         f1.addInputs("a1", "a2", "a3");
         f1.addOutputs("out1");
         f1.addGate("out1", "a1", "a2");

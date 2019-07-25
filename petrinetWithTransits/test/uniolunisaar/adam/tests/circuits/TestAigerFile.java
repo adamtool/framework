@@ -10,10 +10,10 @@ import uniolunisaar.adam.ds.circuits.AigerFileOptimizedGates;
  */
 @Test
 public class TestAigerFile {
-    
+
     @Test
     public void testDuplicateInputForGate() {
-        AigerFileOptimizedGates f = new AigerFileOptimizedGates(true);
+        AigerFileOptimizedGates f = new AigerFileOptimizedGates(true, false);
         f.addInputs("i1", "i2", "i3");
         f.addGate("out", "i1", "i2", "i1", "i3", "i2");
         Assert.assertEquals(f.toString(), "aag 5 3 0 0 2\n"
@@ -59,7 +59,7 @@ public class TestAigerFile {
 
     @Test
     public void testFirstDuplicateInputForGate() {
-        AigerFileOptimizedGates f = new AigerFileOptimizedGates(true);
+        AigerFileOptimizedGates f = new AigerFileOptimizedGates(true, false);
         f.addInputs("i1", "i2", "i3");
         f.addOutputs("out1");
         f.addGate("out1", "i1", "i1");
@@ -206,7 +206,7 @@ public class TestAigerFile {
 
     @Test
     public void testNegation() {
-        AigerFileOptimizedGates f = new AigerFileOptimizedGates(true);
+        AigerFileOptimizedGates f = new AigerFileOptimizedGates(true, false);
         f.addInputs("a1", "a2", "a3");
         f.addOutputs("out1");
         f.addGate("out1", "a1", "a2");
@@ -272,7 +272,7 @@ public class TestAigerFile {
 
     @Test
     public void testRecursive() {
-        AigerFileOptimizedGates f = new AigerFileOptimizedGates(true);
+        AigerFileOptimizedGates f = new AigerFileOptimizedGates(true, false);
         f.addInputs("a1", "a2", "a3");
         f.addOutputs("out1");
         f.addGate("out1", "a1", "a2");

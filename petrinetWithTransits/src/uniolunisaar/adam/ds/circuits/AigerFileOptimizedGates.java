@@ -12,7 +12,8 @@ import uniol.apt.util.Pair;
  */
 public class AigerFileOptimizedGates extends AigerFile {
 
-    private boolean withOpt = true; // currently seems to do not have any real influence on the toyexamples of the test suite
+    private boolean withOpt = true;
+    private boolean withEqCom = true;
     private final Map<Integer, Integer> replacements = new HashMap<>();
     private int maxIdxGates = -1;
     private int nb_gates = -1;
@@ -35,8 +36,9 @@ public class AigerFileOptimizedGates extends AigerFile {
         }
     }
 
-    public AigerFileOptimizedGates(boolean withOpt) {
+    public AigerFileOptimizedGates(boolean withOpt, boolean withEqCom) {
         this.withOpt = withOpt;
+        this.withEqCom = withEqCom;
     }
 
     private List<IntGate> getIntGates() {
@@ -97,11 +99,7 @@ public class AigerFileOptimizedGates extends AigerFile {
         do { // if there is still s.th. to remove repeat
             // safely (i.e. replace all the output of the gate using indizes with the replacement) delete all gates
             for (Pair<Integer, IntGate> pair : toRemove) {
-                boolean test = gates.remove(pair.getSecond());
-                if(!test) {
-                    System.out.println("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@could delte");
-                }
-                System.out.println(pair.getSecond().toString());
+                gates.remove(pair.getSecond());
                 int out = pair.getSecond().out;
                 int replace = pair.getFirst();
                 // check the gates
@@ -158,17 +156,20 @@ public class AigerFileOptimizedGates extends AigerFile {
                     // find gates where second input is one
                     toRemove.add(new Pair<>(gate.in1, gate));
                     break;
-                } else {
-//                    // find gates which are commutativ or equal to another
-//                    for (int j = i + 1; j < gates.size(); j++) {
-//                        IntGate gate1 = gates.get(j);
-//                        if (((gate1.in1 == gate.in1 && gate1.in2 == gate.in2) // check equal
-//                                || (gate1.in1 == gate.in2 && gate1.in2 == gate.in1))) // commutative
-//                        {
-////                            toRemove.add(new Pair<>(gate.out, gat e1)); // the higher ids would be preserved
-//                            toRemove.add(new Pair<>(gate1.out, gate));
-//                        }
-//                    }
+                } else if (withEqCom) {
+                    // find gates which are commutativ or equal to another
+                    for (int j = i + 1; j < gates.size(); j++) {
+                        IntGate gate1 = gates.get(j);
+                        if (((gate1.in1 == gate.in1 && gate1.in2 == gate.in2) // check equal
+                                || (gate1.in1 == gate.in2 && gate1.in2 == gate.in1))) // commutative
+                        {
+//                            toRemove.add(new Pair<>(gate.out, gat e1)); // the higher ids would be preserved
+                            toRemove.add(new Pair<>(gate1.out, gate));
+                        }
+                    }
+                    if (!toRemove.isEmpty()) {
+                        break;
+                    }
                 }
             }
         } while (!toRemove.isEmpty());
