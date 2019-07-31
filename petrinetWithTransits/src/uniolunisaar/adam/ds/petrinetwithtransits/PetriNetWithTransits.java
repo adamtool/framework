@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import uniol.apt.adt.pn.Flow;
+import uniol.apt.adt.pn.Marking;
 import uniol.apt.adt.pn.Node;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
@@ -180,6 +181,12 @@ public class PetriNetWithTransits extends PetriNet {
                         tfl.addPostsetPlace(newNode);
                     }
                 }
+            }
+            //is initially marked?
+            Marking init = getInitialMarking();
+            long val = init.getToken(n.getId()).getValue();
+            if (val > 0) {
+                p.setInitialToken(val);
             }
 
             // now delete
