@@ -109,6 +109,18 @@ public class PetriNetWithTransits extends PetriNet {
 //        }
     }
 
+    public void removeNodes(Node... nodes) {
+        for (Node node : nodes) {
+            super.removeNode(node);
+        }
+    }
+
+    public void removeNodes(String... ids) {
+        for (String id : ids) {
+            super.removeNode(id);
+        }
+    }
+
     public Node rename(Node n, String newId) {
         if (n == null) {
             throw new IllegalArgumentException("n == null");
