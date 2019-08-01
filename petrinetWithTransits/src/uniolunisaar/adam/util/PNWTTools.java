@@ -594,7 +594,7 @@ public class PNWTTools {
             } catch (IOException | InterruptedException ex) {
                 Logger.getInstance().addError("Deleting the buffer files and moving the pdf failed", ex);
             }
-        });        
+        });
         mvPdf.start();
         return mvPdf;
     }
