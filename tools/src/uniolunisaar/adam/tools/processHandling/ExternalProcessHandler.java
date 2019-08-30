@@ -1,4 +1,4 @@
-package uniolunisaar.adam.tools;
+package uniolunisaar.adam.tools.processHandling;
 
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import java.io.BufferedReader;

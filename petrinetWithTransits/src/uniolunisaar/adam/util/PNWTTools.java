@@ -25,12 +25,12 @@ import uniolunisaar.adam.ds.petrinetwithtransits.Transit;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.logic.parser.transits.TransitParser;
-import uniolunisaar.adam.tools.ExternalProcessHandler;
+import uniolunisaar.adam.tools.processHandling.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import uniolunisaar.adam.tools.AdamProperties;
 import uniolunisaar.adam.tools.PetriNetExtensionHandler;
-import uniolunisaar.adam.tools.ProcessPool;
+import uniolunisaar.adam.tools.processHandling.ProcessPool;
 import uniolunisaar.adam.tools.Tools;
 
 /**
