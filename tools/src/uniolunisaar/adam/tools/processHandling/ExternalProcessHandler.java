@@ -11,6 +11,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -132,6 +133,15 @@ public class ExternalProcessHandler {
     }
 
     public Process destroyForcibly() {
+        return proc.destroyForcibly();
+    }
+
+    public Process destroyForciblyWithChilds() {
+        for (Iterator<ProcessHandle> iterator = proc.children().iterator(); iterator.hasNext();) {
+            ProcessHandle childProc = iterator.next();
+//            System.out.println("pid" + childProc.pid());
+            childProc.destroyForcibly();
+        }
         return proc.destroyForcibly();
     }
 

@@ -1,10 +1,10 @@
 package uniolunisaar.adam.tools.processHandling;
 
-import uniolunisaar.adam.tools.processHandling.ExternalProcessHandler;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import uniolunisaar.adam.tools.Logger;
 
 /**
  *
@@ -57,6 +57,30 @@ public class ProcessPool implements IProcessListener {
             }
         }
 //        semaphore.release();
+    }
+
+    public synchronized void destroyProcess(String id) {
+        if (processes.containsKey(id)) {
+            processes.get(id).destroy();
+        } else {
+            Logger.getInstance().addWarning("Couldn't find a process with id '" + id + "' to destroy.");
+        }
+    }
+
+    public synchronized void destroyForciblyProcess(String id) {
+        if (processes.containsKey(id)) {
+            processes.get(id).destroyForcibly();
+        } else {
+            Logger.getInstance().addWarning("Couldn't find a process with id '" + id + "' to destroy.");
+        }
+    }
+
+    public synchronized void destroyForciblyProcessAndChilds(String id) {
+        if (processes.containsKey(id)) {
+            processes.get(id).destroyForciblyWithChilds();
+        } else {
+            Logger.getInstance().addWarning("Couldn't find a process with id '" + id + "' to destroy.");
+        }
     }
 
     public synchronized void destroyForciblyProcessesOfNet(String id) throws InterruptedException {
