@@ -594,15 +594,15 @@ public class PetriNetWithTransits extends PetriNet {
         return PetriNetWithTransitsExtensionHandler.isInitialTokenflow(place);
     }
 
-    public void setInitialTokenflow(Place place) {
+    public void setInitialTransit(Place place) {
         if (place.getInitialToken().getValue() <= 0) {
             throw new NotInitialPlaceException(place);
         }
-        PetriNetWithTransitsExtensionHandler.setInitialTokenflow(place);
+        PetriNetWithTransitsExtensionHandler.setInitialTransit(place);
     }
 
-    public void removeInitialTokenflow(Place place) {
-        PetriNetWithTransitsExtensionHandler.removeInitialTokenflow(place);
+    public void removeInitialTransit(Place place) {
+        PetriNetWithTransitsExtensionHandler.removeInitialTransit(place);
     }
 
     public int getPartition(Place place) {

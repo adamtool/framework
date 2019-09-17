@@ -28,7 +28,7 @@ public class ExternalProcessHandler {
     private OutputStream procInput = null;
     private String[] command;
     private File directory;
-    private int status;
+    private int status = -1;
 
     private ProcessOutputReaderThread out;
     private ProcessOutputReaderThread error;

@@ -24,13 +24,11 @@ import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.ds.petrinetwithtransits.Transit;
 import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
+import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.logic.parser.transits.TransitParser;
-import uniolunisaar.adam.tools.processHandling.ExternalProcessHandler;
 import uniolunisaar.adam.tools.Logger;
-import uniolunisaar.adam.exceptions.ProcessNotStartedException;
-import uniolunisaar.adam.tools.AdamProperties;
+import uniolunisaar.adam.logic.externaltools.pnwt.Dot;
 import uniolunisaar.adam.tools.PetriNetExtensionHandler;
-import uniolunisaar.adam.tools.processHandling.ProcessPool;
 import uniolunisaar.adam.tools.Tools;
 
 /**
@@ -400,7 +398,10 @@ public class PNWTTools {
                 } else if (net.isInitialTransit(place)) {
                     sb.append(", style=dashed");
                 }
+            } else if (net.isInitialTransit(place)) {
+                sb.append(", style=dashed");
             }
+
             sb.append("];\n");
         }
 
@@ -523,29 +524,18 @@ public class PNWTTools {
         } else {
             savePnwt2Dot(path, net, withLabel, tokencount);
         }
-        String dot = AdamProperties.getInstance().getProperty(AdamProperties.DOT);
-        String[] command = {dot, "-Tpdf", path + ".dot", "-o", path + ".pdf"};
-        // Mac:
-        //String[] command = {"/usr/local/bin/dot", "-Tpdf", path + ".dot", "-o", path + ".pdf"};
-        ExternalProcessHandler procH = new ExternalProcessHandler(true, command);
-        ProcessPool.getInstance().putProcess(PetriNetExtensionHandler.getProcessFamilyID(net) + "#dot", procH);
-        // start it in an extra thread
+        // start rendering in an extra thread
         Thread thread = new Thread(() -> {
             try {
-                procH.startAndWaitFor();
+                Dot.call(path + ".dot", path, true, PetriNetExtensionHandler.getProcessFamilyID(net));
                 Logger.getInstance().addMessage("Saved to: " + path + ".pdf", true);
 //                    if (deleteDot) {
 //                        // Delete dot file
 //                        new File(path + ".dot").delete();
 //                        Logger.getInstance().addMessage("Deleted: " + path + ".dot", true);
 //                    }
-            } catch (IOException | InterruptedException ex) {
-                String errors = "";
-                try {
-                    errors = procH.getErrors();
-                } catch (ProcessNotStartedException e) {
-                }
-                Logger.getInstance().addError("Saving pdf from dot failed.\n" + errors, ex);
+            } catch (IOException | InterruptedException | ExternalToolException ex) {
+                Logger.getInstance().addError("Saving pdf from dot failed.", ex);
             }
         });
         thread.start();
@@ -592,7 +582,8 @@ public class PNWTTools {
                 Files.move(new File(bufferpath + ".pdf").toPath(), new File(path + ".pdf").toPath(), REPLACE_EXISTING);
                 Logger.getInstance().addMessage("Moved: " + bufferpath + ".pdf --> " + path + ".pdf", true);
             } catch (IOException | InterruptedException ex) {
-                Logger.getInstance().addError("Deleting the buffer files and moving the pdf failed", ex);
+                ex.printStackTrace();
+                Logger.getInstance().addError("Deleting the buffered dot file and moving the pdf failed", ex);
             }
         });
         mvPdf.start();

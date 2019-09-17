@@ -14,7 +14,7 @@ public class ToyExamples {
         PetriNetWithTransits net = new PetriNetWithTransits("firstExample_" + looping);
         Place in = net.createPlace("in");
         in.setInitialToken(1);
-        net.setInitialTokenflow(in);
+        net.setInitialTransit(in);
         Place out = net.createPlace("out");
         out.setInitialToken(1);
         Transition t = net.createTransition("t");
@@ -35,11 +35,11 @@ public class ToyExamples {
         PetriNetWithTransits net = new PetriNetWithTransits("firstExampleExtended_" + looping);
         Place in = net.createPlace("in");
         in.setInitialToken(1);
-        net.setInitialTokenflow(in);
+        net.setInitialTransit(in);
         Place mid = net.createPlace("mid");
         mid.setInitialToken(1);
         Transition t = net.createTransition("ta");
-        net.setStrongFair(t);
+        net.setWeakFair(t);
         net.createFlow(in, t);
         net.createFlow(t, in);
         net.createFlow(t, mid);
@@ -49,7 +49,7 @@ public class ToyExamples {
         Place out = net.createPlace("out");
         out.setInitialToken(1);
         Transition t1 = net.createTransition("tb");
-        net.setStrongFair(t1);
+        net.setWeakFair(t1);
         net.createFlow(t1, mid);
         net.createFlow(mid, t1);
         net.createFlow(t1, out);

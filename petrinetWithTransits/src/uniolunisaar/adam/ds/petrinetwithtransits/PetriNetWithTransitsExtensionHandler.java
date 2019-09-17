@@ -109,11 +109,11 @@ class PetriNetWithTransitsExtensionHandler {
         return place.hasExtension(AdamExtensions.itfl.name());
     }
 
-    static void setInitialTokenflow(Place place) {
+    static void setInitialTransit(Place place) {
         place.putExtension(AdamExtensions.itfl.name(), true, ExtensionProperty.WRITE_TO_FILE);
     }
 
-    static void removeInitialTokenflow(Place place) {
+    static void removeInitialTransit(Place place) {
         place.removeExtension(AdamExtensions.itfl.name());
     }
 
