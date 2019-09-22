@@ -8,10 +8,14 @@ import uniol.apt.adt.pn.PetriNet;
  */
 public class AigerRendererSafeIn extends AigerRenderer {
 
+    public AigerRendererSafeIn(PetriNet net) {
+        super(net);
+    }
+
     // todo: problem with enabledness since in the ingoing the transition has
     // fired thus, do I check the enabledness for the next transition?
-    public String renderToString(PetriNet net) {
-        return super.render(net).toString();
+    public String renderToString() {
+        return super.render().toString();
     }
 
 }

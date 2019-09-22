@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
-import uniol.apt.adt.pn.PetriNet;
 import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import uniolunisaar.adam.logic.externaltools.pnwt.AigToDot;
@@ -22,8 +21,8 @@ import uniolunisaar.adam.tools.processHandling.ProcessPool;
  */
 public class AigerTools {
 
-    public static void save2Aiger(PetriNet net, AigerRenderer renderer, String path) throws FileNotFoundException {
-        String aigerFile = renderer.render(net).toString();
+    public static void save2Aiger(AigerRenderer renderer, String path) throws FileNotFoundException {
+        String aigerFile = renderer.render().toString();
         // save aiger file
         try (PrintStream out = new PrintStream(path + ".aag")) {
             out.println(aigerFile);

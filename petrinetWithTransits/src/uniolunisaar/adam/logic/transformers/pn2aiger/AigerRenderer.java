@@ -1,5 +1,6 @@
 package uniolunisaar.adam.logic.transformers.pn2aiger;
 
+import java.util.Set;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
@@ -21,7 +22,7 @@ public class AigerRenderer {
     public static final String OUTPUT_PREFIX = "#out#_";
     public static final String ENABLED_PREFIX = "#enabled#_";
     public static final String VALID_TRANSITION_PREFIX = "#chosen#_";
-    public static final String ALL_TRANS_NOT_TRUE = "#allTransitionsNotTrue#";
+    public static final String ALL_TRANS_FALSE = "#allTransitionsNotTrue#";
     public static final String SUCCESSOR_REGISTER_PREFIX = "#succReg#_";
     public static final String SUCCESSOR_PREFIX = "#succ#_";
 
@@ -47,13 +48,19 @@ public class AigerRenderer {
     private OptimizationsSystem optimizationsSys = OptimizationsSystem.NONE;
     private OptimizationsComplete optimizationsComplete = OptimizationsComplete.NONE;
 
+    final PetriNet net;
+
+    public AigerRenderer(PetriNet net) {
+        this.net = net;
+    }
+
     /**
      * Adds inputs for all transitions.
      *
      * @param file
      * @param net
      */
-    void addInputs(AigerFile file, PetriNet net) {
+    void addInputs(AigerFile file) {
         // Add an input for all transitions
         for (Transition t : net.getTransitions()) {
             file.addInput(INPUT_PREFIX + t.getId());
@@ -66,7 +73,7 @@ public class AigerRenderer {
      * @param file
      * @param net
      */
-    void addLatches(AigerFile file, PetriNet net) {
+    void addLatches(AigerFile file) {
         // Add the latches
         // initialization latch
         file.addLatch(INIT_LATCH);
@@ -82,7 +89,7 @@ public class AigerRenderer {
      * @param file
      * @param net
      */
-    void addOutputs(AigerFile file, PetriNet net) {
+    void addOutputs(AigerFile file) {
         //Add outputs
         // for the places
         for (Place p : net.getPlaces()) {
@@ -96,9 +103,10 @@ public class AigerRenderer {
 
     private String addEnabled(AigerFile file, Transition t) {
         String outId = ENABLED_PREFIX + t.getId();
-        String[] inputs = new String[t.getPreset().size()];
+        Set<Flow> preset = t.getPresetEdges();
+        String[] inputs = new String[preset.size()];
         int i = 0;
-        for (Flow e : t.getPresetEdges()) {
+        for (Flow e : preset) {
             //todo: change this (either add a  intermediate class PetriNetWithInhibitor or have an more general extensionhandler which is accessable outside)
             PetriNetWithTransits game = new PetriNetWithTransits("buf");
             if (game.isInhibitor(e)) {
@@ -111,19 +119,19 @@ public class AigerRenderer {
         return outId;
     }
 
-    void addEnablednessOfTransitions(AigerFile file, PetriNet net) {
+    void addEnablednessOfTransitions(AigerFile file) {
         // Create the general circuits for getting the enabledness of a transition
         for (Transition t : net.getTransitions()) {
             addEnabled(file, t);
         }
     }
 
-    void addChosingOfValidTransitions(AigerFile file, PetriNet net) {
+    void addChosingOfValidTransitions(AigerFile file) {
         //%%%%%%%%%%%%% Create the output for the transitions
         // Choose that only one transition at a time can be fired
         //
         // todo: add other semantics (choose every not conflicting transition)
-        // or put this choosing in the formula
+        // or put this choosing in the formula (this would have an impact on the next operator)
         //
         // The transition is only choosen if it is enabled
         for (Transition t1 : net.getTransitions()) {
@@ -140,21 +148,21 @@ public class AigerRenderer {
         }
     }
 
-    void addUpdateInitLatch(AigerFile file, PetriNet net) {
+    void addUpdateInitLatch(AigerFile file) {
         // Update the init flag just means set it to true
         file.copyValues(INIT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX, AigerFile.TRUE);
     }
 
-    private void addNegationOfAllTransitions(AigerFile file, PetriNet net) {
+    private void addNegationOfAllTransitions(AigerFile file) {
         String[] inputs = new String[net.getTransitions().size()];
         int i = 0;
         for (Transition t : net.getTransitions()) {
             inputs[i++] = "!" + VALID_TRANSITION_PREFIX + t.getId();
         }
-        file.addGate(ALL_TRANS_NOT_TRUE, inputs);
+        file.addGate(ALL_TRANS_FALSE, inputs);
     }
 
-    private String createSuccessorRegister(AigerFile file, PetriNet net, Place p) {
+    private String createSuccessorRegister(AigerFile file, Place p) {
         String id = SUCCESSOR_REGISTER_PREFIX + p.getId();
         String[] inputs = new String[net.getTransitions().size()];
         int i = 0;
@@ -178,24 +186,24 @@ public class AigerRenderer {
         String id = SUCCESSOR_PREFIX + p.getId();
         // create A
         String idA = id + "_A";
-        file.addGate(idA, ALL_TRANS_NOT_TRUE, "!" + p.getId());
+        file.addGate(idA, ALL_TRANS_FALSE, "!" + p.getId());
         // create B
         String idB = id + "_B";
-        file.addGate(idB, "!" + ALL_TRANS_NOT_TRUE, "!" + SUCCESSOR_REGISTER_PREFIX + p.getId());
+        file.addGate(idB, "!" + ALL_TRANS_FALSE, "!" + SUCCESSOR_REGISTER_PREFIX + p.getId());
         // total
         file.addGate(id, "!" + idA, "!" + idB);
         return id;
     }
 
-    void addSuccessors(AigerFile file, PetriNet net) {
+    void addSuccessors(AigerFile file) {
         // needed for createSuccessor
-        addNegationOfAllTransitions(file, net);
+        addNegationOfAllTransitions(file);
 
         // Create for each place the chosing and the test if s.th. has fired
         for (Place p : net.getPlaces()) {
             // Create for each place the choosing of the transition
 //            createChooseTransition(file, net, p); // use this when not already checked that the transition is enabled
-            createSuccessorRegister(file, net, p); // F2
+            createSuccessorRegister(file, p); // F2
             // Create for each place the check if s.th. has fired
             createSuccessor(file, p); // F1
         }
@@ -212,7 +220,7 @@ public class AigerRenderer {
         }
     }
 
-    void setOutputs(AigerFile file, PetriNet net) {
+    void setOutputs(AigerFile file) {
         // the valid transitions are already the output in the case that it is not init
         for (Transition t : net.getTransitions()) {
             file.addGate(OUTPUT_PREFIX + t.getId(), INIT_LATCH, VALID_TRANSITION_PREFIX + t.getId());
@@ -224,18 +232,18 @@ public class AigerRenderer {
         }
     }
 
-    public AigerFile render(PetriNet net) {
+    public AigerFile render() {
         AigerFile file = AigerRenderer.getFile(optimizationsSys);
         //%%%%%%%%% Add inputs -> all transitions
-        addInputs(file, net);
+        addInputs(file);
         //%%%%%%%%%% Add the latches -> init + all places
-        addLatches(file, net);
+        addLatches(file);
         //%%%%%%%%% Add outputs -> all places and transitions
-        addOutputs(file, net);
+        addOutputs(file);
 
         //%%%%%%%%%%%%% Create the output for the transitions
         // Create the general circuits for getting the enabledness of a transition
-        addEnablednessOfTransitions(file, net);
+        addEnablednessOfTransitions(file);
 
         // Choose that only one transition at a time can be fired
         //
@@ -243,16 +251,16 @@ public class AigerRenderer {
         // or put this choosing in the formula
         //
         // The transition is only choosen if it is enabled
-        addChosingOfValidTransitions(file, net);
+        addChosingOfValidTransitions(file);
 
         // %%%%%%%%%% Update the latches
         // the init flag
-        addUpdateInitLatch(file, net);
+        addUpdateInitLatch(file);
         // the places
-        addSuccessors(file, net);
+        addSuccessors(file);
 
         // %%%%%%%%% Set the outputs
-        setOutputs(file, net);
+        setOutputs(file);
 
         return file;
     }
