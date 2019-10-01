@@ -17,6 +17,9 @@ import uniolunisaar.adam.tools.Logger;
  */
 public class SDNTopologyListener extends SDNTopologyFormatBaseListener {
 
+    static final String infixActPlace = "_fwd_";
+    static final String infixTransitionLabel = "->";
+
     private boolean inGenOptions = false;
     private Place sw = null;
     private Set<Place> curSet;
@@ -96,7 +99,7 @@ public class SDNTopologyListener extends SDNTopologyFormatBaseListener {
     }
 
     private void addConnection(Place pre, Transition trans, Place post) {
-        String id = pre.getId() + "->" + post.getId();
+        String id = pre.getId() + infixTransitionLabel + post.getId();
         trans.setLabel(id);
         // if we only use one transition for connecting switches, we could get a unique commutative id by lexicographical ordering
 //        String id;
@@ -109,7 +112,7 @@ public class SDNTopologyListener extends SDNTopologyFormatBaseListener {
             Logger.getInstance().addWarning("You added a redundant connection " + pre.getId() + " <-> " + post.getId() + ". We ignore this instance.");
             return;
         }
-        Place act = pnwt.createPlace(pre.getId() + "_fwd_" + post.getId());
+        Place act = pnwt.createPlace(pre.getId() + infixActPlace + post.getId());
         pnwt.createFlow(pre, trans);
         pnwt.createFlow(post, trans);
         pnwt.createFlow(act, trans);
@@ -170,7 +173,7 @@ public class SDNTopologyListener extends SDNTopologyFormatBaseListener {
     public void exitForward(SDNTopologyFormatParser.ForwardContext ctx) {
         Place from = pnwt.getPlace(ctx.src.getText());
         Place to = pnwt.getPlace(ctx.dest.getText());
-        String id = from.getId() + "->" + to.getId();
+        String id = from.getId() + infixTransitionLabel + to.getId();
 //        String id;
 //        if (from.getId().compareTo(to.getId()) > 0) {
 //            id = from.getId() + to.getId();

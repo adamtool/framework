@@ -57,16 +57,15 @@
 		<touch file="${srcfolder}/uniolunisaar/adam/logic/parser/transits/antlr/antlr.stamp" mkdirs="true"/>
 	</target>
 
-    <!-- %%%%%%%%%%%%%%%%% SDN TOPOLOGIES -->
+    <!-- %%%%%%%%%%%%%%%%% SDN -->
 	<!-- Only run the antlr target if some .g file is newer than generated antlr.stamp (which the antlr target touches) -->
-	<target name="antlr.sdnTopology.checkforchanges">
-		<uptodate property="antlr.sdnTopology.nochanges" targetfile="${srcfolder}/uniolunisaar/adam/logic/parser/sdn/antlr/antlr.stamp">
+	<target name="antlr.sdn.checkforchanges">
+		<uptodate property="antlr.sdn.nochanges" targetfile="${srcfolder}/uniolunisaar/adam/logic/parser/sdn/antlr/antlr.stamp">
 			<srcfiles dir="${srcfolder}/uniolunisaar/adam/logic/parser/sdn/" includes="**/*.g4"/>
 		</uptodate>
 	</target>
 
-    <!-- parse SDN topology -->
-	<target name="antlr.sdnTopology" depends="antlr.sdnTopology.checkforchanges" unless="antlr.sdnTopology.nochanges">
+	<target name="antlr.sdn" depends="antlr.sdn.checkforchanges" unless="antlr.sdn.nochanges">
 		<macrodef name="call-antlr">
 			<attribute name="name" />
 			<sequential>
@@ -79,30 +78,32 @@
 				</java>
 			</sequential>
 		</macrodef>
+        <!-- parse SDN topology -->
 		<call-antlr name="SDNTopologyFormat.g4" />
+        <!-- parse SDN updates -->
+		<call-antlr name="SDNUpdateFormat.g4" />
 		<!-- Touch the time stamp file which antlr.checkforchanges checks for -->
 		<touch file="${srcfolder}/uniolunisaar/adam/logic/parser/sdn/antlr/antlr.stamp" mkdirs="true"/>
 	</target>
 
-
 <!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% DELEGATES %%%%%%%%%%%%%%%%%%%%%%%%%%% -->	
-	<target name="test" depends="loadProperties,antlr.transits,antlr.sdnTopology" description="Runs all tests">
+	<target name="test" depends="loadProperties,antlr.transits,antlr.sdn" description="Runs all tests">
 		<antcall target="pnwithtransits.fu.test"/>
 			<!--<ant antfile="${logics.basedir}/build_logics.xml" target="test"></ant>	-->	
 	</target>
-	<target name="test-method" depends="loadProperties,antlr.transits,antlr.sdnTopology" description="Runs the tests of a specific method">
+	<target name="test-method" depends="loadProperties,antlr.transits,antlr.sdn" description="Runs the tests of a specific method">
 		<antcall target="pnwithtransits.fu.test-method"/>
 	</target>
-	<target name="test-class" depends="loadProperties,antlr.transits,antlr.sdnTopology" description="Runs the tests of a specific class">
+	<target name="test-class" depends="loadProperties,antlr.transits,antlr.sdn" description="Runs the tests of a specific class">
 		<antcall target="pnwithtransits.fu.test-class"/>
 	</target>
-	<target name="jar" depends="loadProperties,antlr.transits,antlr.sdnTopology" description="Builds a jar with all its dependencies">
+	<target name="jar" depends="loadProperties,antlr.transits,antlr.sdn" description="Builds a jar with all its dependencies">
 		<antcall target="pnwithtransits.fu.jar"/>
 	</target>
-	<target name="jar-standalone" depends="loadProperties,antlr.transits,antlr.sdnTopology" description="Builds a jar with all its dependencies">
+	<target name="jar-standalone" depends="loadProperties,antlr.transits,antlr.sdn" description="Builds a jar with all its dependencies">
 		<antcall target="pnwithtransits.fu.jar-standalone"/>
 	</target>
-	<target name="javadoc" depends="loadProperties,antlr.transits,antlr.sdnTopology" description="Creates the JavaDoc of this package.">
+	<target name="javadoc" depends="loadProperties,antlr.transits,antlr.sdn" description="Creates the JavaDoc of this package.">
 		<antcall target="pnwithtransits.fu.javadoc"/>
 	</target>
 

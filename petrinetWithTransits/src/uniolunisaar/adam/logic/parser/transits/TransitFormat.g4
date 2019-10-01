@@ -3,7 +3,7 @@
 grammar TransitFormat;
 
 /* is a comma separated list of a preset place -> set of postset places */
-tfl:	(flow (',' flow)*) ;
+tfl:	(flow (',' flow)*) EOF;
 
 flow  : preset=init '->' postset=set;
 

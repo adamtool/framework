@@ -4,11 +4,12 @@ import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import uniol.apt.io.parser.ParseException;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
-import uniolunisaar.adam.exceptions.pnwt.DocumentParseException;
+import uniolunisaar.adam.exceptions.pnwt.LineParseException;
+import uniolunisaar.adam.generators.pnwt.util.sdnencoding.Update;
 import static uniolunisaar.adam.logic.parser.ParsingUtils.handleErrors;
 import static uniolunisaar.adam.logic.parser.ParsingUtils.walk;
-import uniolunisaar.adam.logic.parser.sdn.antlr.SDNTopologyFormatLexer;
-import uniolunisaar.adam.logic.parser.sdn.antlr.SDNTopologyFormatParser;
+import uniolunisaar.adam.logic.parser.sdn.antlr.SDNUpdateFormatLexer;
+import uniolunisaar.adam.logic.parser.sdn.antlr.SDNUpdateFormatParser;
 
 /**
  *
@@ -16,27 +17,27 @@ import uniolunisaar.adam.logic.parser.sdn.antlr.SDNTopologyFormatParser;
  */
 public class SDNUpdateParser {
 
-    public static PetriNetWithTransits parse(String input) throws ParseException {
+    public static Update parse(PetriNetWithTransits pnwt, String input) throws ParseException {
         try {
-            SDNTopologyFormatLexer lexer = new SDNTopologyFormatLexer(new ANTLRInputStream(input));
+            SDNUpdateFormatLexer lexer = new SDNUpdateFormatLexer(new ANTLRInputStream(input));
 
             // Get a list of matched tokens
             CommonTokenStream tokens = new CommonTokenStream(lexer);
 
             // Pass the tokens to the parser
-            SDNTopologyFormatParser parser = new SDNTopologyFormatParser(tokens);
+            SDNUpdateFormatParser parser = new SDNUpdateFormatParser(tokens);
 
-            handleErrors(lexer, parser, false);
+            handleErrors(lexer, parser, true);
 
             // Specify our entry point
-            SDNTopologyFormatParser.TsContext context = parser.ts();
+            SDNUpdateFormatParser.ResultContext context = parser.result();
 
             // Walk it and attach our listener
-            SDNTopologyListener listener = new SDNTopologyListener(new PetriNetWithTransits(""));
+            SDNUpdateListener listener = new SDNUpdateListener(pnwt);
             walk(listener, context);
-            return listener.getPnwt();
-        } catch (DocumentParseException e) {
-            throw new ParseException("Error while parsing input '" + input + "'", e);
+            return listener.getUpdate();
+        } catch (LineParseException e) {
+            throw new ParseException("Error while parsing the update '" + input + "'", e);
         }
     }
 
