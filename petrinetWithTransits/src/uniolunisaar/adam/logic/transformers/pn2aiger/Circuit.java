@@ -13,6 +13,7 @@ public class Circuit {
         INGOING_REGISTER,
         OUTGOING,
         OUTGOING_REGISTER,
+        OUTGOING_REGISTER_BIN_TRANS,
         OUTGOING_REGISTER_MAX_INTERLEAVING,
         OUTGOING_REGISTER_BIN_TRANS_MAX_INTERLEAVING
     }
@@ -27,6 +28,8 @@ public class Circuit {
                 return new AigerRendererSafeOut(net);
             case OUTGOING_REGISTER:
                 return new AigerRendererSafeOutStutterRegister(net);
+            case OUTGOING_REGISTER_BIN_TRANS:
+                return new AigerRendererSafeOutStutterRegisterLogTrans(net);
             case OUTGOING_REGISTER_MAX_INTERLEAVING:
                 return new AigerRendererSafeOutStutterRegisterMaxInterleaving(net);
             case OUTGOING_REGISTER_BIN_TRANS_MAX_INTERLEAVING:
