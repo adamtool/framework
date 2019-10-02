@@ -68,7 +68,7 @@ public class TestSDNTopology {
 
     @Test
     public void topology() throws ParseException, FileNotFoundException {
-        PetriNetWithTransits pn = SDNTopologyParser.parse(topologyA);
+        PetriNetWithTransits pn = SDNTopologyParser.parse(topologyA, false);
         Assert.assertEquals(pn.getName(), "peter");
         Assert.assertEquals(pn.getExtension("description"), "klaus ist raus");
         Assert.assertEquals(pn.getExtension("opt1"), "asdf");
@@ -92,7 +92,7 @@ public class TestSDNTopology {
 
     @Test
     public void update() throws ParseException {
-        PetriNetWithTransits pn = SDNTopologyParser.parse(topologyA);
+        PetriNetWithTransits pn = SDNTopologyParser.parse(topologyA, false);
 
         Update updateSw = SDNUpdateParser.parse(pn, updateASw);
         if (!(updateSw instanceof SwitchUpdate)) {
@@ -106,7 +106,7 @@ public class TestSDNTopology {
         if (!(updateSeq instanceof SequentialUpdate)) {
             Assert.fail("Should be a concurrent update");
         }
-        Update updateNested = SDNUpdateParser.parse(pn, updateANested);  
+        Update updateNested = SDNUpdateParser.parse(pn, updateANested);
         if (!(updateNested instanceof ConcurrentUpdate)) {
             Assert.fail("Should be a concurrent update");
         }

@@ -17,6 +17,10 @@ import uniolunisaar.adam.logic.parser.sdn.antlr.SDNTopologyFormatParser;
 public class SDNTopologyParser {
 
     public static PetriNetWithTransits parse(String input) throws ParseException {
+        return parse(input, true);
+    }
+
+    public static PetriNetWithTransits parse(String input, boolean optimized) throws ParseException {
         try {
             SDNTopologyFormatLexer lexer = new SDNTopologyFormatLexer(new ANTLRInputStream(input));
 
@@ -32,12 +36,18 @@ public class SDNTopologyParser {
             SDNTopologyFormatParser.TsContext context = parser.ts();
 
             // Walk it and attach our listener
-            SDNTopologyListener listener = new SDNTopologyListener(new PetriNetWithTransits(""));
-            walk(listener, context);
-            return listener.getPnwt();
+            if (optimized) {
+                SDNTopologyListenerOptimized listener = new SDNTopologyListenerOptimized(new PetriNetWithTransits(""));
+                walk(listener, context);
+                return listener.getPnwt();
+            } else {
+                SDNTopologyListener listener = new SDNTopologyListener(new PetriNetWithTransits(""));
+                walk(listener, context);
+                return listener.getPnwt();
+            }
         } catch (DocumentParseException e) {
             throw new ParseException("Error while parsing input '" + input + "'", e);
         }
-    }   
+    }
 
 }
