@@ -17,7 +17,7 @@ import uniolunisaar.adam.tools.Logger;
  */
 public class SDNTopologyListener extends SDNTopologyFormatBaseListener {
 
-    static final String infixActPlace = "_fwd_";
+    static final String infixActPlace = "fwdTo";
     static final String infixTransitionLabel = "->";
 
     private boolean inGenOptions = false;
