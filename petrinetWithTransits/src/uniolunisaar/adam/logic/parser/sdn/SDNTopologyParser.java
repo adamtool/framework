@@ -38,6 +38,6 @@ public class SDNTopologyParser {
         } catch (DocumentParseException e) {
             throw new ParseException("Error while parsing input '" + input + "'", e);
         }
-    }
+    }   
 
 }
