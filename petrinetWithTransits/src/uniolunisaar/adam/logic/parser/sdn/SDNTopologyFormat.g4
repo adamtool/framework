@@ -10,7 +10,8 @@ grammar SDNTopologyFormat;
 	int nameCount = 0;
 }
 
-ts		: ( name | description | genOptions | switches | cons | ingress | egress | forwarding)* EOF;
+//ts		: ( name | description | genOptions | switches | cons | ingress | egress | forwarding)* EOF;
+ts		:  name  description  genOptions  switches  cons  ingress  egress  forwarding EOF;
 
 name		: {nameCount == 0}? '.name' STR {nameCount++;};
 

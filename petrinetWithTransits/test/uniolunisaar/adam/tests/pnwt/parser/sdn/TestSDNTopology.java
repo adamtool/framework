@@ -42,6 +42,31 @@ public class TestSDNTopology {
             + "p1 [asdf=\"A\", second=\"B\"]\n"
             + "p2\n"
             + "4\n"
+            + "p3\n"
+            + "p3B\n"
+            + "\n"
+            + ".connections\n"
+            + "p1 4\n"
+            + "4 p2[A=\"asdf\", B=\"5\"]\n"
+            + "p3 p3B\n"
+            + "\n"
+            + ".ingress={4, p1}\n"
+            + ".egress={p2}\n"
+            + "\n"
+            + ".forwarding"
+            + "p1.fwd(4)\n"
+            + "4.fwd(p2)";
+
+    private static final String topologyWithMultipleSectionAppearences = ".name \"peter\"\n"
+            + ".description \"klaus ist raus\"\n"
+            + ".options\n"
+            + "opt1 = \"asdf\",\n"
+            + "opt2 = \"more\"\n"
+            + "\n"
+            + ".switches\n"
+            + "p1 [asdf=\"A\", second=\"B\"]\n"
+            + "p2\n"
+            + "4\n"
             + "\n"
             + ".connections\n"
             + "p1 4\n"
@@ -62,9 +87,9 @@ public class TestSDNTopology {
             + "4.fwd(p2)";
 
     private static final String updateASw = "upd(p2.fwd(4))";
-    private static final String updateAPar = "(upd(p2.fwd(4)) || upd(4.fwd(p1)))";
-    private static final String updateASeq = "(upd(p2.fwd(4)) >> upd(4.fwd(p1)))";
-    private static final String updateANested = "(upd(p3.fwd(p3B)) || (upd(p2.fwd(4)) >> upd(4.fwd(p1))) )";
+    private static final String updateAPar = "[upd(p2.fwd(4)) || upd(4.fwd(p1))]";
+    private static final String updateASeq = "[upd(p2.fwd(4)) >> upd(4.fwd(p1))]";
+    private static final String updateANested = "[upd(p3.fwd(p3B)) || [upd(p2.fwd(4)) >> upd(4.fwd(p1))]]";
 
     @Test
     public void topology() throws ParseException, FileNotFoundException {

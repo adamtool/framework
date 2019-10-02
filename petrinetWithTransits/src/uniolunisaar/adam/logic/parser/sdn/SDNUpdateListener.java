@@ -24,7 +24,7 @@ public class SDNUpdateListener extends SDNUpdateFormatBaseListener {
     private Set<Update> curConUpdate = null;
 
     private final PetriNetWithTransits pnwt;
-    private Update update;
+    private Update update = null;
 
     public SDNUpdateListener(PetriNetWithTransits net) {
         this.pnwt = net;

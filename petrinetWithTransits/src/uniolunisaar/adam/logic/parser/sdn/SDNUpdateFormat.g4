@@ -7,8 +7,8 @@ result          : update EOF;
 update          : swUpdate | seqUpdate | parUpdate;
 
 swUpdate        : 'upd(' sw1=idi '.fwd(' sw2=idi '))';
-seqUpdate       : '(' update (SEQ update)* ')';
-parUpdate       : '(' update (PAR update)* ')';
+seqUpdate       : '[' update (SEQ update)* ']';
+parUpdate       : '[' update (PAR update)* ']';
 
 /* Lexer symbols */
 INT : '0'..'9'+;
