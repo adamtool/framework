@@ -9,6 +9,10 @@ import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
  */
 public class PNTools {
 
+    public static void annotateProcessFamilyID(PetriNet net) {
+        PetriNetExtensionHandler.setProcessFamilyID(net, net.getName() + Thread.currentThread().getName());
+    }
+
     public static PetriNet createPetriNet(String name) {
         PetriNet net = new PetriNet(name);
         PetriNetExtensionHandler.setProcessFamilyID(net, name + Thread.currentThread().getName());
