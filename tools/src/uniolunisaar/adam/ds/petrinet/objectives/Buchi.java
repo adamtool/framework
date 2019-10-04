@@ -1,9 +1,10 @@
-package uniolunisaar.adam.ds.objectives;
+package uniolunisaar.adam.ds.petrinet.objectives;
 
 import java.util.HashSet;
 import java.util.Set;
+import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
-import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
+import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 
 /**
  *
@@ -29,9 +30,9 @@ public class Buchi extends Condition {
     }
 
     @Override
-    public void buffer(PetriNetWithTransits net) {
+    public void buffer(PetriNet net) {
         for (Place place : net.getPlaces()) {
-            if (net.isBuchi(place)) {
+            if (PetriNetExtensionHandler.isBuchi(place)) {
                 buchiPlaces.add(place);
             }
         }

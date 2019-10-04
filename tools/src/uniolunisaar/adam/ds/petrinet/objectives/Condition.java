@@ -1,6 +1,6 @@
-package uniolunisaar.adam.ds.objectives;
+package uniolunisaar.adam.ds.petrinet.objectives;
 
-import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
+import uniol.apt.adt.pn.PetriNet;
 
 /**
  *
@@ -20,7 +20,7 @@ public abstract class Condition {
         LTL
     }
 
-    public abstract void buffer(PetriNetWithTransits net);
+    public abstract void buffer(PetriNet net);
 
     public abstract Objective getObjective();
 

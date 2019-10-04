@@ -1,7 +1,7 @@
 package uniolunisaar.adam.util;
 
 import uniol.apt.adt.pn.PetriNet;
-import uniolunisaar.adam.tools.PetriNetExtensionHandler;
+import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 
 /**
  *

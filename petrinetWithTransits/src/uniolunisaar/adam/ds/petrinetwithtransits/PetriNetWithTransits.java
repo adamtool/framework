@@ -18,11 +18,11 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.analysis.coverability.CoverabilityGraph;
 import uniol.apt.io.renderer.RenderException;
-import uniolunisaar.adam.ds.objectives.Condition;
+import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
+import uniolunisaar.adam.ds.petrinet.objectives.Condition;
 import uniolunisaar.adam.exceptions.pnwt.InconsistencyException;
 import uniolunisaar.adam.exceptions.pnwt.NoSuchTransitException;
 import uniolunisaar.adam.exceptions.pnwt.NotInitialPlaceException;
-import uniolunisaar.adam.tools.PetriNetExtensionHandler;
 import uniolunisaar.adam.util.PNWTTools;
 
 /**
