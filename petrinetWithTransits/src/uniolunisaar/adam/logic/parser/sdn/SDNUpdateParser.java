@@ -17,7 +17,7 @@ import uniolunisaar.adam.logic.parser.sdn.antlr.SDNUpdateFormatParser;
  */
 public class SDNUpdateParser {
 
-    public static Update parse(PetriNetWithTransits pnwt, String input) throws ParseException {
+    public static Update parse(PetriNetWithTransits pnwt, String input, boolean optimized) throws ParseException {
         try {
             SDNUpdateFormatLexer lexer = new SDNUpdateFormatLexer(new ANTLRInputStream(input));
 
@@ -33,9 +33,15 @@ public class SDNUpdateParser {
             SDNUpdateFormatParser.ResultContext context = parser.result();
 
             // Walk it and attach our listener
-            SDNUpdateListener listener = new SDNUpdateListener(pnwt);
-            walk(listener, context);
-            return listener.getUpdate();
+            if (optimized) {
+                SDNUpdateListenerOptimized listener = new SDNUpdateListenerOptimized(pnwt);
+                walk(listener, context);
+                return listener.getUpdate();
+            } else {
+                SDNUpdateListener listener = new SDNUpdateListener(pnwt);
+                walk(listener, context);
+                return listener.getUpdate();
+            }
         } catch (LineParseException e) {
             throw new ParseException("Error while parsing the update '" + input + "'", e);
         }

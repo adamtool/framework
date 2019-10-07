@@ -13,12 +13,15 @@ import uniolunisaar.adam.generators.pnwt.util.sdnencoding.SwitchUpdate;
 import uniolunisaar.adam.generators.pnwt.util.sdnencoding.Update;
 import uniolunisaar.adam.logic.parser.sdn.antlr.SDNUpdateFormatBaseListener;
 import uniolunisaar.adam.logic.parser.sdn.antlr.SDNUpdateFormatParser;
+import uniolunisaar.adam.util.SDNTools;
+import static uniolunisaar.adam.util.SDNTools.infixActPlace;
+import static uniolunisaar.adam.util.SDNTools.infixTransitionLabel;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class SDNUpdateListener extends SDNUpdateFormatBaseListener {
+public class SDNUpdateListenerOptimized extends SDNUpdateFormatBaseListener {
 
     private List<Update> curSeqUpdate = null;
     private Set<Update> curConUpdate = null;
@@ -26,7 +29,7 @@ public class SDNUpdateListener extends SDNUpdateFormatBaseListener {
     private final PetriNetWithTransits pnwt;
     private Update update = null;
 
-    public SDNUpdateListener(PetriNetWithTransits net) {
+    public SDNUpdateListenerOptimized(PetriNetWithTransits net) {
         this.pnwt = net;
     }
 
@@ -68,9 +71,22 @@ public class SDNUpdateListener extends SDNUpdateFormatBaseListener {
                 conEx = true;
             }
         }
-        if (!conEx) {
-            // todo: throw a ParseException when we learned how to teach antlr to throw own exceptions on rules
-            throw new RuntimeException("You added an update '" + from.getId() + ".fwd(" + to.getId() + ")' of unconnected switches.");
+        if (!conEx) { // add this connection
+            String id = from.getId() + infixTransitionLabel + to.getId();
+            Transition tran = pnwt.createTransition();
+            tran.setLabel(id);
+            tran.putExtension(SDNTools.fwdExtension, true);
+            Place act = pnwt.createPlace(from.getId() + infixActPlace + to.getId());
+
+            pnwt.createFlow(from, tran);
+            pnwt.createFlow(to, tran);
+            pnwt.createFlow(act, tran);
+            pnwt.createFlow(tran, from);
+            pnwt.createFlow(tran, to);
+            pnwt.createFlow(tran, act);
+
+            pnwt.createTransit(from, tran, to);
+            pnwt.createTransit(to, tran, to);
         }
 //        SwitchUpdate up = null;
 //        System.out.println("switch update " + from.getId() + " " + to.getId());

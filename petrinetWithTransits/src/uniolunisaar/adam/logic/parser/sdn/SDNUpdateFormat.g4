@@ -6,7 +6,7 @@ grammar SDNUpdateFormat;
 result          : update EOF;
 update          : swUpdate | seqUpdate | parUpdate;
 
-swUpdate        : 'upd(' sw1=idi '.fwd(' sw2=idi '))';
+swUpdate        : 'upd(' sw1=idi '.fwd(' sw2=idi ('/' old=idi)? '))';
 seqUpdate       : '[' update (SEQ update)* ']';
 parUpdate       : '[' update (PAR update)* ']';
 

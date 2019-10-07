@@ -11,7 +11,7 @@ grammar SDNTopologyFormat;
 }
 
 //ts		: ( name | description | genOptions | switches | cons | ingress | egress | forwarding)* EOF;
-ts		:  name  description  genOptions  switches  cons  ingress  egress  forwarding EOF;
+ts		:  name  description?  genOptions?  switches  cons  ingress  egress  forwarding EOF;
 
 name		: {nameCount == 0}? '.name' STR {nameCount++;};
 

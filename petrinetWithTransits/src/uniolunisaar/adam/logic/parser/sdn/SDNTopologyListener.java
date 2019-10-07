@@ -10,15 +10,17 @@ import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.logic.parser.sdn.antlr.SDNTopologyFormatBaseListener;
 import uniolunisaar.adam.logic.parser.sdn.antlr.SDNTopologyFormatParser;
 import uniolunisaar.adam.tools.Logger;
+import uniolunisaar.adam.util.SDNTools;
+import static uniolunisaar.adam.util.SDNTools.egressExtension;
+import static uniolunisaar.adam.util.SDNTools.infixActPlace;
+import static uniolunisaar.adam.util.SDNTools.infixTransitionLabel;
+import static uniolunisaar.adam.util.SDNTools.ingressExtension;
 
 /**
  *
  * @author Manuel Gieseking
  */
 public class SDNTopologyListener extends SDNTopologyFormatBaseListener {
-
-    static final String infixActPlace = "fwdTo";
-    static final String infixTransitionLabel = "->";
 
     private boolean inGenOptions = false;
     private Place sw = null;
@@ -75,6 +77,7 @@ public class SDNTopologyListener extends SDNTopologyFormatBaseListener {
     public void enterSwitchT(SDNTopologyFormatParser.SwitchTContext ctx) {
         sw = pnwt.createPlace(ctx.sw().getText());
         sw.setInitialToken(1);
+        sw.putExtension(SDNTools.switchExtension, true);
     }
 
     @Override
@@ -91,6 +94,7 @@ public class SDNTopologyListener extends SDNTopologyFormatBaseListener {
     public void exitCon(SDNTopologyFormatParser.ConContext ctx) {
         Place pre = pnwt.getPlace(ctx.sw1.getText());
         Place post = pnwt.getPlace(ctx.sw2.getText());
+        t.putExtension(SDNTools.fwdExtension, true);
         addConnection(pre, t, post);
         Transition trans = pnwt.createTransition();
         trans.copyExtensions(t);
@@ -119,6 +123,8 @@ public class SDNTopologyListener extends SDNTopologyFormatBaseListener {
         pnwt.createFlow(trans, pre);
         pnwt.createFlow(trans, post);
         pnwt.createFlow(trans, act);
+        pnwt.createTransit(pre, trans, post);
+        pnwt.createTransit(post, trans, post);
         con.put(id, trans);
     }
 
@@ -135,6 +141,7 @@ public class SDNTopologyListener extends SDNTopologyFormatBaseListener {
     @Override
     public void exitIngress(SDNTopologyFormatParser.IngressContext ctx) {
         for (Place place : curSet) {
+            place.putExtension(ingressExtension, true);
             Transition t = pnwt.createTransition();
             pnwt.createFlow(place, t);
             pnwt.createFlow(t, place);
@@ -157,7 +164,7 @@ public class SDNTopologyListener extends SDNTopologyFormatBaseListener {
     @Override
     public void exitEgress(SDNTopologyFormatParser.EgressContext ctx) {
         for (Place place : curSet) {
-            place.putExtension("egress", true);
+            place.putExtension(egressExtension, true);
         }
         curSet = null;
     }
@@ -184,9 +191,7 @@ public class SDNTopologyListener extends SDNTopologyFormatBaseListener {
         if (tran == null) {
             // todo: throw a ParseException when we learned how to teach antlr to throw own exceptions on rules
             throw new RuntimeException("You added a forward rule '" + from.getId() + ".fwd(" + to.getId() + ")' of unconnected switches.");
-        }
-        pnwt.createTransit(from, tran, to);
-        pnwt.createTransit(to, tran, to);
+        }        
         // activate the transition (it's not problem to set every input place to 1, because the others are one anyhow)
         for (Place place : tran.getPreset()) {
             place.setInitialToken(1);

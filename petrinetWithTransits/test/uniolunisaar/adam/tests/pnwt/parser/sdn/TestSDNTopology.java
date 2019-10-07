@@ -86,6 +86,10 @@ public class TestSDNTopology {
             + "p1.fwd(4)\n"
             + "4.fwd(p2)";
 
+//    private static final String updateASw = "upd(p2.fwd(4))";
+//    private static final String updateAPar = "[upd(p2.fwd(4)) || upd(4.fwd(p1))]";
+//    private static final String updateASeq = "[upd(p2.fwd(4)) >> upd(4.fwd(p1))]";
+//    private static final String updateANested = "[upd(p3.fwd(p3B)) || [upd(p2.fwd(4)) >> upd(4.fwd(p1))]]";
     private static final String updateASw = "upd(p2.fwd(4))";
     private static final String updateAPar = "[upd(p2.fwd(4)) || upd(4.fwd(p1))]";
     private static final String updateASeq = "[upd(p2.fwd(4)) >> upd(4.fwd(p1))]";
@@ -119,19 +123,19 @@ public class TestSDNTopology {
     public void update() throws ParseException {
         PetriNetWithTransits pn = SDNTopologyParser.parse(topologyA, false);
 
-        Update updateSw = SDNUpdateParser.parse(pn, updateASw);
+        Update updateSw = SDNUpdateParser.parse(pn, updateASw, false);
         if (!(updateSw instanceof SwitchUpdate)) {
             Assert.fail("Should be a switch update");
         }
-        Update updatePar = SDNUpdateParser.parse(pn, updateAPar);
+        Update updatePar = SDNUpdateParser.parse(pn, updateAPar, false);
         if (!(updatePar instanceof ConcurrentUpdate)) {
             Assert.fail("Should be a concurrent update");
         }
-        Update updateSeq = SDNUpdateParser.parse(pn, updateASeq);
+        Update updateSeq = SDNUpdateParser.parse(pn, updateASeq, false);
         if (!(updateSeq instanceof SequentialUpdate)) {
             Assert.fail("Should be a concurrent update");
         }
-        Update updateNested = SDNUpdateParser.parse(pn, updateANested);
+        Update updateNested = SDNUpdateParser.parse(pn, updateANested, false);
         if (!(updateNested instanceof ConcurrentUpdate)) {
             Assert.fail("Should be a concurrent update");
         }

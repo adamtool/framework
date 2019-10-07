@@ -10,15 +10,15 @@ import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.logic.parser.sdn.antlr.SDNTopologyFormatBaseListener;
 import uniolunisaar.adam.logic.parser.sdn.antlr.SDNTopologyFormatParser;
 import uniolunisaar.adam.tools.Logger;
+import uniolunisaar.adam.util.SDNTools;
+import static uniolunisaar.adam.util.SDNTools.infixActPlace;
+import static uniolunisaar.adam.util.SDNTools.infixTransitionLabel;
 
 /**
  *
  * @author Manuel Gieseking
  */
 public class SDNTopologyListenerOptimized extends SDNTopologyFormatBaseListener {
-
-    static final String infixActPlace = "fwdTo";
-    static final String infixTransitionLabel = "->";
 
     private boolean inGenOptions = false;
     private Place sw = null;
@@ -75,6 +75,7 @@ public class SDNTopologyListenerOptimized extends SDNTopologyFormatBaseListener 
     public void enterSwitchT(SDNTopologyFormatParser.SwitchTContext ctx) {
         sw = pnwt.createPlace(ctx.sw().getText());
         sw.setInitialToken(1);
+        sw.putExtension(SDNTools.switchExtension, true);
     }
 
     @Override
@@ -109,6 +110,7 @@ public class SDNTopologyListenerOptimized extends SDNTopologyFormatBaseListener 
     @Override
     public void exitIngress(SDNTopologyFormatParser.IngressContext ctx) {
         for (Place place : curSet) {
+            place.putExtension(SDNTools.ingressExtension, true);
             Transition t = pnwt.createTransition();
             pnwt.createFlow(place, t);
             pnwt.createFlow(t, place);
@@ -131,7 +133,7 @@ public class SDNTopologyListenerOptimized extends SDNTopologyFormatBaseListener 
     @Override
     public void exitEgress(SDNTopologyFormatParser.EgressContext ctx) {
         for (Place place : curSet) {
-            place.putExtension("egress", true);
+            place.putExtension(SDNTools.egressExtension, true);
         }
         curSet = null;
     }
@@ -151,6 +153,7 @@ public class SDNTopologyListenerOptimized extends SDNTopologyFormatBaseListener 
 
         Transition tran = pnwt.createTransition();
         tran.setLabel(id);
+        tran.putExtension(SDNTools.fwdExtension, true);
 
         Place act = pnwt.createPlace(from.getId() + infixActPlace + to.getId());
 
