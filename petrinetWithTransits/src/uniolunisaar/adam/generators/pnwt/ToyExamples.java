@@ -3,6 +3,7 @@ package uniolunisaar.adam.generators.pnwt;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
+import uniolunisaar.adam.util.PNWTTools;
 
 /**
  *
@@ -70,5 +71,35 @@ public class ToyExamples {
 //        net.setName(net.getName() + "_positiv");
 //        net.removeTransit("ta", "in");
 //        net.removeTransit("tb", "mid");
+    }
+
+    public static PetriNetWithTransits createIntroductoryExample() {
+        PetriNetWithTransits net = new PetriNetWithTransits("introduction");
+        Place a = net.createPlace("a");
+        a.setInitialToken(1);
+        net.setInitialTransit(a);
+        Place b = net.createPlace("B");
+        b.setInitialToken(1);
+        net.setInitialTransit(b);
+        Place c = net.createPlace("C");
+        c.setInitialToken(1);
+        Place d = net.createPlace("D");
+        Place e = net.createPlace("E");
+        Place f = net.createPlace("F");
+        Transition t1 = net.createTransition("o1");
+        Transition t2 = net.createTransition("o2");
+        net.createFlow(a, t1);
+        net.createFlow(b, t1);
+        net.createFlow(t1, d);
+        net.createFlow(c, t2);
+        net.createFlow(d, t2);
+        net.createFlow(t2, e);
+        net.createFlow(t2, f);
+        net.createFlow(t2, b);
+        net.createTransit(a, t1, d);
+        net.createTransit(b, t1, d);
+        net.createTransit(d, t2, e, b);
+        net.createInitialTransit(t2, f);
+        return net;
     }
 }

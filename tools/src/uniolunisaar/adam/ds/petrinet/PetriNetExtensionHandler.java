@@ -143,6 +143,18 @@ public class PetriNetExtensionHandler {
         node.putExtension(AdamExtensions.yCoord.name(), id, ExtensionProperty.WRITE_TO_FILE);
     }
 
+    public static boolean isOriginal(Node node) {
+        return node.hasExtension(AdamExtensions.original.name());
+    }
+
+    public static void setOriginal(Node node) {
+        node.putExtension(AdamExtensions.original.name(), true, ExtensionProperty.WRITE_TO_FILE);
+    }
+
+    public static void removeOriginal(Node node) {
+        node.removeExtension(AdamExtensions.original.name());
+    }
+
 // %%%%%%%%%%%%%%%%%%%%%%%%% TRANSITION EXTENSIONS
     public static boolean isStrongFair(Transition t) {
         return t.hasExtension(AdamExtensions.strongFair.name());
