@@ -33,7 +33,7 @@ public class AigerRendererSafeOutStutterRegisterLogTransMaxInterleaving extends 
             file.addInput(INPUT_PREFIX + i);
         }
     }
-
+    
     @Override
     void addChosingOfValidTransitions(AigerFile file) {
         // get the ID of the logarithmic input

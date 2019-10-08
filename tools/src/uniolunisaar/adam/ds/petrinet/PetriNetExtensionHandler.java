@@ -143,6 +143,18 @@ public class PetriNetExtensionHandler {
         node.putExtension(AdamExtensions.yCoord.name(), id, ExtensionProperty.WRITE_TO_FILE);
     }
 
+    public static boolean hasBinID(Node node) {
+        return node.hasExtension(AdamExtensions.binID.name());
+    }
+
+    public static String getBinID(Node node) {
+        return (String) node.getExtension(AdamExtensions.binID.name());
+    }
+
+    public static void setBinID(Node node, String binID) {
+        node.putExtension(AdamExtensions.binID.name(), binID, ExtensionProperty.WRITE_TO_FILE);
+    }
+
     public static boolean isOriginal(Node node) {
         return node.hasExtension(AdamExtensions.original.name());
     }
