@@ -27,4 +27,11 @@ public class SequentialUpdate implements Update {
 		
 		return start;
 	}
+
+    @Override
+    public String toString() {
+        return "SequentialUpdate{" + "sequential=" + sequential + '}';
+    }
+        
+        
 }

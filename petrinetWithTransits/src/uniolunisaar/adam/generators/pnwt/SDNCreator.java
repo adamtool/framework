@@ -19,7 +19,7 @@ public class SDNCreator {
         Place updateStart = top.createPlace(SDNTools.updateStartID);
         updateStart.setInitialToken(1);
         Update up = SDNUpdateParser.parse(top, update, optimized);
-        up.addUpdate(top, updateStart);
+        up.addUpdate(top, updateStart);        
         return top;
     }
 }

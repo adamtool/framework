@@ -44,7 +44,16 @@ public class SwitchUpdate implements Update {
         if (before != null) {
             pn.createFlow(sw + SDNTools.infixActPlace + before, t.getId());
         }
-        pn.createFlow(t.getId(), sw + SDNTools.infixActPlace + after);
+        if (after != null) {
+            pn.createFlow(t.getId(), sw + SDNTools.infixActPlace + after);
+        }
         return end;
     }
+
+    @Override
+    public String toString() {
+        return "SwitchUpdate{" + "sw=" + sw + ", before=" + before + ", after=" + after + '}';
+    }
+    
+    
 }
