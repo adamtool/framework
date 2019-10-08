@@ -61,19 +61,21 @@ public class SDNUpdateListenerOptimized extends SDNUpdateListener {
                 pnwt.createTransit(to, tran, to);
             }
         }
-//        SwitchUpdate up = null;
-//        System.out.println("switch update " + from.getId() + " " + to.getId());
-//        for (Transition t : from.getPostset()) {            // find the activated transition
-//            for (Place place : t.getPreset()) {
-//                System.out.println(place.getId());
-//                if (place.getId().contains(infixActPlace) && pnwt.getInitialMarking().getToken(place).getValue() > 0) {
-//                    System.out.println("drin");
-//
-//                    up = new SwitchUpdate(from.getId(), place.getId(), to.getId());
-//                    break;
-//                }
-//            }
-//        }
+
+        // check if old connection existed
+        if (old != null) {
+            boolean conEx = false;
+            Set<Transition> pre = old.getPreset();
+            for (Transition t : from.getPostset()) {
+                if (pre.contains(t)) {
+                    conEx = true;
+                }
+            }
+            if (!conEx) {
+                // todo: throw a ParseException when we learned how to teach antlr to throw own exceptions on rules
+                throw new RuntimeException("You wanted to update the connection '" + from.getId() + ".fwd(" + old.getId() + ")'. But this connection hadn't existed.");
+            }
+        }
         SwitchUpdate up;
         if (old == null) {
             up = new SwitchUpdate(from.getId(), (to == null) ? null : to.getId());

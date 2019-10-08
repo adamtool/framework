@@ -153,6 +153,7 @@ public class SDNTopologyListenerOptimized extends SDNTopologyFormatBaseListener 
 
         Transition tran = pnwt.createTransition();
         tran.setLabel(id);
+        pnwt.setWeakFair(tran);
         tran.putExtension(SDNTools.fwdExtension, true);
 
         Place act = pnwt.createPlace(from.getId() + infixActPlace + to.getId());

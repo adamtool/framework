@@ -12,9 +12,9 @@ import uniolunisaar.adam.util.SDNTools;
  */
 public class SwitchUpdate implements Update {
 
-    String sw;
-    String before = null;
-    String after;
+    private final String sw;
+    private String before = null;
+    private final String after;
 
     /**
      * For the case that there wasn't any forwarding rule for this switch
@@ -53,7 +53,6 @@ public class SwitchUpdate implements Update {
     @Override
     public String toString() {
         return "SwitchUpdate{" + "sw=" + sw + ", before=" + before + ", after=" + after + '}';
-    }
-    
+    }   
     
 }

@@ -105,6 +105,7 @@ public class SDNTopologyListener extends SDNTopologyFormatBaseListener {
     private void addConnection(Place pre, Transition trans, Place post) {
         String id = pre.getId() + infixTransitionLabel + post.getId();
         trans.setLabel(id);
+        pnwt.setWeakFair(trans);
         // if we only use one transition for connecting switches, we could get a unique commutative id by lexicographical ordering
 //        String id;
 //        if (pre.getId().compareTo(post.getId()) > 0) {

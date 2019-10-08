@@ -14,7 +14,7 @@ import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
  */
 public class ConcurrentUpdate implements Update {
 
-    Set<Update> concurrent;
+    private final Set<Update> concurrent;
 
     public ConcurrentUpdate(Set<Update> setOfUpdates) {
         concurrent = setOfUpdates;
