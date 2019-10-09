@@ -1,11 +1,10 @@
 package uniolunisaar.adam.logic.transformers.pn2aiger;
 
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.circuits.AigerFile;
+import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 
 /**
  *
@@ -13,43 +12,45 @@ import uniolunisaar.adam.ds.circuits.AigerFile;
  */
 public class AigerRendererSafeOutStutterRegisterLogTransMaxInterleaving extends AigerRendererSafeOutStutterRegisterMaxInterleaving {
 
-    private final Map<Transition, Integer> transIDs;
+    public final static String BIN_COD_ID = "#bin#_";
 
     public AigerRendererSafeOutStutterRegisterLogTransMaxInterleaving(PetriNet net) {
         super(net);
-        transIDs = new HashMap<>(net.getTransitions().size());
+        // Give unique binary ids for the transitions        
+        int digits = Integer.toBinaryString(net.getTransitions().size() - 1).length();
         int id = 0;
         for (Iterator<Transition> iterator = net.getTransitions().iterator(); iterator.hasNext();) {
             Transition t = iterator.next();
-            transIDs.put(t, id++);
+            // code the ID
+            String bin = Integer.toBinaryString(id++);      
+            bin = String.format("%" + digits + "s", bin).replace(' ', '0');
+            PetriNetExtensionHandler.setBinID(t, bin);
         }
     }
 
     @Override
     void addInputs(AigerFile file) {
         // add log(|T|) input to code the transitions logarithmically
-        int size = (int) (Math.log(net.getTransitions().size()) / Math.log(2)) + 1;
+//        int size = (int) (Math.log(net.getTransitions().size()) / Math.log(2)) + 1;
+        int size = Integer.toBinaryString(net.getTransitions().size() - 1).length();
         for (int i = 0; i < size; i++) {
-            file.addInput(INPUT_PREFIX + i);
+            file.addInput(INPUT_PREFIX + BIN_COD_ID + i);
         }
     }
-    
+
     @Override
     void addChosingOfValidTransitions(AigerFile file) {
         // get the ID of the logarithmic input
-        int digits = Integer.toBinaryString(net.getTransitions().size() - 1).length();
         for (Iterator<Transition> iterator = net.getTransitions().iterator(); iterator.hasNext();) {
             Transition t = iterator.next();
-            // code the ID
-            String bin = Integer.toBinaryString(transIDs.get(t));
-            bin = String.format("%" + digits + "s", bin).replace(' ', '0');
+            String bin = PetriNetExtensionHandler.getBinID(t);
             String[] gates = new String[bin.length() + 1];
             for (int i = 0; i < bin.length(); i++) {
                 char var = bin.charAt(i);
                 if (var == '0') {
-                    gates[i] = "!" + INPUT_PREFIX + i;
+                    gates[i] = "!" + INPUT_PREFIX + BIN_COD_ID + i;
                 } else {
-                    gates[i] = INPUT_PREFIX + i;
+                    gates[i] = INPUT_PREFIX + BIN_COD_ID + i;
                 }
             }
             // the transition is only true if it is also enabled
