@@ -27,13 +27,13 @@ public class Circuit {
             case OUTGOING:
                 return new AigerRendererSafeOut(net);
             case OUTGOING_REGISTER:
-                return new AigerRendererSafeOutStutterRegister(net);
+                return new AigerRendererSafeOutStutterRegister(net, false);
             case OUTGOING_REGISTER_BIN_TRANS:
-                return new AigerRendererSafeOutStutterRegisterLogTrans(net);
+                return new AigerRendererSafeOutStutterRegisterLogTrans(net, false);
             case OUTGOING_REGISTER_MAX_INTERLEAVING:
-                return new AigerRendererSafeOutStutterRegisterMaxInterleaving(net);
+                return new AigerRendererSafeOutStutterRegister(net, true);
             case OUTGOING_REGISTER_BIN_TRANS_MAX_INTERLEAVING:
-                return new AigerRendererSafeOutStutterRegisterLogTransMaxInterleaving(net);
+                return new AigerRendererSafeOutStutterRegisterLogTrans(net, true);
         }
         throw new RuntimeException("The case " + renderer + " is not yet implemented.");
     }

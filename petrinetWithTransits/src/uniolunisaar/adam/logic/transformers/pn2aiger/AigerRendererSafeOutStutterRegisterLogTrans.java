@@ -14,8 +14,8 @@ public class AigerRendererSafeOutStutterRegisterLogTrans extends AigerRendererSa
 
     public final static String BIN_COD_ID = "#bin#_";
 
-    public AigerRendererSafeOutStutterRegisterLogTrans(PetriNet net) {
-        super(net);
+    public AigerRendererSafeOutStutterRegisterLogTrans(PetriNet net, boolean max) {
+        super(net, max);
         // Give unique binary ids for the transitions        
         int digits = Integer.toBinaryString(net.getTransitions().size() - 1).length();
         int id = 0;

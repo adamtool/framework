@@ -9,7 +9,7 @@ import uniolunisaar.adam.ds.circuits.AigerFile;
 import static uniolunisaar.adam.ds.circuits.AigerFile.NEW_VALUE_OF_LATCH_SUFFIX;
 import uniolunisaar.adam.ds.circuits.AigerFileOptimizedGates;
 import uniolunisaar.adam.ds.circuits.AigerFileOptimizedGatesAndIndizes;
-import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
+import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 
 /**
  *
@@ -107,9 +107,7 @@ public class AigerRenderer {
         String[] inputs = new String[preset.size()];
         int i = 0;
         for (Flow e : preset) {
-            //todo: change this (either add a  intermediate class PetriNetWithInhibitor or have an more general extensionhandler which is accessable outside)
-            PetriNetWithTransits game = new PetriNetWithTransits("buf");
-            if (game.isInhibitor(e)) {
+            if (PetriNetExtensionHandler.isInhibitor(e)) {
                 inputs[i++] = "!" + e.getPlace().getId();
             } else {
                 inputs[i++] = e.getPlace().getId();

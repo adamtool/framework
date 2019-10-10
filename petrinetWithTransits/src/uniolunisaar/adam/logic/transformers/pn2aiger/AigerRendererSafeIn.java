@@ -3,7 +3,8 @@ package uniolunisaar.adam.logic.transformers.pn2aiger;
 import uniol.apt.adt.pn.PetriNet;
 
 /**
- *
+ * Not yet done, right?
+ * 
  * @author Manuel Gieseking
  */
 public class AigerRendererSafeIn extends AigerRenderer {

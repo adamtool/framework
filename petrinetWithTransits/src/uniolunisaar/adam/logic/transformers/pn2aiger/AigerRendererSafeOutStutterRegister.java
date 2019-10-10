@@ -13,9 +13,14 @@ import static uniolunisaar.adam.ds.circuits.AigerFile.NEW_VALUE_OF_LATCH_SUFFIX;
 public class AigerRendererSafeOutStutterRegister extends AigerRenderer {
 
     public static final String STUTT_LATCH = "#stutt#";
+    private final boolean max;
+    private final boolean asError = false;
+//    private final boolean asError = true; // currently there is still an error for the binary coding, but didn't seem 
+                                           // to make such a difference anyhow.
 
-    public AigerRendererSafeOutStutterRegister(PetriNet net) {
+    public AigerRendererSafeOutStutterRegister(PetriNet net, boolean max) {
         super(net);
+        this.max = max;
     }
 
     public String renderToString() {
@@ -65,8 +70,13 @@ public class AigerRendererSafeOutStutterRegister extends AigerRenderer {
     void setOutputs(AigerFile file) {
         // init latch is the old value
         file.copyValues(OUTPUT_PREFIX + INIT_LATCH, INIT_LATCH);
-        // for stuttering it is the old value
-        file.copyValues(OUTPUT_PREFIX + STUTT_LATCH, STUTT_LATCH);
+        if (!asError) {
+            // for stuttering it is the old value
+            file.copyValues(OUTPUT_PREFIX + STUTT_LATCH, STUTT_LATCH);
+        } else {
+            // for the error case it is the new value
+            file.copyValues(OUTPUT_PREFIX + STUTT_LATCH, STUTT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX);
+        }
         // the valid transitions are already the output (initially it is not important what the output is)
         for (Transition t : net.getTransitions()) {
             file.copyValues(OUTPUT_PREFIX + t.getId(), VALID_TRANSITION_PREFIX + t.getId());
@@ -82,8 +92,19 @@ public class AigerRendererSafeOutStutterRegister extends AigerRenderer {
     }
 
     void updateStuttering(AigerFile file) {
-        // old version: setting stutt =1 iff several transition are chosen or a not enable transition is chosen
-        //              not for when the input is all Zero
+        if (!max) {
+            if (asError) { // it's an error iff the input was not false
+                String[] inputs = new String[net.getTransitions().size()];
+                int i = 0;
+                for (String id : file.getInputNames()) {
+                    inputs[i++] = "!" + id;
+                }
+                file.addGate("inputAllZero", inputs);
+                file.addGate(STUTT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX + "buf", "!inputAllZero", ALL_TRANS_FALSE);
+                file.addGate(STUTT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX, INIT_LATCH, STUTT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX + "buf");
+            } else {
+                // old version: setting stutt =1 iff several transition are chosen or a not enable transition is chosen
+                //              not for when the input is all Zero
 //        String[] inputs = new String[net.getTransitions().size()];
 //        int i = 0;
 //        for (Transition t : net.getTransitions()) {
@@ -91,6 +112,20 @@ public class AigerRendererSafeOutStutterRegister extends AigerRenderer {
 //        }        
 //        file.addGate(STUTT_LATCH + "_buf", inputs);
 //        file.addGate(STUTT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX, ALL_TRANS_NOT_TRUE, "!" + STUTT_LATCH + "_buf");
-        file.addGate(STUTT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX, INIT_LATCH, ALL_TRANS_FALSE);
+                file.addGate(STUTT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX, INIT_LATCH, ALL_TRANS_FALSE);
+            }
+        } else {
+            // here the error version is exactly the stuttering version since the maximality is done here.            
+            // old version: setting stutt =1 iff several transition are chosen or a not enable transition is chosen
+            //              not for when the input is all Zero
+            String[] inputs = new String[net.getTransitions().size()];
+            int i = 0;
+            for (Transition t : net.getTransitions()) {
+                inputs[i++] = "!" + ENABLED_PREFIX + t.getId();
+            }
+            file.addGate(STUTT_LATCH + "_buf", inputs);
+            file.addGate(STUTT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX, ALL_TRANS_FALSE, "!" + STUTT_LATCH + "_buf");
+//        file.addGate(STUTT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX, INIT_LATCH, ALL_TRANS_NOT_TRUE);
+        }
     }
 }

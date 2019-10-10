@@ -212,4 +212,7 @@ public abstract class AigerFile {
         return latches;
     }
 
+    public Set<String> getInputNames() {
+        return inputs.keySet();
+    }
 }
