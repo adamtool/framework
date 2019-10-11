@@ -40,7 +40,7 @@ public class AigerRendererSafeOut extends AigerRenderer {
     }
 
     @Override
-    void setOutputs(AigerFile file) {
+    protected void setOutputs(AigerFile file) {
         // the valid transitions are already the output in the case that it is not init
         for (Transition t : net.getTransitions()) {
             file.addGate(OUTPUT_PREFIX + t.getId(), INIT_LATCH, VALID_TRANSITION_PREFIX + t.getId());

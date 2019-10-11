@@ -14,7 +14,7 @@ public class AigerRendererSafeOutStutterRegister extends AigerRenderer {
 
     public static final String STUTT_LATCH = "#stutt#";
     private final boolean max;
-    private final boolean asError = false;
+    protected final boolean asError = false;
 //    private final boolean asError = true; // currently there is still an error for the binary coding, but didn't seem 
                                            // to make such a difference anyhow.
 
@@ -51,14 +51,14 @@ public class AigerRendererSafeOutStutterRegister extends AigerRenderer {
     }
 
     @Override
-    void addLatches(AigerFile file) {
+    protected void addLatches(AigerFile file) {
         super.addLatches(file);
         // add the stuttering latch
         file.addLatch(STUTT_LATCH);
     }
 
     @Override
-    void addOutputs(AigerFile file) {
+    protected void addOutputs(AigerFile file) {
         super.addOutputs(file);
         // add the init latch as output
         file.addOutput(OUTPUT_PREFIX + INIT_LATCH);
@@ -67,7 +67,7 @@ public class AigerRendererSafeOutStutterRegister extends AigerRenderer {
     }
 
     @Override
-    void setOutputs(AigerFile file) {
+    protected void setOutputs(AigerFile file) {
         // init latch is the old value
         file.copyValues(OUTPUT_PREFIX + INIT_LATCH, INIT_LATCH);
         if (!asError) {

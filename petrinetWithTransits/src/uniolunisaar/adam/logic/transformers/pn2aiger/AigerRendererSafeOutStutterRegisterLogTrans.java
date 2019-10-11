@@ -29,7 +29,7 @@ public class AigerRendererSafeOutStutterRegisterLogTrans extends AigerRendererSa
     }
 
     @Override
-    void addInputs(AigerFile file) {
+    protected void addInputs(AigerFile file) {
         // add log(|T|) input to code the transitions logarithmically
 //        int size1 = (int) (Math.log(net.getTransitions().size()) / Math.log(2)) + 1;
         int size = Integer.toBinaryString(net.getTransitions().size() - 1).length();
@@ -39,7 +39,7 @@ public class AigerRendererSafeOutStutterRegisterLogTrans extends AigerRendererSa
     }
 
     @Override
-    void addChosingOfValidTransitions(AigerFile file) {
+    protected void addChosingOfValidTransitions(AigerFile file) {
         // get the ID of the logarithmic input
         for (Iterator<Transition> iterator = net.getTransitions().iterator(); iterator.hasNext();) {
             Transition t = iterator.next();

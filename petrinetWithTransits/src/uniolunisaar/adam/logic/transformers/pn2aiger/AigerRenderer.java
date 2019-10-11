@@ -60,7 +60,7 @@ public class AigerRenderer {
      * @param file
      * @param net
      */
-    void addInputs(AigerFile file) {
+    protected void addInputs(AigerFile file) {
         // Add an input for all transitions
         for (Transition t : net.getTransitions()) {
             file.addInput(INPUT_PREFIX + t.getId());
@@ -73,7 +73,7 @@ public class AigerRenderer {
      * @param file
      * @param net
      */
-    void addLatches(AigerFile file) {
+    protected void addLatches(AigerFile file) {
         // Add the latches
         // initialization latch
         file.addLatch(INIT_LATCH);
@@ -89,7 +89,7 @@ public class AigerRenderer {
      * @param file
      * @param net
      */
-    void addOutputs(AigerFile file) {
+    protected void addOutputs(AigerFile file) {
         //Add outputs
         // for the places
         for (Place p : net.getPlaces()) {
@@ -117,14 +117,14 @@ public class AigerRenderer {
         return outId;
     }
 
-    void addEnablednessOfTransitions(AigerFile file) {
+    private void addEnablednessOfTransitions(AigerFile file) {
         // Create the general circuits for getting the enabledness of a transition
         for (Transition t : net.getTransitions()) {
             addEnabled(file, t);
         }
     }
 
-    void addChosingOfValidTransitions(AigerFile file) {
+    protected void addChosingOfValidTransitions(AigerFile file) {
         //%%%%%%%%%%%%% Create the output for the transitions
         // Choose that only one transition at a time can be fired
         //
@@ -146,7 +146,7 @@ public class AigerRenderer {
         }
     }
 
-    void addUpdateInitLatch(AigerFile file) {
+    private void addUpdateInitLatch(AigerFile file) {
         // Update the init flag just means set it to true
         file.copyValues(INIT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX, AigerFile.TRUE);
     }
@@ -193,7 +193,7 @@ public class AigerRenderer {
         return id;
     }
 
-    void addSuccessors(AigerFile file) {
+    private void addSuccessors(AigerFile file) {
         // needed for createSuccessor
         addNegationOfAllTransitions(file);
 
@@ -218,7 +218,7 @@ public class AigerRenderer {
         }
     }
 
-    void setOutputs(AigerFile file) {
+    protected void setOutputs(AigerFile file) {
         // the valid transitions are already the output in the case that it is not init
         for (Transition t : net.getTransitions()) {
             file.addGate(OUTPUT_PREFIX + t.getId(), INIT_LATCH, VALID_TRANSITION_PREFIX + t.getId());
@@ -307,6 +307,10 @@ public class AigerRenderer {
 
     public OptimizationsComplete getMCHyperResultOptimizations() {
         return optimizationsComplete;
+    }
+
+    public PetriNet getNet() {
+        return net;
     }
 
     /**
