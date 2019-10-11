@@ -11,9 +11,9 @@ import static uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer.OUTPUT
  *
  * @author Manuel Gieseking
  */
-public class AigerRendererSafeOutStutterRegisterLogTransFireability extends AigerRendererSafeOutStutterRegisterLogTrans {
+public class AigerRendererSafeOutStutterRegisterFireability extends AigerRendererSafeOutStutterRegister {
 
-    public AigerRendererSafeOutStutterRegisterLogTransFireability(PetriNet net, boolean max) {
+    public AigerRendererSafeOutStutterRegisterFireability(PetriNet net, boolean max) {
         super(net, max);
     }
 

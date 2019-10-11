@@ -1,7 +1,10 @@
 package uniolunisaar.adam.logic.transformers.pn2aiger;
 
 import uniol.apt.adt.pn.PetriNet;
+import uniolunisaar.adam.logic.transformers.pn2aiger.mcc.AigerRendererSafeOutStutterRegisterFireability;
 import uniolunisaar.adam.logic.transformers.pn2aiger.mcc.AigerRendererSafeOutStutterRegisterLogTransFireability;
+import uniolunisaar.adam.logic.transformers.pn2aiger.mcc.AigerRendererSafeOutStutterRegisterLogTransOnlyPlaces;
+import uniolunisaar.adam.logic.transformers.pn2aiger.mcc.AigerRendererSafeOutStutterRegisterOnlyPlaces;
 
 /**
  *
@@ -20,7 +23,18 @@ public class Circuit {
         // logarithmic
         OUTGOING_REGISTER_BIN_TRANS,
         OUTGOING_REGISTER_BIN_TRANS_MAX_INTERLEAVING,
+        // %%%%%% onlyPlaces
+        // explicit
+        OUTGOING_REGISTER_ONLYPLACES,
+        OUTGOING_REGISTER_ONLYPLACES_MAX_INTERLEAVING,
+        // logarithmic
+        OUTGOING_REGISTER_ONLYPLACES_BIN_TRANS,
+        OUTGOING_REGISTER_ONLYPLACES_BIN_TRANS_MAX_INTERLEAVING,
         // %%%%%% fireability
+        // explicit
+        OUTGOING_REGISTER_FIREABILITY,
+        OUTGOING_REGISTER_FIREABILITY_MAX_INTERLEAVING,
+        // logarithmic
         OUTGOING_REGISTER_FIREABILITY_BIN_TRANS,
         OUTGOING_REGISTER_FIREABILITY_BIN_TRANS_MAX_INTERLEAVING
     }
@@ -41,6 +55,18 @@ public class Circuit {
                 return new AigerRendererSafeOutStutterRegisterLogTrans(net, false);
             case OUTGOING_REGISTER_BIN_TRANS_MAX_INTERLEAVING:
                 return new AigerRendererSafeOutStutterRegisterLogTrans(net, true);
+            case OUTGOING_REGISTER_ONLYPLACES:
+                return new AigerRendererSafeOutStutterRegisterOnlyPlaces(net, false);
+            case OUTGOING_REGISTER_ONLYPLACES_MAX_INTERLEAVING:
+                return new AigerRendererSafeOutStutterRegisterOnlyPlaces(net, true);
+            case OUTGOING_REGISTER_ONLYPLACES_BIN_TRANS:
+                return new AigerRendererSafeOutStutterRegisterLogTransOnlyPlaces(net, false);
+            case OUTGOING_REGISTER_ONLYPLACES_BIN_TRANS_MAX_INTERLEAVING:
+                return new AigerRendererSafeOutStutterRegisterLogTransOnlyPlaces(net, true);
+            case OUTGOING_REGISTER_FIREABILITY:
+                return new AigerRendererSafeOutStutterRegisterFireability(net, false);
+            case OUTGOING_REGISTER_FIREABILITY_MAX_INTERLEAVING:
+                return new AigerRendererSafeOutStutterRegisterFireability(net, true);
             case OUTGOING_REGISTER_FIREABILITY_BIN_TRANS:
                 return new AigerRendererSafeOutStutterRegisterLogTransFireability(net, false);
             case OUTGOING_REGISTER_FIREABILITY_BIN_TRANS_MAX_INTERLEAVING:

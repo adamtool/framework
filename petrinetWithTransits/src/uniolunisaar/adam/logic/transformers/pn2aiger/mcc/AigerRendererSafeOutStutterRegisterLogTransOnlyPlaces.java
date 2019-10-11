@@ -2,7 +2,7 @@ package uniolunisaar.adam.logic.transformers.pn2aiger.mcc;
 
 import uniolunisaar.adam.logic.transformers.pn2aiger.*;
 import uniol.apt.adt.pn.PetriNet;
-import uniol.apt.adt.pn.Transition;
+import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.circuits.AigerFile;
 import static uniolunisaar.adam.ds.circuits.AigerFile.NEW_VALUE_OF_LATCH_SUFFIX;
 import static uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer.OUTPUT_PREFIX;
@@ -11,17 +11,17 @@ import static uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer.OUTPUT
  *
  * @author Manuel Gieseking
  */
-public class AigerRendererSafeOutStutterRegisterLogTransFireability extends AigerRendererSafeOutStutterRegisterLogTrans {
+public class AigerRendererSafeOutStutterRegisterLogTransOnlyPlaces extends AigerRendererSafeOutStutterRegisterLogTrans {
 
-    public AigerRendererSafeOutStutterRegisterLogTransFireability(PetriNet net, boolean max) {
+    public AigerRendererSafeOutStutterRegisterLogTransOnlyPlaces(PetriNet net, boolean max) {
         super(net, max);
     }
 
     @Override
     protected void addOutputs(AigerFile file) {
-        // here only the transitions are relevant
-        for (Transition t : getNet().getTransitions()) {
-            file.addOutput(OUTPUT_PREFIX + "{" + t.getId() + ">");
+        // here we are only interested in the places
+        for (Place p : getNet().getPlaces()) {
+            file.addOutput(OUTPUT_PREFIX + p.getId());
         }
         // add the init latch as output
         file.addOutput(OUTPUT_PREFIX + INIT_LATCH);
@@ -40,9 +40,13 @@ public class AigerRendererSafeOutStutterRegisterLogTransFireability extends Aige
             // for the error case it is the new value
             file.copyValues(OUTPUT_PREFIX + STUTT_LATCH, STUTT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX);
         }
-        // output the enabledness of the transitions
-        for (Transition t : getNet().getTransitions()) {
-            file.copyValues(OUTPUT_PREFIX + "{" + t.getId() + ">", ENABLED_PREFIX + t.getId());
+        // if it is not the initial step
+        // the place outputs are the saved output of the place latches
+        // otherwise it is the new value of the places
+        for (Place p : getNet().getPlaces()) {
+            file.addGate(OUTPUT_PREFIX + p.getId() + "_bufA", "!" + INIT_LATCH, "!" + p.getId() + NEW_VALUE_OF_LATCH_SUFFIX);
+            file.addGate(OUTPUT_PREFIX + p.getId() + "_bufB", INIT_LATCH, "!" + p.getId());
+            file.addGate(OUTPUT_PREFIX + p.getId(), "!" + OUTPUT_PREFIX + p.getId() + "_bufA", "!" + OUTPUT_PREFIX + p.getId() + "_bufB");
         }
     }
 
