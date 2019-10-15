@@ -71,7 +71,6 @@ public class Circuit {
             case OUTGOING_REGISTER_FIREABILITY_BIN_TRANS:
                 return new AigerRendererSafeOutStutterRegisterLogTransFireability(net, false);
             case OUTGOING_REGISTER_FIREABILITY_BIN_TRANS_MAX_INTERLEAVING:
-                Logger.getInstance().addMessage("OUTGOING_REGISTER_FIREABILITY_BIN_TRANS_MAX_INTERLEAVING is used", false);
                 return new AigerRendererSafeOutStutterRegisterLogTransFireability(net, true);
         }
         throw new RuntimeException("The case " + renderer + " is not yet implemented.");
