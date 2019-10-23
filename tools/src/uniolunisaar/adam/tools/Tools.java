@@ -157,7 +157,7 @@ public class Tools {
     public static void saveFile(String path, String content, boolean append) throws FileNotFoundException {
         try (PrintStream out = new PrintStream(new FileOutputStream(path, append))) {
             out.println(content);
-            Logger.getInstance().addMessage("Saved to: " + path, false);
+            Logger.getInstance().addMessage("Saved to: " + path);
         }
     }
 
