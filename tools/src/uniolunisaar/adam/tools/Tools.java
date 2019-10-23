@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.commons.io.FileUtils;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.analysis.bounded.Bounded;
@@ -169,8 +170,8 @@ public class Tools {
     }
 
     public static String readFile(String path) throws IOException {
-//        return FileUtils.readFileToString(new File(path));
-        return IOUtils.readFileToString(new File(path));
+        return FileUtils.readFileToString(new File(path));
+//        return IOUtils.readFileToString(new File(path));  // this currently has a problem for the sdn topology parser
     }
 
     public static void deleteFile(String path) {
