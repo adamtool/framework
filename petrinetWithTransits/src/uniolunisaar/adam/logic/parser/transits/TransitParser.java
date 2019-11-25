@@ -19,22 +19,24 @@ import uniolunisaar.adam.logic.parser.transits.antlr.TransitFormatParser;
 public class TransitParser {
 
     public static List<Transit> parse(PetriNetWithTransits net, Transition t, String flows) throws ParseException {
+
+        TransitFormatLexer lexer = new TransitFormatLexer(new ANTLRInputStream(flows));
+
+        // Get a list of matched tokens
+        CommonTokenStream tokens = new CommonTokenStream(lexer);
+
+        // Pass the tokens to the parser
+        TransitFormatParser parser = new TransitFormatParser(tokens);
+
+        ParsingUtils.handleErrors(lexer, parser, true);
+        TransitListener listener;
+        TransitFormatParser.TflContext context;
         try {
-            TransitFormatLexer lexer = new TransitFormatLexer(new ANTLRInputStream(flows));
-
-            // Get a list of matched tokens
-            CommonTokenStream tokens = new CommonTokenStream(lexer);
-
-            // Pass the tokens to the parser
-            TransitFormatParser parser = new TransitFormatParser(tokens);
-
-            ParsingUtils.handleErrors(lexer, parser, true);
-
             // Specify our entry point
-            TransitFormatParser.TflContext context = parser.tfl();
+            context = parser.tfl();
 
             // Walk it and attach our listener
-            TransitListener listener = new TransitListener(net, t);
+            listener = new TransitListener(net, t, parser);
             ParsingUtils.walk(listener, context);
             return listener.getTokenflows();
         } catch (LineParseException e) {

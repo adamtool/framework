@@ -167,6 +167,14 @@ public class PetriNetWithTransits extends PetriNet {
             for (Node post : postset) {
                 createFlow(newNode.getId(), post.getId());
             }
+            
+            //is initially marked?
+            Marking initM = getInitialMarking();
+            long val = initM.getToken(n.getId()).getValue();
+            if (val > 0) {
+                newNode.setInitialToken(val);
+            }
+            
             // copy the tokenflows
             // postset flows
             for (Transition t : p.getPostset()) {
@@ -193,12 +201,6 @@ public class PetriNetWithTransits extends PetriNet {
                         tfl.addPostsetPlace(newNode);
                     }
                 }
-            }
-            //is initially marked?
-            Marking init = getInitialMarking();
-            long val = init.getToken(n.getId()).getValue();
-            if (val > 0) {
-                p.setInitialToken(val);
             }
 
             // now delete

@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import org.antlr.v4.runtime.tree.ParseTreeProperty;
+import uniol.apt.adt.exception.NoSuchNodeException;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
@@ -18,16 +19,19 @@ import uniolunisaar.adam.logic.parser.transits.antlr.TransitFormatParser;
  */
 public class TransitListener extends TransitFormatBaseListener {
 
-    private final ParseTreeProperty<Set<String>> sets = new ParseTreeProperty<>();
-    private Set<String> curSet;
+    private final ParseTreeProperty<Set<Place>> sets = new ParseTreeProperty<>();
+    private Set<Place> curSet;
 
     private final Transition t;
     private final PetriNetWithTransits net;
     private final List<Transit> tokenflows;
 
-    public TransitListener(PetriNetWithTransits net, Transition t) {
+    private final TransitFormatParser parser;
+
+    public TransitListener(PetriNetWithTransits net, Transition t, TransitFormatParser parser) {
         this.t = t;
         this.net = net;
+        this.parser = parser;
         tokenflows = new ArrayList<>();
     }
 
@@ -45,24 +49,25 @@ public class TransitListener extends TransitFormatBaseListener {
     @Override
     public void exitObj(TransitFormatParser.ObjContext ctx) {
         if (curSet != null) {
-            this.curSet.add(ctx.id.getText());
+            try {
+                this.curSet.add(net.getPlace(ctx.id.getText()));
+            } catch (NoSuchNodeException e) {
+                parser.notifyErrorListeners(ctx.start, e.getMessage(), ctx.exception);
+            }
         }
     }
 
     @Override
     public void exitFlow(TransitFormatParser.FlowContext ctx) {
-        Set<String> postSet = this.sets.get(ctx.postset);
+        Set<Place> postSet = this.sets.get(ctx.postset);
         Place[] postset = new Place[postSet.size()];
-        int i = 0;
-        for (String id : postSet) {
-            postset[i] = net.getPlace(id);
-            ++i;
-        }
+        postset = postSet.toArray(postset);
         if (ctx.preset.GR() != null) {
             tokenflows.add(net.createInitialTransit(t, postset));
         } else if (ctx.preset.obj() != null) {
             tokenflows.add(net.createTransit(net.getPlace(ctx.preset.obj().getText()), t, postset));
         }
+
     }
 
     public List<Transit> getTokenflows() {
