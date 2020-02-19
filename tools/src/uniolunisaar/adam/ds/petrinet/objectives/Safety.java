@@ -10,7 +10,7 @@ import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
  *
  * @author Manuel Gieseking
  */
-public class Safety extends Condition {
+public class Safety extends Condition<Safety> {
 
     private final Set<Place> badPlaces;
     private boolean existential;

@@ -10,7 +10,7 @@ import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
  *
  * @author Manuel Gieseking
  */
-public class Buchi extends Condition {
+public class Buchi extends Condition<Buchi> {
 
     private final Set<Place> buchiPlaces;
     private boolean existential;

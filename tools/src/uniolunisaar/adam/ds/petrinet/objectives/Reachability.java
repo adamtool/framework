@@ -10,7 +10,7 @@ import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
  *
  * @author Manuel Gieseking
  */
-public class Reachability extends Condition {
+public class Reachability extends Condition<Reachability> {
 
     private final Set<Place> places2Reach;
     private boolean existential;

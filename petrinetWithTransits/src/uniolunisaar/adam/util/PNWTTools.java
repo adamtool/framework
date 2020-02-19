@@ -54,7 +54,7 @@ public class PNWTTools {
     public static Condition.Objective parseConditionFromNetExtensionText(PetriNetWithTransits net) throws CouldNotFindSuitableConditionException {
         if (hasConditionAnnotation(net)) {
             try {
-                // todo: this is only for the fallback to the just-sythesis-version.
+                // todo: this is only for the fallback to the just-synthesis-version.
                 String con;
                 if (net.hasExtension(AdamExtensions.winningCondition.name())) {
                     con = (String) net.getExtension(AdamExtensions.winningCondition.name());
