@@ -31,6 +31,7 @@ public class Safety extends Condition<Safety> {
 
     @Override
     public void buffer(PetriNet net) {
+        badPlaces.clear();
         for (Place place : net.getPlaces()) {
             if (PetriNetExtensionHandler.isBad(place)) {
                 badPlaces.add(place);
@@ -58,6 +59,11 @@ public class Safety extends Condition<Safety> {
     @Override
     public Safety getCopy() {
         return new Safety(this);
+    }
+
+    @Override
+    public Safety newObject() {
+        return new Safety();
     }
 
 }

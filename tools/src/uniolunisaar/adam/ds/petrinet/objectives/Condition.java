@@ -28,4 +28,5 @@ public abstract class Condition<W extends Condition<W>> {
 //    public abstract <W extends Condition> W getCopy();
 //    public abstract Condition getCopy();
     public abstract W getCopy();
+    public abstract W newObject();
 }

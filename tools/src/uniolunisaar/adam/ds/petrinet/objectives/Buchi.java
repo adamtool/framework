@@ -31,6 +31,7 @@ public class Buchi extends Condition<Buchi> {
 
     @Override
     public void buffer(PetriNet net) {
+        buchiPlaces.clear();
         for (Place place : net.getPlaces()) {
             if (PetriNetExtensionHandler.isBuchi(place)) {
                 buchiPlaces.add(place);
@@ -54,6 +55,11 @@ public class Buchi extends Condition<Buchi> {
     @Override
     public Buchi getCopy() {
         return new Buchi(this);
+    }
+
+    @Override
+    public Buchi newObject() {
+        return new Buchi();
     }
 
 }

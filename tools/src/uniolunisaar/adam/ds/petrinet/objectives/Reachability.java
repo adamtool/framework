@@ -31,6 +31,7 @@ public class Reachability extends Condition<Reachability> {
 
     @Override
     public void buffer(PetriNet net) {
+        places2Reach.clear();
         for (Place place : net.getPlaces()) {
             if (PetriNetExtensionHandler.isReach(place)) {
                 places2Reach.add(place);
@@ -54,6 +55,11 @@ public class Reachability extends Condition<Reachability> {
     @Override
     public Reachability getCopy() {
         return new Reachability(this);
+    }
+
+    @Override
+    public Reachability newObject() {
+        return new Reachability();
     }
 
 }
