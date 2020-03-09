@@ -23,6 +23,7 @@ import uniolunisaar.adam.ds.petrinet.objectives.Condition;
 import uniolunisaar.adam.exceptions.pnwt.InconsistencyException;
 import uniolunisaar.adam.exceptions.pnwt.NoSuchTransitException;
 import uniolunisaar.adam.exceptions.pnwt.NotInitialPlaceException;
+import uniolunisaar.adam.util.PNTools;
 import uniolunisaar.adam.util.PNWTTools;
 
 /**
@@ -208,6 +209,7 @@ public class PetriNetWithTransits extends PetriNet {
         }
         return n;
     }
+    
 
     /**
      * Creating a flow to a place 'pre' which already exists adds the postset
@@ -489,6 +491,19 @@ public class PetriNetWithTransits extends PetriNet {
         return PNWTTools.getAPT(this, withAnnotationPartition, withCoordinates);
     }
 
+//    Safe some memory and don't do it automatically for every place
+//    /**
+//     * Override to automatically add a label to the place
+//     * @param id
+//     * @return 
+//     */
+//    @Override
+//    public Place createPlace(String id) {
+//        Place p = super.createPlace(id);
+//        PetriNetExtensionHandler.setLabel(p, id);
+//        return p;
+//    }
+    
     // Overriden methods to handle tokenflow
     /**
      * The others methods do not have to be overriden since all fall back to
@@ -503,7 +518,7 @@ public class PetriNetWithTransits extends PetriNet {
         transits.put(t.getId(), new HashMap<>());
         return t;
     }
-
+    
     /**
      * The others methods do not have to be overriden since all fall back to
      * this method
