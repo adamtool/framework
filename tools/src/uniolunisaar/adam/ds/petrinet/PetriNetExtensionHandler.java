@@ -29,6 +29,18 @@ public class PetriNetExtensionHandler {
     }
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% PLACE EXTENSIONS
+    public static boolean hasLabel(Place place) {
+        return place.hasExtension(AdamExtensions.label.name());
+    }
+
+    public static void setLabel(Place place, String label) {
+        place.putExtension(AdamExtensions.label.name(), label, ExtensionProperty.WRITE_TO_FILE);
+    }
+
+    public static String getLabel(Place place) {
+        return (String) place.getExtension(AdamExtensions.label.name());
+    }
+
     public static boolean isSpecial(Place place) {
 //        PetriNet net = place.getGraph();
 //        if (getWinningCondition(net).equals(WinningCondition.Objective.E_SAFETY)

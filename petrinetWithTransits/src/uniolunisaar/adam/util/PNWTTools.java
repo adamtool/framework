@@ -13,6 +13,7 @@ import java.util.Map;
 import java.util.Set;
 import uniol.apt.adt.extension.ExtensionProperty;
 import uniol.apt.adt.pn.Flow;
+import uniol.apt.adt.pn.Node;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
@@ -590,4 +591,37 @@ public class PNWTTools {
         return mvPdf;
     }
 
+    /**
+     * Creates a PetriNetWithTransits which has automatically named nodes and
+     * the original ids in the label of the node. This can be used to create a
+     * net which is definitely readably be the APT parser.
+     *
+     * @param net
+     * @return
+     */
+    public static PetriNetWithTransits createPNWTWithIDsInLabel(PetriNetWithTransits net) {
+        PetriNetWithTransits out = new PetriNetWithTransits(net.getName());
+        addElementsForPNWTWithIDsInLabel(net, out);
+        return out;
+    }
+
+    public static Map<Node, Node> addElementsForPNWTWithIDsInLabel(PetriNetWithTransits net, PetriNetWithTransits out) {
+        Map<Node, Node> mapping = PNTools.addElementsForPetriNetWithIDsInLabel(net, out);
+        for (Transition transition : net.getTransitions()) {
+            for (Transit transit : net.getTransits(transition)) {
+                String[] postset = new String[transit.getPostset().size()];
+                int i = 0;
+                for (Place post : transit.getPostset()) {
+                    postset[i] = mapping.get(post).getId();
+                    ++i;
+                }
+                if (transit.isInitial()) {
+                    out.createInitialTransit(mapping.get(transit.getTransition()).getId(), postset);
+                } else {
+                    out.createTransit(mapping.get(transit.getPresetPlace()).getId(), transition.getId(), postset);
+                }
+            }
+        }
+        return mapping;
+    }
 }
