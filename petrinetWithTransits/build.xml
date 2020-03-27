@@ -24,24 +24,86 @@
 		<property file="${subproject.basedir}/build.properties"/>		
 	</target>
 
+	<path id="antlr.class.path">
+		<pathelement location="${libfolder}/antlr-4.5.1/antlr-4.5.1-complete.jar" />
+	</path>
+
+
+	<!-- %%%%%%%%%%%%%%%%%%%%  Antlr4 is called here -->
+    <!-- %%%%%%%%%%%%%%% TRANSITS -->
+	<!-- Only run the antlr target if some .g file is newer than generated antlr.stamp (which the antlr target touches) -->
+	<target name="antlr.transits.checkforchanges">
+		<uptodate property="antlr.transits.nochanges" targetfile="${srcfolder}/uniolunisaar/adam/logic/parser/transits/antlr/antlr.stamp">
+			<srcfiles dir="${srcfolder}/uniolunisaar/adam/logic/parser/transits/" includes="**/*.g4"/>
+		</uptodate>
+	</target>
+
+    <!-- parse transits -->
+	<target name="antlr.transits" depends="antlr.transits.checkforchanges" unless="antlr.transits.nochanges">
+		<macrodef name="call-antlr">
+			<attribute name="name" />
+			<sequential>
+				<java classpathref="antlr.class.path" classname="org.antlr.v4.Tool" fork="true" failonerror="true">
+					<arg value="-o"/>
+					<arg path="${srcfolder}/uniolunisaar/adam/logic/parser/transits/antlr"/>
+					<arg value="-package"/>
+					<arg value="uniolunisaar.adam.logic.parser.transits.antlr"/>
+					<arg line="${srcfolder}/uniolunisaar/adam/logic/parser/transits/@{name}"/>
+				</java>
+			</sequential>
+		</macrodef>
+		<call-antlr name="TransitFormat.g4" />
+		<!-- Touch the time stamp file which antlr.checkforchanges checks for -->
+		<touch file="${srcfolder}/uniolunisaar/adam/logic/parser/transits/antlr/antlr.stamp" mkdirs="true"/>
+	</target>
+
+    <!-- %%%%%%%%%%%%%%%%% SDN -->
+	<!-- Only run the antlr target if some .g file is newer than generated antlr.stamp (which the antlr target touches) -->
+	<target name="antlr.sdn.checkforchanges">
+		<uptodate property="antlr.sdn.nochanges" targetfile="${srcfolder}/uniolunisaar/adam/logic/parser/sdn/antlr/antlr.stamp">
+			<srcfiles dir="${srcfolder}/uniolunisaar/adam/logic/parser/sdn/" includes="**/*.g4"/>
+		</uptodate>
+	</target>
+
+	<target name="antlr.sdn" depends="antlr.sdn.checkforchanges" unless="antlr.sdn.nochanges">
+		<macrodef name="call-antlr">
+			<attribute name="name" />
+			<sequential>
+				<java classpathref="antlr.class.path" classname="org.antlr.v4.Tool" fork="true" failonerror="true">
+					<arg value="-o"/>
+					<arg path="${srcfolder}/uniolunisaar/adam/logic/parser/sdn/antlr"/>
+					<arg value="-package"/>
+					<arg value="uniolunisaar.adam.logic.parser.sdn.antlr"/>
+					<arg line="${srcfolder}/uniolunisaar/adam/logic/parser/sdn/@{name}"/>
+				</java>
+			</sequential>
+		</macrodef>
+        <!-- parse SDN topology -->
+		<call-antlr name="SDNTopologyFormat.g4" />
+        <!-- parse SDN updates -->
+		<call-antlr name="SDNUpdateFormat.g4" />
+		<!-- Touch the time stamp file which antlr.checkforchanges checks for -->
+		<touch file="${srcfolder}/uniolunisaar/adam/logic/parser/sdn/antlr/antlr.stamp" mkdirs="true"/>
+	</target>
+
 <!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% DELEGATES %%%%%%%%%%%%%%%%%%%%%%%%%%% -->	
-	<target name="test" depends="loadProperties" description="Runs all tests">
+	<target name="test" depends="loadProperties,antlr.transits,antlr.sdn" description="Runs all tests">
 		<antcall target="pnwithtransits.fu.test"/>
 			<!--<ant antfile="${logics.basedir}/build_logics.xml" target="test"></ant>	-->	
 	</target>
-	<target name="test-method" depends="loadProperties" description="Runs the tests of a specific method">
+	<target name="test-method" depends="loadProperties,antlr.transits,antlr.sdn" description="Runs the tests of a specific method">
 		<antcall target="pnwithtransits.fu.test-method"/>
 	</target>
-	<target name="test-class" depends="loadProperties" description="Runs the tests of a specific class">
+	<target name="test-class" depends="loadProperties,antlr.transits,antlr.sdn" description="Runs the tests of a specific class">
 		<antcall target="pnwithtransits.fu.test-class"/>
 	</target>
-	<target name="jar" depends="loadProperties" description="Builds a jar with all its dependencies">
+	<target name="jar" depends="loadProperties,antlr.transits,antlr.sdn" description="Builds a jar with all its dependencies">
 		<antcall target="pnwithtransits.fu.jar"/>
 	</target>
-	<target name="jar-standalone" depends="loadProperties" description="Builds a jar with all its dependencies">
+	<target name="jar-standalone" depends="loadProperties,antlr.transits,antlr.sdn" description="Builds a jar with all its dependencies">
 		<antcall target="pnwithtransits.fu.jar-standalone"/>
 	</target>
-	<target name="javadoc" depends="loadProperties" description="Creates the JavaDoc of this package.">
+	<target name="javadoc" depends="loadProperties,antlr.transits,antlr.sdn" description="Creates the JavaDoc of this package.">
 		<antcall target="pnwithtransits.fu.javadoc"/>
 	</target>
 
@@ -49,6 +111,8 @@
 		<antcall target="pnwithtransits.fu.clean"/>
 	</target>
 	<target name="clean-all" depends="loadProperties" description="Cleans all temporary files including the reports">
+		<delete dir="${srcfolder}/uniolunisaar/adam/logic/parser/transits/antlr" failonerror="false"/>
+		<delete dir="${srcfolder}/uniolunisaar/adam/logic/parser/sdn/antlr" failonerror="false"/>
 		<antcall target="pnwithtransits.fu.clean-all"/>
 	</target>
 </project>

@@ -15,6 +15,9 @@ public class AdamProperties {
     public static final String AIGER_TOOLS = "aigertools";
     public static final String MC_HYPER = "mcHyper";
     public static final String ABC = "abcBin";
+    public static final String DOT = "dot";
+    public static final String QUABS = "quabs";
+    public static final String TIME = "time";
 
     private AdamProperties() {
         // Load the property file which location is given as parameter of the console

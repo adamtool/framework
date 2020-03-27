@@ -1,14 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="adam_targets" default="jar">
 <!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% SRC %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-	<path id="classpath">
-		<pathelement location="${classesfolder}"/>
-		<resourcelist id="libs">
-			<file file="${subproject.basedir}/libs.res"/>
-		</resourcelist>
-	</path>
-	
 	<target name="javac" description="Compile code">
+        <!--<condition property="libFile" else="libs.res">
+            <isset property="libFile"/>
+        </condition>
+        This was added to separated the MC from the synthesis appraoch.
+        This would also need to only select the files which should be compiled from the ui
+        package. Easier to compile all and add the end only pack the needed files into the jar.
+        -->
+        <path id="classpath">
+	        <pathelement location="${classesfolder}"/>
+	        <resourcelist id="libs">
+<!--		        <file file="${subproject.basedir}/${libFile}"/>-->
+		        <file file="${subproject.basedir}/libs.res"/>
+	        </resourcelist>
+        </path>
 		<invoke-javac 
 			dependencies="libs" 
 			classpath="classpath"
@@ -21,12 +28,12 @@
 		<path refid="classpath" />
 		<pathelement location="${testclassesfolder}"/>
 		<path refid="testng.classpath" />
-		<resourcelist id="subprojects.tests.libs">
+		<resourcelist id="subproject.tests.libs">
 			<file file="${subproject.basedir}/testlibs.res"/>
 		</resourcelist>
 	</path>
 
-	<target name="tests.javac" depends="javac" description="Compile test code">
+	<target name="tests.javac"  depends="javac" description="Compile test code">
 		<depend srcdir="${testfolder}" destdir="${testclassesfolder}" classpath="${classesfolder}"/>
 		<invoke-javac
 			dependencies="tests.libs"
@@ -34,7 +41,7 @@
 			src="${macros.basedir}/test/src"
 			output="${testclassesfolder}" />
 		<invoke-javac
-			dependencies="tests.libs"
+			dependencies="subproject.tests.libs"
 			classpath="tests.classpath"
 			src="${testfolder}"
 			output="${testclassesfolder}" />
@@ -88,36 +95,39 @@
 	</target>
 
 <!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% JAR-STANDALONE %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
-	<loadfile property="libs.jars" srcfile="${subproject.basedir}/libs.res">
-	  <filterchain>
-	    <linecontains>
-	      <contains value=".jar"></contains> <!-- take only the jars of libs.res -->
-	    </linecontains>
-		<replaceregex pattern="\$\{libfolder\}/" replace=""/> <!-- get the relativ path -->
-	    <prefixlines prefix="," /> <!-- replace linebreaks by ',' to get it prepared for using it as includes -->
-	    <striplinebreaks />
-	  </filterchain>
-	</loadfile>
-
-	<loadfile property="libs.classes" srcfile="${subproject.basedir}/libs.res">
-	  <filterchain>
-		<linecontains>
-			<contains value="classes"></contains> <!-- take only the jars of libs.res -->
-	    </linecontains>
-		<replaceregex pattern="\$\{mainfolder\}/" replace="${mainfolder}/"/><!-- get the relativ path -->
-		<replaceregex pattern="$" replace=","/> <!-- put the include pattern at each end -->
-	    <prefixlines prefix="" /> <!-- replace linebreaks by '' to get it prepared for using it as includes -->
-	    <striplinebreaks />
-	  </filterchain>
-	</loadfile>
-	
-	<union id="jar.res">    	
-			<fileset dir="${classesfolder}"/>	
-			<multirootfileset basedirs="${libs.classes}" includes="**/*"/>
-			<resources refid="${subproject}.jar.res" />
-	</union>
-
 	<target name="jar-standalone" depends="javac" description="Builds a jar file. Also contains all files of the needed dependencies.">
+        <condition property="libFile" else="libs.res">
+            <isset property="libFile"/>
+        </condition>
+	    <loadfile property="libs.jars" srcfile="${subproject.basedir}/${libFile}">
+	      <filterchain>
+	        <linecontains>
+	          <contains value=".jar"></contains> <!-- take only the jars of libs.res -->
+	        </linecontains>
+		    <replaceregex pattern="\$\{libfolder\}/" replace=""/> <!-- get the relativ path -->
+	        <prefixlines prefix="," /> <!-- replace linebreaks by ',' to get it prepared for using it as includes -->
+	        <striplinebreaks />
+	      </filterchain>
+	    </loadfile>
+
+        <loadfile property="libs.classes" srcfile="${subproject.basedir}/${libFile}">
+	      <filterchain>
+		    <linecontains>
+			    <contains value="classes"></contains> <!-- take only the class entries of libs.res -->
+	        </linecontains>
+		    <replaceregex pattern="\$\{mainfolder\}/" replace="${mainfolder}/"/><!-- get the relativ path -->
+		    <replaceregex pattern="$" replace=","/> <!-- put the include pattern at each end -->
+	        <prefixlines prefix="" /> <!-- replace linebreaks by '' to get it prepared for using it as includes -->
+	        <striplinebreaks />
+	      </filterchain>
+	    </loadfile>
+	    
+	    <union id="jar.res">    	
+			    <fileset dir="${classesfolder}"/>	
+			    <multirootfileset basedirs="${libs.classes}" includes="**/*"/>
+			    <resources refid="${subproject}.jar.res" />
+	    </union>
+
 		<invoke-jar-standalone outputfolder="${subproject.basedir}" filesuffix="${subproject}" resources="jar.res" jarresources="${libs.jars}"/>
 	</target>
 

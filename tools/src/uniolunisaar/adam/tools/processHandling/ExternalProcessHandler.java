@@ -1,5 +1,6 @@
-package uniolunisaar.adam.tools;
+package uniolunisaar.adam.tools.processHandling;
 
+import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -8,7 +9,10 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Using the idea of
@@ -24,11 +28,13 @@ public class ExternalProcessHandler {
     private OutputStream procInput = null;
     private String[] command;
     private File directory;
-    private int status;
+    private int status = -1;
 
     private ProcessOutputReaderThread out;
     private ProcessOutputReaderThread error;
     private Process proc;
+
+    private List<IProcessListener> listeners = new ArrayList<>();
 
     public ExternalProcessHandler(String... command) {
         this(null, command);
@@ -53,7 +59,7 @@ public class ExternalProcessHandler {
     }
 
     /**
-     * Start with ommitting the output.
+     * Start with omitting the output.
      *
      * @throws IOException
      */
@@ -63,7 +69,7 @@ public class ExternalProcessHandler {
 
     /**
      * Start with sending the error and output to the given streams. When they
-     * are null, the output is ommitted.
+     * are null, the output is omitted.
      *
      * @param outputStream
      * @param errorStream
@@ -92,6 +98,9 @@ public class ExternalProcessHandler {
         status = proc.waitFor();
         out.join();
         error.join();
+        for (IProcessListener listener : listeners) {
+            listener.processFinished(proc);
+        }
         return status;
     }
 
@@ -101,7 +110,7 @@ public class ExternalProcessHandler {
 
     /**
      * Start with sending the error and output to the given streams. When they
-     * are null, the output is ommitted.
+     * are null, the output is omitted.
      *
      * @param outputStream
      * @param errorStream
@@ -113,6 +122,27 @@ public class ExternalProcessHandler {
         start(outputStream, errorStream);
         waitFor();
         return status;
+    }
+
+    public boolean isAlive() {
+        return proc != null && proc.isAlive();
+    }
+
+    public void destroy() {
+        proc.destroy();
+    }
+
+    public Process destroyForcibly() {
+        return proc.destroyForcibly();
+    }
+
+    public Process destroyForciblyWithChilds() {
+        for (Iterator<ProcessHandle> iterator = proc.children().iterator(); iterator.hasNext();) {
+            ProcessHandle childProc = iterator.next();
+//            System.out.println("pid" + childProc.pid());
+            childProc.destroyForcibly();
+        }
+        return proc.destroyForcibly();
     }
 
     public String getErrors() throws ProcessNotStartedException {
@@ -138,6 +168,14 @@ public class ExternalProcessHandler {
 
     public int getStatus() {
         return status;
+    }
+
+    public boolean addListener(IProcessListener listener) {
+        return listeners.add(listener);
+    }
+
+    public boolean removeListener(IProcessListener listener) {
+        return listeners.remove(listener);
     }
 
     //todo: when we have java9 take ProcessHandle to get the CPU time of the process and so on.

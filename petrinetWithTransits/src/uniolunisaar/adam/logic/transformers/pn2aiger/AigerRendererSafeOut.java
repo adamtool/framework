@@ -7,17 +7,24 @@ import uniolunisaar.adam.ds.circuits.AigerFile;
 import static uniolunisaar.adam.ds.circuits.AigerFile.NEW_VALUE_OF_LATCH_SUFFIX;
 
 /**
+ * This class is not used? How are the false inputs handled? No stuttering latch
+ * (which only allows not enabled transitions for finite runs at the end) Not
+ * sure for what this was for or how it could be used.
  *
  * @author Manuel Gieseking
  */
 public class AigerRendererSafeOut extends AigerRenderer {
 
-    public String renderToString(PetriNet net) {
-        return super.render(net).toString();
+    public AigerRendererSafeOut(PetriNet net) {
+        super(net);
     }
 
-    public String renderWithSavingTransitions(PetriNet net) {
-        AigerFile file = render(net);
+    public String renderToString() {
+        return super.render().toString();
+    }
+
+    public String renderWithSavingTransitions() {
+        AigerFile file = render();
         //%%%%%%%%%% Add the additional latches
         // the transitions (todo: save only the one relevant id)
         for (Transition t : net.getTransitions()) {
@@ -33,7 +40,7 @@ public class AigerRendererSafeOut extends AigerRenderer {
     }
 
     @Override
-    void setOutputs(AigerFile file, PetriNet net) {
+    protected void setOutputs(AigerFile file) {
         // the valid transitions are already the output in the case that it is not init
         for (Transition t : net.getTransitions()) {
             file.addGate(OUTPUT_PREFIX + t.getId(), INIT_LATCH, VALID_TRANSITION_PREFIX + t.getId());

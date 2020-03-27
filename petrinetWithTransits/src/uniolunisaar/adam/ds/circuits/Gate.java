@@ -6,9 +6,10 @@ package uniolunisaar.adam.ds.circuits;
  */
 public class Gate {
 
-    private final String in1;
-    private final String in2;
+    private String in1;
+    private String in2;
     private final String out;
+    private int idx = -1;
 
     public Gate(String out, String in1, String in2) {
         this.in1 = in1;
@@ -27,4 +28,26 @@ public class Gate {
     public String getOut() {
         return out;
     }
+
+    public void setIn1(String in1) {
+        this.in1 = in1;
+    }
+
+    public void setIn2(String in2) {
+        this.in2 = in2;
+    }
+
+    public int getIdx() {
+        return idx;
+    }
+
+    public void setIdx(int idx) {
+        this.idx = idx;
+    }
+
+    @Override
+    public String toString() {
+        return "Gate{" + "in1=" + in1 + ", in2=" + in2 + ", out=" + out + '}';
+    }
+
 }

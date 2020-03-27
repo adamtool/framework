@@ -100,17 +100,17 @@
 	<macrodef name="invoke-check-dependencies">
 		<attribute name="resourcen"/>
 		<sequential>
-			<restrict id="missing.libs">
+			<restrict id="missing.libs.@{resourcen}">
 				<resourcelist refid="@{resourcen}"/>
 				<not>
 					<exists/>
 				</not>
 			</restrict>
 
-			<property name="missing.libs" refid="missing.libs" />
-			<fail message="Some dependencies are missing: ${missing.libs}">
+			<property name="missing.libs.@{resourcen}" refid="missing.libs.@{resourcen}" />
+			<fail message="Some dependencies are missing: ${missing.libs.@{resourcen}}">
 				<condition>
-					<length string="${missing.libs}" when="greater" length="0" />
+					<length string="${missing.libs.@{resourcen}}" when="greater" length="0" />
 				</condition>
 			</fail>		
 		</sequential>
@@ -125,7 +125,7 @@
 		<sequential>
 			<invoke-check-dependencies resourcen="@{dependencies}"/>
 			<mkdir dir="@{output}"/>
-			<javac includes="**" encoding="utf-8" destdir="@{output}" source="1.8" target="1.8" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
+			<javac includes="**" encoding="utf-8" destdir="@{output}" source="1.9" target="1.9" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
 				<src path="@{src}"/>
 				<classpath refid="@{classpath}"/>
 				<compilerarg value="-Xlint:all"/>
