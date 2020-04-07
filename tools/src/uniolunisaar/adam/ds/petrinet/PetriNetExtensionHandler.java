@@ -179,6 +179,18 @@ public class PetriNetExtensionHandler {
         node.removeExtension(AdamExtensions.original.name());
     }
 
+    public static boolean hasOrigID(Place place) {
+        return place.hasExtension(AdamExtensions.origID.name());
+    }
+
+    public static String getOrigID(Place place) {
+        return (String) place.getExtension(AdamExtensions.origID.name());
+    }
+
+    public static void setOrigID(Place place, String id) {
+        place.putExtension(AdamExtensions.origID.name(), id);
+    }
+
 // %%%%%%%%%%%%%%%%%%%%%%%%% TRANSITION EXTENSIONS
     public static boolean isStrongFair(Transition t) {
         return t.hasExtension(AdamExtensions.strongFair.name());

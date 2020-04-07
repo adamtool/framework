@@ -42,14 +42,5 @@ class PetriNetWithTransitsExtensionHandler extends PetriNetExtensionHandler {
     static void setID(Place place, int id) {
         place.putExtension(AdamExtensions.id.name(), id);
     }
-
-    static String getOrigID(Place place) {
-        return (String) place.getExtension(AdamExtensions.origID.name());
-    }
-
-    static void setOrigID(Place place, String id) {
-        place.putExtension(AdamExtensions.origID.name(), id);
-    }
-    
-    
+  
 }

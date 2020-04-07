@@ -21,6 +21,7 @@ import uniol.apt.io.renderer.RenderException;
 import uniol.apt.io.renderer.impl.AptPNRenderer;
 import uniol.apt.module.exception.ModuleException;
 import uniol.apt.util.Pair;
+import uniolunisaar.adam.util.PNTools;
 
 /**
  *
@@ -132,6 +133,7 @@ public class Tools {
                 Logger.getInstance().addWarning("You added a transition (" + trans + ") with an empty pre- and postset. We deleted it for usability reasons.");
             }
         }
+        PNTools.annotateProcessFamilyID(net);
         return net;
     }
 
