@@ -37,8 +37,6 @@ public class AccessControl {
 			for (String location : locations) {
 				if (starts.get(person).equals(location)) {
 					addRoom(person, location);
-				} else {
-					addRoom(person, location);
 				}
 			}
 			
