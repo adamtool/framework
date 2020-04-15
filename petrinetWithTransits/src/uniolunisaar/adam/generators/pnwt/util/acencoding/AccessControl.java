@@ -35,9 +35,7 @@ public class AccessControl {
 	public PetriNetWithTransits createAccessControlExample() { 
 		for (String person : groups) {
 			for (String location : locations) {
-				if (starts.get(person).equals(location)) {
-					addRoom(person, location);
-				}
+				addRoom(person, location);
 			}
 			
 			for (Pair<String, String> pair : connections) {
