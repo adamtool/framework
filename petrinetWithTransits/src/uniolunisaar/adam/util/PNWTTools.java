@@ -158,6 +158,11 @@ public class PNWTTools {
         }
     }
 
+    public static PetriNetWithTransits getPetriNetWithTransitsFromFile(String path, boolean withAutomatic) throws ParseException, IOException {
+        PetriNet pn = Tools.getPetriNet(path);
+        return getPetriNetWithTransitsFromParsedPetriNet(pn, withAutomatic);
+    }
+
     /**
      * Creates a PetriNetWithTransits from the string in apt format given in
      * content.

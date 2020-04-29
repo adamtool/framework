@@ -37,6 +37,7 @@ public class Unfolder {
      * @param net
      * @param nb_fired_transitions
      * @return
+     * @throws uniolunisaar.adam.exceptions.NoSuitableParameterException
      */
     public PetriNet unfold(PetriNet net, long nb_fired_transitions) throws NoSuitableParameterException {
         if (nb_fired_transitions < 0) {

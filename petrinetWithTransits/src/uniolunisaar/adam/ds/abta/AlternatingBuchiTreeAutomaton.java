@@ -57,7 +57,7 @@ public class AlternatingBuchiTreeAutomaton<SIGMA> {
     public TreeEdge<SIGMA> createAndAddEdge(String stateID, SIGMA sigma, int degree, IPositiveBooleanFormula successor) {
         if (states.containsKey(stateID)) {
             TreeEdge<SIGMA> edge = new TreeEdge<>(states.get(stateID), sigma, degree, successor);
-            edges.put(new Pair<>(stateID, sigma), edge);
+            edge = edges.put(new Pair<>(stateID, sigma), edge);
             if (!alphabet.contains(sigma)) {
                 alphabet.add(sigma);
             }
