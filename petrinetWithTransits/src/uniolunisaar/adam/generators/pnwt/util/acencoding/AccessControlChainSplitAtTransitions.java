@@ -65,13 +65,17 @@ public class AccessControlChainSplitAtTransitions {
 	public Place addRoom(String person, String location) {
 		String name = person + "AT" + location;
 		Place p = net.createPlace(name);
+		p.setInitialToken(1);
 		if (starts.get(person) != null && starts.get(person).equals(location)) {
 			Place createChain = net.createPlace("CREATECHAIN" + name);
 			createChain.setInitialToken(1);
 			Transition transitionCreate = net.createTransition("FLOWCREATECHAIN" + name);
 			net.createFlow(createChain, transitionCreate);
+			net.createFlow(transitionCreate, createChain);
 			net.createFlow(transitionCreate, p);
+			net.createFlow(p, transitionCreate);
 			net.createInitialTransit(transitionCreate, p);
+			net.createTransit(p, transitionCreate, p);
 			
 		}
 		return p;
