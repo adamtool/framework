@@ -23,6 +23,10 @@ public class BuchiState {
         return buchi;
     }
 
+    public String getId() {
+        return id;
+    }
+
     @Override
     public int hashCode() {
         int hash = 5;
