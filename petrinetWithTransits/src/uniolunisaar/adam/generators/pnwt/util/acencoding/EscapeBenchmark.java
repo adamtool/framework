@@ -78,7 +78,7 @@ public class EscapeBenchmark {
 		// TODO asynchronous door2
 		connections.put("d2", "S2");
 		
-		return new AccessControl(name, groups, locations, starts, null, null).createAccessControlExample();
+		return new AccessControlChainSplitAtPlaces(name, groups, locations, starts, null, null).createAccessControlExample();
 	
 		// new ExistsEventually(new AP(e1)) AND new ExistsEventually(new AP(e2))
 	}

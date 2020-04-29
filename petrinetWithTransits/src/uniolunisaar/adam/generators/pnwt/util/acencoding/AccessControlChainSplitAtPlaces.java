@@ -14,7 +14,7 @@ import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
  *
  */
 
-public class AccessControl {
+public class AccessControlChainSplitAtPlaces {
 	
 	private Set<String> groups;
 	private Set<String> locations;
@@ -23,7 +23,7 @@ public class AccessControl {
 	private Map<String, Set<Pair<String, String>>> open; // person -> open doors
 	private PetriNetWithTransits net;
 	
-	public AccessControl(String name, Set<String> pers, Set<String> locs, Map<String, String> sts, Set<Pair<String, String>> con, Map<String, Set<Pair<String, String>>> op) {
+	public AccessControlChainSplitAtPlaces(String name, Set<String> pers, Set<String> locs, Map<String, String> sts, Set<Pair<String, String>> con, Map<String, Set<Pair<String, String>>> op) {
 		net = new PetriNetWithTransits(name);
 		groups = pers;
 		locations= locs;
