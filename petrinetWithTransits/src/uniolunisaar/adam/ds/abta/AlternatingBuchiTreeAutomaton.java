@@ -13,6 +13,7 @@ import uniolunisaar.adam.ds.abta.posbooleanformula.IPositiveBooleanFormula;
 import uniolunisaar.adam.tools.Logger;
 
 /**
+ * A deterministic alternating Buchi automaton
  *
  * @author Manuel Gieseking
  * @param <SIGMA>
@@ -21,6 +22,7 @@ public class AlternatingBuchiTreeAutomaton<SIGMA> {
 
     private final Set<SIGMA> alphabet = new HashSet<>();
     private final Map<String, TreeState> states = new HashMap<>();
+//    private final Map<Pair<String, SIGMA>, Set<TreeEdge<SIGMA>>> edges = new HashMap<>(); // for ndet
     private final Map<Pair<String, SIGMA>, TreeEdge<SIGMA>> edges = new HashMap<>();
 //    private final List<TreeState> buchiStates = new ArrayList<>();
 
@@ -57,7 +59,15 @@ public class AlternatingBuchiTreeAutomaton<SIGMA> {
     public TreeEdge<SIGMA> createAndAddEdge(String stateID, SIGMA sigma, int degree, IPositiveBooleanFormula successor) {
         if (states.containsKey(stateID)) {
             TreeEdge<SIGMA> edge = new TreeEdge<>(states.get(stateID), sigma, degree, successor);
-            edge = edges.put(new Pair<>(stateID, sigma), edge);
+            Pair<String, SIGMA> key = new Pair<>(stateID, sigma);
+            // for ndet
+//                 Set<TreeEdge<SIGMA>> es = edges.get(key);
+//            if (es == null) {
+//                es = new HashSet<>();
+//                edges.put(key, es);
+//            }
+//            es.add(edge);
+            edge = edges.put(key, edge);
             if (!alphabet.contains(sigma)) {
                 alphabet.add(sigma);
             }
