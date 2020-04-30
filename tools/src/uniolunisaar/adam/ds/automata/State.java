@@ -1,29 +1,33 @@
 package uniolunisaar.adam.ds.automata;
 
+import java.util.Objects;
+
 /**
  *
  * @author Manuel Gieseking
  */
-public class BuchiState extends State {
+public class State implements IState {
 
-    private boolean buchi = false;
+    private final String id;
 
-    public BuchiState(String id) {
-        super(id);
+    public State(String id) {
+        this.id = id;
     }
 
-    protected void setBuchi(boolean buchi) {
-        this.buchi = buchi;
+    @Override
+    public String getId() {
+        return id;
     }
 
-    public boolean isBuchi() {
-        return buchi;
+    @Override
+    public String toString() {
+        return id;
     }
 
     @Override
     public int hashCode() {
-        int hash = super.hashCode();
-        hash = 79 * hash + (this.buchi ? 1 : 0);
+        int hash = 5;
+        hash = 67 * hash + this.id.hashCode();
         return hash;
     }
 
@@ -38,8 +42,8 @@ public class BuchiState extends State {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final BuchiState other = (BuchiState) obj;
-        if (this.buchi != other.buchi || !getId().equals(other.getId())) {
+        final State other = (State) obj;
+        if (!Objects.equals(this.id, other.id)) {
             return false;
         }
         return true;
