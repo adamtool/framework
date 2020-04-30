@@ -25,4 +25,12 @@ public class TreeDirectionxState implements IPositiveBooleanFormula {
         return "(" + directionText + "," + state.toString() + ")";
     }
 
+    public TreeState getState() {
+        return state;
+    }
+
+    public int getDirection() {
+        return direction;
+    }
+
 }

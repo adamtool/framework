@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.automaton;
+package uniolunisaar.adam.ds.automata;
 
 import java.util.Objects;
 

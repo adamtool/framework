@@ -8,6 +8,9 @@ public class PositiveBooleanConstants implements IPositiveBooleanFormula {
 
     public static class True extends PositiveBooleanConstants {
 
+        True() {
+        }
+
         public String toSymbolString() {
             return "⊤";// "\u22A4";
         }
@@ -19,6 +22,9 @@ public class PositiveBooleanConstants implements IPositiveBooleanFormula {
     }
 
     public static class False extends PositiveBooleanConstants {
+
+        False() {
+        }
 
         public String toSymbolString() {
             return "⊥";// "\u22A5";

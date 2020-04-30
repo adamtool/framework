@@ -20,11 +20,23 @@ import uniolunisaar.adam.tools.Logger;
  */
 public class AlternatingBuchiTreeAutomaton<SIGMA> {
 
-    private final Set<SIGMA> alphabet = new HashSet<>();
-    private final Map<String, TreeState> states = new HashMap<>();
+    private final Set<SIGMA> alphabet;
+    private final Map<String, TreeState> states;
 //    private final Map<Pair<String, SIGMA>, Set<TreeEdge<SIGMA>>> edges = new HashMap<>(); // for ndet
-    private final Map<Pair<String, SIGMA>, TreeEdge<SIGMA>> edges = new HashMap<>();
+    private final Map<Pair<String, SIGMA>, TreeEdge<SIGMA>> edges;
 //    private final List<TreeState> buchiStates = new ArrayList<>();
+    private final String name;
+    private final TreeState initialState;
+
+    public AlternatingBuchiTreeAutomaton(String name, String initialStateId) {
+        this.name = name;
+        this.alphabet = new HashSet<>();
+        this.states = new HashMap<>();
+        this.edges = new HashMap<>();
+        TreeState init = new TreeState(initialStateId);
+        states.put(initialStateId, init);
+        this.initialState = init;
+    }
 
     public void setBuchi(TreeState s, boolean buchi) {
         s.setBuchi(true);
@@ -75,6 +87,22 @@ public class AlternatingBuchiTreeAutomaton<SIGMA> {
         } else {
             throw new StructureException("There is no state with ID '" + stateID + "'");
         }
+    }
+
+    public TreeEdge<SIGMA> getEdge(String treeStateID, SIGMA sigma) {
+        return edges.get(new Pair<>(treeStateID, sigma));
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Set<SIGMA> getAlphabet() {
+        return alphabet;
+    }
+
+    public TreeState getInitialState() {
+        return initialState;
     }
 
     @Override

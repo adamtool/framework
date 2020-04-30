@@ -10,7 +10,7 @@ public class ParameterizedPositiveBooleanFormula implements IPositiveBooleanForm
     private final PositiveBooleanFormulaOperators.Binary op;
     private final IPositiveBooleanFormula element;
 
-    public ParameterizedPositiveBooleanFormula(int bound, PositiveBooleanFormulaOperators.Binary op, IPositiveBooleanFormula element) {
+    ParameterizedPositiveBooleanFormula(int bound, PositiveBooleanFormulaOperators.Binary op, IPositiveBooleanFormula element) {
         this.bound = bound;
         this.op = op;
         this.element = element;
@@ -23,6 +23,18 @@ public class ParameterizedPositiveBooleanFormula implements IPositiveBooleanForm
             boundText = "k-1";
         }
         return op.toString() + "_c=0^" + boundText + " " + element.toString();
+    }
+
+    public int getBound() {
+        return bound;
+    }
+
+    public PositiveBooleanFormulaOperators.Binary getOp() {
+        return op;
+    }
+
+    public IPositiveBooleanFormula getElement() {
+        return element;
     }
 
 }
