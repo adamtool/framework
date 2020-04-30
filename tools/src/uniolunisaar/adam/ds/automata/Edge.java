@@ -56,4 +56,11 @@ public class Edge<S extends IState> implements IEdge<S> {
         return true;
     }
 
+    @Override
+    public String toDot() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getPre().getId().hashCode()).append("->").append(getPost().getId().hashCode());
+        return sb.toString();
+    }
+
 }

@@ -10,16 +10,27 @@ import java.util.Objects;
  */
 public class LabeledEdge<S extends IState, L extends ILabel> extends Edge<S> implements ILabeledEdge<S, L> {
 
-    private final L label;
+    private L label;
 
     public LabeledEdge(S pre, L label, S post) {
         super(pre, post);
         this.label = label;
     }
 
+    public void setLabel(L label) {
+        this.label = label;
+    }
+
     @Override
     public L getLabel() {
         return label;
+    }
+
+    @Override
+    public String toDot() {
+        StringBuilder sb = new StringBuilder(super.toDot());
+        sb.append("[label=\"").append(label.toString()).append("\"]");
+        return sb.toString();
     }
 
     @Override
