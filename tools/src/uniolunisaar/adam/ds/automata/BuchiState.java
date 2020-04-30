@@ -21,28 +21,12 @@ public class BuchiState extends State {
     }
 
     @Override
-    public int hashCode() {
-        int hash = super.hashCode();
-        hash = 79 * hash + (this.buchi ? 1 : 0);
-        return hash;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
+    public String toDot() {
+        String dot = super.toDot();
+        if (buchi) {
+            dot = dot.replace("circle", "doublecircle");
         }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        final BuchiState other = (BuchiState) obj;
-        if (this.buchi != other.buchi || !getId().equals(other.getId())) {
-            return false;
-        }
-        return true;
+        return dot;
     }
 
 }

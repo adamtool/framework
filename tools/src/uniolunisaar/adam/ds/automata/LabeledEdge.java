@@ -10,14 +10,10 @@ import java.util.Objects;
  */
 public class LabeledEdge<S extends IState, L extends ILabel> extends Edge<S> implements ILabeledEdge<S, L> {
 
-    private L label;
+    private final L label;
 
     public LabeledEdge(S pre, L label, S post) {
         super(pre, post);
-        this.label = label;
-    }
-
-    public void setLabel(L label) {
         this.label = label;
     }
 
@@ -29,14 +25,14 @@ public class LabeledEdge<S extends IState, L extends ILabel> extends Edge<S> imp
     @Override
     public String toDot() {
         StringBuilder sb = new StringBuilder(super.toDot());
-        sb.append("[label=\"").append(label.toString()).append("\"]");
+        sb.append("[label=\"").append(label == null ? "" : label.toString()).append("\"]");
         return sb.toString();
     }
 
     @Override
     public int hashCode() {
         int hash = super.hashCode();
-        hash = 19 * hash + this.label.hashCode();
+        hash = 19 * hash + ((label == null) ? 0 : this.label.hashCode());
         return hash;
     }
 

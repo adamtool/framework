@@ -1,7 +1,9 @@
 package uniolunisaar.adam.ds.automata;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import uniol.apt.adt.exception.StructureException;
@@ -17,13 +19,13 @@ import uniolunisaar.adam.util.IDotSaveable;
 public abstract class Automaton<S extends IState, E extends IEdge<S>> implements IDotSaveable {
 
     private final Map<String, S> states; // maps IDs to states
-    private final Map<String, Set<E>> edges; // maps place IDs to edges
+    private final Map<String, List<E>> edges; // maps place IDs to edges
     private final String name;
     private final Set<S> inits; // initial states
 
-    public abstract S createState(String id);
+    abstract S createState(String id);
 
-    public abstract E createEdge(String preId, String postId);
+    abstract E createEdge(String preId, String postId);
 
     public Automaton(String name) {
         states = new HashMap<>();
@@ -60,6 +62,12 @@ public abstract class Automaton<S extends IState, E extends IEdge<S>> implements
     }
 
     public E createAndAddEdge(String preId, String postId, boolean check) {
+        E edge = createEdge(preId, postId);
+        getPostEdges(preId, postId, check).add(edge);
+        return edge;
+    }
+
+    List<E> getPostEdges(String preId, String postId, boolean check) {
         if (check) {
             if (!states.containsKey(preId)) {
                 throw new StructureException("A state with the id '" + preId + "' does not exists.");
@@ -68,14 +76,12 @@ public abstract class Automaton<S extends IState, E extends IEdge<S>> implements
                 throw new StructureException("A state with the id '" + postId + "' does not exists.");
             }
         }
-        E edge = createEdge(preId, postId);
-        Set<E> postEdges = edges.get(preId);
+        List<E> postEdges = edges.get(preId);
         if (postEdges == null) {
-            postEdges = new HashSet<>();
+            postEdges = new ArrayList<>();
             edges.put(preId, postEdges);
         }
-        postEdges.add(edge);
-        return edge;
+        return postEdges;
     }
 
     public boolean containsState(String id) {
@@ -86,8 +92,12 @@ public abstract class Automaton<S extends IState, E extends IEdge<S>> implements
         return states.get(id);
     }
 
-    public Set<E> getPostset(String id) {
+    public List<E> getPostset(String id) {
         return edges.get(id);
+    }
+
+    public String getName() {
+        return name;
     }
 
     @Override
@@ -112,7 +122,7 @@ public abstract class Automaton<S extends IState, E extends IEdge<S>> implements
         for (S init : inits) {
             sb.append(this.hashCode()).append("").append(counter++).append("->").append(init.getId().hashCode()).append("\n");// add the inits arc
         }
-        for (Set<E> es : edges.values()) {
+        for (List<E> es : edges.values()) {
             for (E edge : es) {
                 sb.append(edge.toDot()).append("\n");
             }

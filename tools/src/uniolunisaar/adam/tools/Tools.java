@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
+import java.nio.file.Files;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -21,6 +23,7 @@ import uniol.apt.io.renderer.RenderException;
 import uniol.apt.io.renderer.impl.AptPNRenderer;
 import uniol.apt.module.exception.ModuleException;
 import uniol.apt.util.Pair;
+import uniolunisaar.adam.util.IDotSaveable;
 import uniolunisaar.adam.util.PNTools;
 
 /**
@@ -236,5 +239,62 @@ public class Tools {
             sets.add(set);
         }
         return sets;
+    }
+
+    public static void save2Dot(String path, IDotSaveable object) throws FileNotFoundException {
+        try (PrintStream out = new PrintStream(path + ".dot")) {
+            out.println(object.toDot());
+        }
+        Logger.getInstance().addMessage("Saved to: " + path + ".dot", true);
+    }
+
+    public static Thread save2DotAndPDF(String path, IDotSaveable object) throws IOException, InterruptedException {
+        save2Dot(path, object);
+        String dot = AdamProperties.getInstance().getProperty(AdamProperties.DOT);
+        String[] command = {dot, "-Tpdf", path + ".dot", "-o", path + ".pdf"};
+        uniolunisaar.adam.tools.processHandling.ExternalProcessHandler procH = new uniolunisaar.adam.tools.processHandling.ExternalProcessHandler(true, command);
+        uniolunisaar.adam.tools.processHandling.ProcessPool.getInstance().putProcess(object.hashCode() + "#dot", procH);
+        // start it in an extra thread
+        Thread thread = new Thread(() -> {
+            try {
+                procH.startAndWaitFor();
+                Logger.getInstance().addMessage("Saved to: " + path + ".pdf", true);
+//                    if (deleteDot) {
+//                        // Delete dot file
+//                        new File(path + ".dot").delete();
+//                        Logger.getInstance().addMessage("Deleted: " + path + ".dot", true);
+//                    }
+            } catch (IOException | InterruptedException ex) {
+                String errors = "";
+                try {
+                    errors = procH.getErrors();
+                } catch (uniolunisaar.adam.exceptions.ProcessNotStartedException e) {
+                }
+                Logger.getInstance().addError("Saving pdf from dot failed.\n" + errors, ex);
+            }
+        });
+        thread.start();
+        return thread;
+    }
+
+    public static Thread save2PDF(String path, IDotSaveable object) throws IOException, InterruptedException {
+        String bufferpath = path + "_" + System.currentTimeMillis();
+        Thread dot;
+        dot = save2DotAndPDF(bufferpath, object);
+        Thread mvPdf = new Thread(() -> {
+            try {
+                dot.join();
+                // Delete dot file
+                new File(bufferpath + ".dot").delete();
+                Logger.getInstance().addMessage("Deleted: " + bufferpath + ".dot", true);
+                // move to original name 
+                Files.move(new File(bufferpath + ".pdf").toPath(), new File(path + ".pdf").toPath(), REPLACE_EXISTING);
+                Logger.getInstance().addMessage("Moved: " + bufferpath + ".pdf --> " + path + ".pdf", true);
+            } catch (IOException | InterruptedException ex) {
+                Logger.getInstance().addError("Deleting the buffer files and moving the pdf failed", ex);
+            }
+        });
+        mvPdf.start();
+        return mvPdf;
     }
 }
