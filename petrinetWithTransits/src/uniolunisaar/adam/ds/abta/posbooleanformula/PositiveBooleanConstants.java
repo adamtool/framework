@@ -1,5 +1,8 @@
 package uniolunisaar.adam.ds.abta.posbooleanformula;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  *
  * @author Manuel Gieseking
@@ -35,5 +38,10 @@ public class PositiveBooleanConstants implements IPositiveBooleanFormula {
             return "FALSE";
         }
 
+    }
+
+    @Override
+    public List<IPositiveBooleanFormulaAtom> getAtoms() {
+        return new ArrayList<>();
     }
 }

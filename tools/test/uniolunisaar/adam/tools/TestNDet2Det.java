@@ -6,7 +6,7 @@ import org.testng.annotations.Test;
 import uniolunisaar.adam.ds.automata.BuchiAutomaton;
 import uniolunisaar.adam.ds.automata.BuchiState;
 import uniolunisaar.adam.ds.automata.StringLabel;
-import uniolunisaar.adam.logic.transformers.automata.NDet2DetAutomaton;
+import uniolunisaar.adam.logic.transformers.automata.NDet2DetAutomatonTransformer;
 
 /**
  *
@@ -51,7 +51,7 @@ public class TestNDet2Det {
 
         Tools.save2DotAndPDF(outputDir + a.getName(), a);
 
-        BuchiAutomaton detA = NDet2DetAutomaton.transform(a);
+        BuchiAutomaton detA = NDet2DetAutomatonTransformer.transform(a);
         Tools.save2DotAndPDF(outputDir + detA.getName(), detA);
     }
     
@@ -83,7 +83,7 @@ public class TestNDet2Det {
 
         Tools.save2DotAndPDF(outputDir + a.getName(), a);
 
-        BuchiAutomaton detA = NDet2DetAutomaton.transform(a);
+        BuchiAutomaton detA = NDet2DetAutomatonTransformer.transform(a);
         Tools.save2DotAndPDF(outputDir + detA.getName(), detA);
     }
 }

@@ -16,7 +16,7 @@ import uniolunisaar.adam.ds.automata.StringLabel;
  *
  * @author Manuel Gieseking
  */
-public class NDet2DetAutomaton {
+public class NDet2DetAutomatonTransformer {
 
     public static BuchiAutomaton transform(BuchiAutomaton in) {
         BuchiAutomaton out = new BuchiAutomaton("Det_" + in.getName());

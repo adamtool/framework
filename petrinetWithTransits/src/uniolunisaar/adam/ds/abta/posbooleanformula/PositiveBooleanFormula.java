@@ -1,5 +1,7 @@
 package uniolunisaar.adam.ds.abta.posbooleanformula;
 
+import java.util.List;
+
 /**
  *
  * @author Manuel Gieseking
@@ -11,6 +13,11 @@ public class PositiveBooleanFormula implements IPositiveBooleanFormula {
 
     PositiveBooleanFormula(IPositiveBooleanFormula phi1, PositiveBooleanFormulaOperators.Binary op, IPositiveBooleanFormula phi2) {
         phi = new PositiveBooleanFormulaBinary(phi1, op, phi2);
+    }
+
+    @Override
+    public List<IPositiveBooleanFormulaAtom> getAtoms() {
+        return phi.getAtoms();
     }
 
 }

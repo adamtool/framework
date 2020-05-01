@@ -1,5 +1,7 @@
 package uniolunisaar.adam.ds.abta.posbooleanformula;
 
+import java.util.List;
+
 /**
  *
  * @author Manuel Gieseking
@@ -35,6 +37,11 @@ public class ParameterizedPositiveBooleanFormula implements IPositiveBooleanForm
 
     public IPositiveBooleanFormula getElement() {
         return element;
+    }
+
+    @Override
+    public List<IPositiveBooleanFormulaAtom> getAtoms() {
+        return element.getAtoms();
     }
 
 }
