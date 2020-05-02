@@ -11,6 +11,7 @@ import uniol.apt.adt.exception.StructureException;
 import uniol.apt.util.Pair;
 import uniolunisaar.adam.ds.abta.posbooleanformula.IPositiveBooleanFormula;
 import uniolunisaar.adam.tools.Logger;
+import uniolunisaar.adam.tools.Tools;
 
 /**
  * A deterministic alternating Buchi automaton
@@ -26,15 +27,23 @@ public class AlternatingBuchiTreeAutomaton<SIGMA> {
     private final Map<Pair<String, SIGMA>, TreeEdge<SIGMA>> edges;
 //    private final List<TreeState> buchiStates = new ArrayList<>();
     private final String name;
-    private final TreeState initialState;
+    private TreeState initialState;
 
-    public AlternatingBuchiTreeAutomaton(String name, String initialStateId) {
+    public AlternatingBuchiTreeAutomaton(String name) {
         this.name = name;
         this.alphabet = new HashSet<>();
         this.states = new HashMap<>();
         this.edges = new HashMap<>();
+    }
+
+    public AlternatingBuchiTreeAutomaton(String name, String initialStateId) {
+        this(name);
         TreeState init = new TreeState(initialStateId);
         states.put(initialStateId, init);
+        this.initialState = init;
+    }
+
+    public void setInitialState(TreeState init) {
         this.initialState = init;
     }
 
@@ -105,20 +114,52 @@ public class AlternatingBuchiTreeAutomaton<SIGMA> {
         return initialState;
     }
 
+    public TreeState getState(String id) {
+        return states.get(id);
+    }
+
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder("alphabet=" + alphabet + "\n");
-        sb.append("q");
+        // get the max size of each edge per sigma for the size of the column
+        int maxSize = 0;
         for (Iterator<SIGMA> iterator = alphabet.iterator(); iterator.hasNext();) {
             SIGMA sigma = iterator.next();
-            sb.append("          &    delta(q,").append(sigma).append(",k)");
+            for (String stateId : states.keySet()) {
+                int length = edges.get(new Pair<>(stateId, sigma)).getSuccessor().toString().length();
+                if (length > maxSize) {
+                    maxSize = length;
+                }
+            }
+        }
+
+        // alphabet
+        StringBuilder sb = new StringBuilder("alphabet=" + alphabet + "\n\n");
+
+        // mapping
+        int maxStateId = 0;
+        for (TreeState value : states.values()) {
+            String id = value.getId();
+            if (id.length() > maxStateId) {
+                maxStateId = id.length();
+            }
+            sb.append(id).append(" | ").append(value.getLabel()).append("\n");
+        }
+        sb.append("\n");
+
+        // the table
+        sb.append("q").append(Tools.fillupWithBlanks(1, maxStateId));
+        for (Iterator<SIGMA> iterator = alphabet.iterator(); iterator.hasNext();) {
+            SIGMA sigma = iterator.next();
+            String header = " delta(q," + sigma + ",k)";
+            sb.append("|").append(header).append(Tools.fillupWithBlanks(header.length(), maxSize));
         }
         sb.append("\n");
         for (String stateId : states.keySet()) {
-            sb.append(stateId);
+            sb.append(stateId).append(Tools.fillupWithBlanks(stateId.length(), maxStateId));
             for (Iterator<SIGMA> iterator = alphabet.iterator(); iterator.hasNext();) {
                 SIGMA sigma = iterator.next();
-                sb.append("           &  ").append(edges.get(new Pair<>(stateId, sigma)).getSuccessor().toString());
+                String entry = edges.get(new Pair<>(stateId, sigma)).getSuccessor().toString();
+                sb.append("| ").append(entry).append(Tools.fillupWithBlanks(entry.length(), maxSize));
             }
             sb.append("\n");
         }

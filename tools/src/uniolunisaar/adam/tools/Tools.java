@@ -32,6 +32,14 @@ import uniolunisaar.adam.util.PNTools;
  */
 public class Tools {
 
+    public static String fillupWithBlanks(int length, int maxLength) {
+        String out = "";
+        for (int i = length; i < maxLength; i++) {
+            out += " ";
+        }
+        return out;
+    }
+
     /**
      * Returns A-Z, a-z, 0-... for i>=0
      *
