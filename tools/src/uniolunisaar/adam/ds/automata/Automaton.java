@@ -88,6 +88,15 @@ public abstract class Automaton<S extends IState, E extends IEdge<S>> implements
         return states.containsKey(id);
     }
 
+    /**
+     * These are the real states. Only change if you know what you do!
+     *
+     * @return
+     */
+    public Map<String, S> getStates() {
+        return states;
+    }
+
     public S getState(String id) {
         return states.get(id);
     }

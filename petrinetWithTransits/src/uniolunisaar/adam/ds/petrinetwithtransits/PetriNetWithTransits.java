@@ -588,6 +588,10 @@ public class PetriNetWithTransits extends PetriNet {
         PetriNetWithTransitsExtensionHandler.setBad(place);
     }
 
+    public void removeBad(Place place) {
+        PetriNetWithTransitsExtensionHandler.removeBad(place);
+    }
+
     public boolean isReach(Place place) {
         return PetriNetWithTransitsExtensionHandler.isReach(place);
     }
@@ -596,12 +600,20 @@ public class PetriNetWithTransits extends PetriNet {
         PetriNetWithTransitsExtensionHandler.setReach(place);
     }
 
+    public void removeReach(Place place) {
+        PetriNetWithTransitsExtensionHandler.removeReach(place);
+    }
+
     public boolean isBuchi(Place place) {
         return PetriNetWithTransitsExtensionHandler.isBuchi(place);
     }
 
     public void setBuchi(Place place) {
         PetriNetWithTransitsExtensionHandler.setBuchi(place);
+    }
+
+    public void removeBuchi(Place place) {
+        PetriNetWithTransitsExtensionHandler.removeBuchi(place);
     }
 
     public boolean isInitialTransit(Place place) {
