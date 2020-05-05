@@ -59,6 +59,12 @@ public class NDet2DetAutomatonTransformer {
                 BuchiState newPost;
                 if (!out.containsState(key)) {
                     newPost = out.createAndAddState(key, false);
+                    // if one of the states is a buchi state, the new state should be a buchi state
+                    for (BuchiState successor : successors) {
+                        if (successor.isBuchi()) {
+                            out.setBuchi(true, newPost);
+                        }
+                    }
                     todo.add(new Pair<>(newPost, successors));
                 } else {
                     newPost = out.getState(key);
