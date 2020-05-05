@@ -5,7 +5,6 @@ import uniolunisaar.adam.logic.transformers.pn2aiger.mcc.AigerRendererSafeOutStu
 import uniolunisaar.adam.logic.transformers.pn2aiger.mcc.AigerRendererSafeOutStutterRegisterLogTransFireability;
 import uniolunisaar.adam.logic.transformers.pn2aiger.mcc.AigerRendererSafeOutStutterRegisterLogTransOnlyPlaces;
 import uniolunisaar.adam.logic.transformers.pn2aiger.mcc.AigerRendererSafeOutStutterRegisterOnlyPlaces;
-import uniolunisaar.adam.tools.Logger;
 
 /**
  *
