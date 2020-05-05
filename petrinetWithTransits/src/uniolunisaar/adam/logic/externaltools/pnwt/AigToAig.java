@@ -56,7 +56,7 @@ public class AigToAig {
             Tools.deleteFile(inputFile);
         }
         if (exitValue != 0) {
-            throw new ExternalToolException("Aigertools didn't finshed correctly. 'aigtoaig' couldn't produce an 'aig'-file from '" + inputFile + "'");
+            throw new ExternalToolException("Aigertools didn't finish correctly. 'aigtoaig' couldn't produce an 'aig'-file from '" + inputFile + "'");
         }
         Logger.getInstance().addMessage("... finished calling Aiger.", false);
         Logger.getInstance().addMessage("", false);
