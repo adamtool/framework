@@ -98,7 +98,7 @@ public class AccessControlChainSplitAtTransitions {
 				closed.removeAll(open);
 				
 				Place from = net.getPlace(person + "AT" + location);
-				Transition connection = net.createTransition(/*"DOOR" + from.getId() + "TO" + open*/);	// LoLA does not like , in open's toString() method
+				Transition connection = net.createTransition("DOOR" + from.getId() + "TO" + open);
 				net.createFlow(from, connection);
 				for (String destination : open) {
 					Place to = net.getPlace(person + "AT" + destination);
