@@ -67,7 +67,18 @@ public class AccessControlChainSplitAtTransitions {
 		Place p = net.createPlace(name);
 		p.setInitialToken(1);
 		if (starts.get(person) != null && starts.get(person).equals(location)) {
-			Place createChain = net.createPlace("CREATECHAIN" + name);
+			// one flow chain:
+			Place createChainStart = net.createPlace("CREATECHAINstart" + name);
+			createChainStart.setInitialToken(1);
+			Place createChainEnd = net.createPlace("CREATECHAINend" + name);
+			Transition transitionCreate = net.createTransition("FLOWCREATECHAIN" + name);
+			net.createFlow(createChainStart, transitionCreate);
+			net.createFlow(transitionCreate, createChainEnd);
+			net.createFlow(transitionCreate, p);
+			net.createFlow(p, transitionCreate);
+			net.createInitialTransit(transitionCreate, p);
+			// infinite number of flow chains:
+			/*Place createChain = net.createPlace("CREATECHAIN" + name);
 			createChain.setInitialToken(1);
 			Transition transitionCreate = net.createTransition("FLOWCREATECHAIN" + name);
 			net.createFlow(createChain, transitionCreate);
@@ -75,7 +86,7 @@ public class AccessControlChainSplitAtTransitions {
 			net.createFlow(transitionCreate, p);
 			net.createFlow(p, transitionCreate);
 			net.createInitialTransit(transitionCreate, p);
-			net.createTransit(p, transitionCreate, p);
+			net.createTransit(p, transitionCreate, p);*/
 			
 		}
 		return p;
