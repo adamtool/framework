@@ -109,6 +109,18 @@ public abstract class Automaton<S extends IState, E extends IEdge<S>> implements
         return name;
     }
 
+    public int getNumberOfStates() {
+        return states.size();
+    }
+
+    public int getNumberOfEdges() {
+        int nb_edges = 0;
+        for (List<E> post : edges.values()) {
+            nb_edges += post.size();
+        }
+        return nb_edges;
+    }
+
     @Override
     public String toDot() {
         StringBuilder sb = new StringBuilder();
