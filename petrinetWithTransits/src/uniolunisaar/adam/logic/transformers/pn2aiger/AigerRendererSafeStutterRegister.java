@@ -1,25 +1,25 @@
 package uniolunisaar.adam.logic.transformers.pn2aiger;
 
 import uniol.apt.adt.pn.PetriNet;
-import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.circuits.AigerFile;
 import static uniolunisaar.adam.ds.circuits.AigerFile.NEW_VALUE_OF_LATCH_SUFFIX;
+import uniolunisaar.adam.ds.circuits.CircuitRendererSettings;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class AigerRendererSafeOutStutterRegister extends AigerRenderer {
+public class AigerRendererSafeStutterRegister extends AigerRenderer {
 
     public static final String STUTT_LATCH = "#stutt#";
     private final boolean max;
     protected final boolean asError = false;
 //    private final boolean asError = true; // currently there is still an error for the binary coding, but didn't seem 
-                                           // to make such a difference anyhow.
+    // to make such a difference anyhow.
 
-    public AigerRendererSafeOutStutterRegister(PetriNet net, boolean max) {
-        super(net);
+    public AigerRendererSafeStutterRegister(PetriNet net, boolean max, CircuitRendererSettings.TransitionSemantics semantics) {
+        super(net, semantics);
         this.max = max;
     }
 
@@ -66,10 +66,12 @@ public class AigerRendererSafeOutStutterRegister extends AigerRenderer {
         file.addOutput(OUTPUT_PREFIX + STUTT_LATCH);
     }
 
-    @Override
-    protected void setOutputs(AigerFile file) {
+    protected void setInitOutput(AigerFile file) {
         // init latch is the old value
         file.copyValues(OUTPUT_PREFIX + INIT_LATCH, INIT_LATCH);
+    }
+
+    protected void setStuttterOutput(AigerFile file) {
         if (!asError) {
             // for stuttering it is the old value
             file.copyValues(OUTPUT_PREFIX + STUTT_LATCH, STUTT_LATCH);
@@ -77,18 +79,14 @@ public class AigerRendererSafeOutStutterRegister extends AigerRenderer {
             // for the error case it is the new value
             file.copyValues(OUTPUT_PREFIX + STUTT_LATCH, STUTT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX);
         }
-        // the valid transitions are already the output (initially it is not important what the output is)
-        for (Transition t : net.getTransitions()) {
-            file.copyValues(OUTPUT_PREFIX + t.getId(), VALID_TRANSITION_PREFIX + t.getId());
-        }
-        // if it is not the initial step
-        // the place outputs are the saved output of the place latches
-        // otherwise it is the new value of the places
-        for (Place p : net.getPlaces()) {
-            file.addGate(OUTPUT_PREFIX + p.getId() + "_bufA", "!" + INIT_LATCH, "!" + p.getId() + NEW_VALUE_OF_LATCH_SUFFIX);
-            file.addGate(OUTPUT_PREFIX + p.getId() + "_bufB", INIT_LATCH, "!" + p.getId());
-            file.addGate(OUTPUT_PREFIX + p.getId(), "!" + OUTPUT_PREFIX + p.getId() + "_bufA", "!" + OUTPUT_PREFIX + p.getId() + "_bufB");
-        }
+    }
+
+    @Override
+    protected void setOutputs(AigerFile file) {
+        setInitOutput(file);
+        setStuttterOutput(file);
+        setTransitionOutputs(file);
+        setPlaceOutputs(file);
     }
 
     void updateStuttering(AigerFile file) {

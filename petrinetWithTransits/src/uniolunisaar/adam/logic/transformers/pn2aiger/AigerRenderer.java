@@ -9,6 +9,7 @@ import uniolunisaar.adam.ds.circuits.AigerFile;
 import static uniolunisaar.adam.ds.circuits.AigerFile.NEW_VALUE_OF_LATCH_SUFFIX;
 import uniolunisaar.adam.ds.circuits.AigerFileOptimizedGates;
 import uniolunisaar.adam.ds.circuits.AigerFileOptimizedGatesAndIndizes;
+import uniolunisaar.adam.ds.circuits.CircuitRendererSettings;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 
 /**
@@ -49,16 +50,17 @@ public class AigerRenderer {
     private OptimizationsComplete optimizationsComplete = OptimizationsComplete.NONE;
 
     final PetriNet net;
+    private final CircuitRendererSettings.TransitionSemantics semantics;
 
-    public AigerRenderer(PetriNet net) {
+    public AigerRenderer(PetriNet net, CircuitRendererSettings.TransitionSemantics semantics) {
         this.net = net;
+        this.semantics = semantics;
     }
 
     /**
      * Adds inputs for all transitions.
      *
      * @param file
-     * @param net
      */
     protected void addInputs(AigerFile file) {
         // Add an input for all transitions
@@ -71,7 +73,6 @@ public class AigerRenderer {
      * Adds latches for the init latch and all places
      *
      * @param file
-     * @param net
      */
     protected void addLatches(AigerFile file) {
         // Add the latches
@@ -87,7 +88,6 @@ public class AigerRenderer {
      * Adds the outputs for the places and transitions.
      *
      * @param file
-     * @param net
      */
     protected void addOutputs(AigerFile file) {
         //Add outputs
@@ -218,16 +218,44 @@ public class AigerRenderer {
         }
     }
 
-    protected void setOutputs(AigerFile file) {
-        // the valid transitions are already the output in the case that it is not init
+    protected void setTransitionOutputs(AigerFile file) {
+        // the valid transitions are already the output (initially it is not important what the output is)
         for (Transition t : net.getTransitions()) {
-            file.addGate(OUTPUT_PREFIX + t.getId(), INIT_LATCH, VALID_TRANSITION_PREFIX + t.getId());
-//            file.copyValues(OUTPUT_PREFIX + t.getId(), VALID_TRANSITION_PREFIX + t.getId());
+            file.copyValues(OUTPUT_PREFIX + t.getId(), VALID_TRANSITION_PREFIX + t.getId());
         }
-        // the place outputs are directly the output of the place latches
-        for (Place p : net.getPlaces()) {
-            file.copyValues(OUTPUT_PREFIX + p.getId(), p.getId() + NEW_VALUE_OF_LATCH_SUFFIX);
+//        // the valid transitions are already the output in the case that it is not init
+//        for (Transition t : net.getTransitions()) {
+//            file.addGate(OUTPUT_PREFIX + t.getId(), INIT_LATCH, VALID_TRANSITION_PREFIX + t.getId());
+//        }
+    }
+
+    protected void setPlaceOutputs(AigerFile file) {
+        switch (semantics) {
+            case INGOING:
+                // for the ingoing semantics the places are already the new values
+                for (Place p : net.getPlaces()) {
+                    file.copyValues(OUTPUT_PREFIX + p.getId(), p.getId() + NEW_VALUE_OF_LATCH_SUFFIX);
+                }
+                break;
+            case OUTGOING:
+                // for the outgoing semantics 
+                // if it is not the initial step
+                // the place outputs are the saved output of the place latches
+                // otherwise it is the new value of the places
+                for (Place p : net.getPlaces()) {
+                    file.addGate(OUTPUT_PREFIX + p.getId() + "_bufA", "!" + INIT_LATCH, "!" + p.getId() + NEW_VALUE_OF_LATCH_SUFFIX);
+                    file.addGate(OUTPUT_PREFIX + p.getId() + "_bufB", INIT_LATCH, "!" + p.getId());
+                    file.addGate(OUTPUT_PREFIX + p.getId(), "!" + OUTPUT_PREFIX + p.getId() + "_bufA", "!" + OUTPUT_PREFIX + p.getId() + "_bufB");
+                }
+                break;
+            default:
+                throw new RuntimeException("The semantics " + semantics.name() + " is not yet implemented.");
         }
+    }
+
+    protected void setOutputs(AigerFile file) {
+        setTransitionOutputs(file);
+        setPlaceOutputs(file);
     }
 
     public AigerFile render() {
