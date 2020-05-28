@@ -50,7 +50,6 @@ public class AccessControlChainSplitAtPlaces {
 			}
 		}
 		// TODO open doors for all benchmarks
-		// TODO make all connections based on set of pairs instead of hashmaps
 		// TODO shared doors, limited throughput door
 		return net;
 	}
