@@ -8,6 +8,11 @@ import uniolunisaar.adam.ds.circuits.CircuitRendererSettings;
 
 /**
  *
+ * Attention in combination with McHyper the output is not as expected. McHyper
+ * uses the output for the atomic propositions, but you don't have the output
+ * visual in the counter example. There you only have access to the values of
+ * the latches (the old value) and the input values (ergo the transitions).
+ *
  * @author Manuel Gieseking
  */
 public class AigerRendererSafeStutterRegister extends AigerRenderer {
@@ -61,7 +66,7 @@ public class AigerRendererSafeStutterRegister extends AigerRenderer {
     protected void addOutputs(AigerFile file) {
         super.addOutputs(file);
         // add the init latch as output
-        file.addOutput(OUTPUT_PREFIX + INIT_LATCH);
+//        file.addOutput(OUTPUT_PREFIX + INIT_LATCH); //I don't use it in the formula, so I don't need it as output
         // add the stuttering latch as output
         file.addOutput(OUTPUT_PREFIX + STUTT_LATCH);
     }
@@ -83,7 +88,7 @@ public class AigerRendererSafeStutterRegister extends AigerRenderer {
 
     @Override
     protected void setOutputs(AigerFile file) {
-        setInitOutput(file);
+//        setInitOutput(file); I don't use it in the formula, so I don't need it as output
         setStuttterOutput(file);
         setTransitionOutputs(file);
         setPlaceOutputs(file);

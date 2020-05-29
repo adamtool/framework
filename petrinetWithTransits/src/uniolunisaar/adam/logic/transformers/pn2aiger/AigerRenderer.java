@@ -14,6 +14,12 @@ import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 
 /**
  *
+ * Attention in combination with McHyper the output is not as expected.
+ * McHyper uses the output for the atomic propositions, but you don't 
+ * have the output visual in the counter example. There you only have
+ * access to the values of the latches (the old value) and the input
+ * values (ergo the transitions).
+ *
  * @author Manuel Gieseking
  */
 public class AigerRenderer {
@@ -222,6 +228,8 @@ public class AigerRenderer {
         // the valid transitions are already the output (initially it is not important what the output is)
         for (Transition t : net.getTransitions()) {
             file.copyValues(OUTPUT_PREFIX + t.getId(), VALID_TRANSITION_PREFIX + t.getId());
+//            System.out.println("all true");
+//            file.copyValues(OUTPUT_PREFIX + t.getId(), AigerFile.TRUE);
         }
 //        // the valid transitions are already the output in the case that it is not init
 //        for (Transition t : net.getTransitions()) {
@@ -235,6 +243,7 @@ public class AigerRenderer {
                 // for the ingoing semantics the places are already the new values
                 for (Place p : net.getPlaces()) {
                     file.copyValues(OUTPUT_PREFIX + p.getId(), p.getId() + NEW_VALUE_OF_LATCH_SUFFIX);
+//                    file.copyValues(OUTPUT_PREFIX + p.getId(), AigerFile.TRUE);
                 }
                 break;
             case OUTGOING:
