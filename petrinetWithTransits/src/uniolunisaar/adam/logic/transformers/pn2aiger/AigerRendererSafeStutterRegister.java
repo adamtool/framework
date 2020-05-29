@@ -127,6 +127,7 @@ public class AigerRendererSafeStutterRegister extends AigerRenderer {
                 inputs[i++] = "!" + ENABLED_PREFIX + t.getId();
             }
             file.addGate(STUTT_LATCH + "_buf", inputs);
+//            file.addGate(STUTT_LATCH + "_buf", AigerFile.TRUE);
             file.addGate(STUTT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX, ALL_TRANS_FALSE, "!" + STUTT_LATCH + "_buf");
 //        file.addGate(STUTT_LATCH + NEW_VALUE_OF_LATCH_SUFFIX, INIT_LATCH, ALL_TRANS_NOT_TRUE);
         }
