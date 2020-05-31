@@ -224,8 +224,8 @@ public class PNTools {
 //        Logger.getInstance().addMessage("Saved to: " + path + ".pdf", true);
     }
 
-    public static Thread savePNt2PDF(String path, PetriNet net, boolean withLabel, boolean withOrigPlaces) throws FileNotFoundException {
-        return savePN2PDF(path, net, withLabel, withOrigPlaces, -1);
+    public static Thread savePN2PDF(String path, PetriNet net, boolean withLabel, boolean withOrigPlaces) throws FileNotFoundException {
+        return PNTools.savePN2PDF(path, net, withLabel, withOrigPlaces, -1);
     }
 
     public static Thread savePN2PDF(String path, PetriNet net, boolean withLabel, boolean withOrigPlaces, Integer tokencount) throws FileNotFoundException {
