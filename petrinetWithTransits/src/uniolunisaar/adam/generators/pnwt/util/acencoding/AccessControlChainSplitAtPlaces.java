@@ -64,6 +64,7 @@ public class AccessControlChainSplitAtPlaces {
 			net.createFlow(createChain, transitionCreate);
 			net.createFlow(transitionCreate, p);
 			net.createInitialTransit(transitionCreate, p);
+			net.createTransit(p, transitionCreate, p);
 			
 		}
 		return p;
@@ -76,6 +77,7 @@ public class AccessControlChainSplitAtPlaces {
 		net.createFlow(from, connection);
 		net.createFlow(connection, to);
 		net.createTransit(from, connection, to);
+		net.createTransit(to, connection, to);
 		Place control = net.createPlace("CONTROL" + from.getId() + "TO" + to.getId());
 		net.createFlow(control, connection);
 		net.createFlow(connection, control);
