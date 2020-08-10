@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.externaltools.pnwt;
+package uniolunisaar.adam.logic.externaltools.pn;
 
 import java.io.IOException;
 import java.io.PrintStream;

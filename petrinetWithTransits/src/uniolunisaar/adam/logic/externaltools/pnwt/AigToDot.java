@@ -39,7 +39,7 @@ public class AigToDot {
         }
         int exitValue = procAiger.startAndWaitFor(outStream, errStream);
         if (exitValue != 0) {
-            throw new ExternalToolException("Aigertools didn't finshed correctly. 'aigtodot' couldn't produce an 'dot'-file from '" + inputFile + "'");
+            throw new ExternalToolException("Aigertools didn't finish correctly. 'aigtodot' couldn't produce an 'dot'-file from '" + inputFile + "'");
         }
         Logger.getInstance().addMessage("... finished calling Aiger.", false);
         Logger.getInstance().addMessage("", false);

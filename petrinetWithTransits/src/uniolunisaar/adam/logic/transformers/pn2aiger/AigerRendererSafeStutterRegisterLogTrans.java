@@ -4,18 +4,19 @@ import java.util.Iterator;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.circuits.AigerFile;
+import uniolunisaar.adam.ds.circuits.CircuitRendererSettings;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class AigerRendererSafeOutStutterRegisterLogTrans extends AigerRendererSafeOutStutterRegister {
+public class AigerRendererSafeStutterRegisterLogTrans extends AigerRendererSafeStutterRegister {
 
     public final static String BIN_COD_ID = "#bin#_";
 
-    public AigerRendererSafeOutStutterRegisterLogTrans(PetriNet net, boolean max) {
-        super(net, max);
+    public AigerRendererSafeStutterRegisterLogTrans(PetriNet net, boolean max, CircuitRendererSettings.TransitionSemantics semantics) {
+        super(net, max, semantics);
         // Give unique binary ids for the transitions        
         int digits = Integer.toBinaryString(net.getTransitions().size() - 1).length();
         int id = 0;
