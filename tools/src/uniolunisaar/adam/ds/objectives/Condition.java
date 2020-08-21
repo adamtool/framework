@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.petrinet.objectives;
+package uniolunisaar.adam.ds.objectives;
 
 import uniol.apt.adt.pn.PetriNet;
 

@@ -1,4 +1,4 @@
-package uniolunisaar.adam.ds.petrinet.objectives;
+package uniolunisaar.adam.ds.objectives;
 
 import java.util.HashSet;
 import java.util.Set;
