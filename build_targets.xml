@@ -38,7 +38,7 @@
 		<invoke-javac
 			dependencies="tests.libs"
 			classpath="tests.classpath"
-			src="${macros.basedir}/test/src"
+			src="${macros.basedir}/testing/src"
 			output="${testclassesfolder}" />
 		<invoke-javac
 			dependencies="subproject.tests.libs"

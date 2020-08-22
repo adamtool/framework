@@ -5,11 +5,11 @@
 <!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% TESTS %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 	<path id="testng.classpath">
 		<resourcelist id="tests.libs">
-			<file name="${macros.basedir}/test/testlibs.res"/>
+			<file name="${macros.basedir}/testing/testlibs.res"/>
 		</resourcelist>
 	</path>
 
-	<taskdef name="testng" classname="org.testng.TestNGAntTask" classpathref="testng.classpath" />
+    <typedef name="testng" classname="org.testng.TestNGAntTask" classpathref="testng.classpath" />
 
 	<macrodef name="invoke-testng">
 		<attribute name="outputdir"/>
@@ -19,7 +19,7 @@
 		<attribute name="testoutputfolder"/>
 		<attribute name="libfolder"/>
 		<sequential>
-			<testng outputdir="@{outputdir}" verbose="2" haltonfailure="true">
+ 			<testng outputdir="@{outputdir}" verbose="2" haltonfailure="true">
 				<!-- enable assertions -->
 				<jvmarg value="-ea" />
 				<jvmarg value="-Dexamplesfolder=@{examplesfolder}" />
