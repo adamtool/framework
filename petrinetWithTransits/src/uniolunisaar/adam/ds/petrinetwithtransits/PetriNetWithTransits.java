@@ -23,7 +23,6 @@ import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.exceptions.pnwt.InconsistencyException;
 import uniolunisaar.adam.exceptions.pnwt.NoSuchTransitException;
 import uniolunisaar.adam.exceptions.pnwt.NotInitialPlaceException;
-import uniolunisaar.adam.util.PNTools;
 import uniolunisaar.adam.util.PNWTTools;
 
 /**
@@ -168,14 +167,14 @@ public class PetriNetWithTransits extends PetriNet {
             for (Node post : postset) {
                 createFlow(newNode.getId(), post.getId());
             }
-            
+
             //is initially marked?
             Marking initM = getInitialMarking();
             long val = initM.getToken(n.getId()).getValue();
             if (val > 0) {
                 newNode.setInitialToken(val);
             }
-            
+
             // copy the tokenflows
             // postset flows
             for (Transition t : p.getPostset()) {
@@ -209,7 +208,6 @@ public class PetriNetWithTransits extends PetriNet {
         }
         return n;
     }
-    
 
     /**
      * Creating a flow to a place 'pre' which already exists adds the postset
@@ -503,7 +501,6 @@ public class PetriNetWithTransits extends PetriNet {
 //        PetriNetExtensionHandler.setLabel(p, id);
 //        return p;
 //    }
-    
     // Overriden methods to handle tokenflow
     /**
      * The others methods do not have to be overriden since all fall back to
@@ -518,7 +515,7 @@ public class PetriNetWithTransits extends PetriNet {
         transits.put(t.getId(), new HashMap<>());
         return t;
     }
-    
+
     /**
      * The others methods do not have to be overriden since all fall back to
      * this method
@@ -591,6 +588,10 @@ public class PetriNetWithTransits extends PetriNet {
         PetriNetWithTransitsExtensionHandler.setBad(place);
     }
 
+    public void removeBad(Place place) {
+        PetriNetWithTransitsExtensionHandler.removeBad(place);
+    }
+
     public boolean isReach(Place place) {
         return PetriNetWithTransitsExtensionHandler.isReach(place);
     }
@@ -599,12 +600,20 @@ public class PetriNetWithTransits extends PetriNet {
         PetriNetWithTransitsExtensionHandler.setReach(place);
     }
 
+    public void removeReach(Place place) {
+        PetriNetWithTransitsExtensionHandler.removeReach(place);
+    }
+
     public boolean isBuchi(Place place) {
         return PetriNetWithTransitsExtensionHandler.isBuchi(place);
     }
 
     public void setBuchi(Place place) {
         PetriNetWithTransitsExtensionHandler.setBuchi(place);
+    }
+
+    public void removeBuchi(Place place) {
+        PetriNetWithTransitsExtensionHandler.removeBuchi(place);
     }
 
     public boolean isInitialTransit(Place place) {
@@ -643,11 +652,11 @@ public class PetriNetWithTransits extends PetriNet {
     }
 
     public String getOrigID(Place place) {
-        return PetriNetWithTransitsExtensionHandler.getOrigID(place);
+        return PetriNetExtensionHandler.getOrigID(place);
     }
 
     public void setOrigID(Place place, String id) {
-        PetriNetWithTransitsExtensionHandler.setOrigID(place, id);
+        PetriNetExtensionHandler.setOrigID(place, id);
     }
 
     // For transitions

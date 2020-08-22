@@ -29,7 +29,7 @@ import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.logic.parser.transits.TransitParser;
 import uniolunisaar.adam.tools.Logger;
-import uniolunisaar.adam.logic.externaltools.pnwt.Dot;
+import uniolunisaar.adam.logic.externaltools.pn.Dot;
 import uniolunisaar.adam.tools.Tools;
 
 /**
@@ -156,6 +156,11 @@ public class PNWTTools {
                 }
             }
         }
+    }
+
+    public static PetriNetWithTransits getPetriNetWithTransitsFromFile(String path, boolean withAutomatic) throws ParseException, IOException {
+        PetriNet pn = Tools.getPetriNet(path);
+        return getPetriNetWithTransitsFromParsedPetriNet(pn, withAutomatic);
     }
 
     /**

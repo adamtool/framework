@@ -3,7 +3,6 @@ package uniolunisaar.adam.generators.pnwt;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
-import uniolunisaar.adam.util.PNWTTools;
 
 /**
  *
