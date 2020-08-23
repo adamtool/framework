@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="adam_pnwithtransits" default="jar" xmlns:if="ant:if" xmlns:unless="ant:unless">
-	<!-- For building the standalone version in libs.res the jars have to start with ${libfolder}/ and have to be put in ${mainfolder}/lib 
-and the classes have to start with ${mainfolder}/ and have to be located from the directory where the build_macros.xml is positioned. -->
+	<!-- For building the standalone version in libs.res the jars have to start with ${libfolder}/ and 
+         the classes have to start with ${dependenciesfolder}, or ${frameworkfolder}. -->
 
 <!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% PROPERTIES %%%%%%%%%%%%%%%%%%%%%%%%%%% -->	
 	<dirname property="pnwithtransits.basedir" file="${ant.file.adam_pnwithtransits}"/>
