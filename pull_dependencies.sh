@@ -15,8 +15,10 @@ for dep in "${dep_folders[@]}"	# all dependencies
 	do	
 		echo "%%%%%%%%%%%%%%%% DEPENDENCY: $dep"
 		if [ -d "$dep" ]; then 
+            cd $dep
 			echo "Start pulling the git repository ${dep_repos[$count]}"
 			git pull
+            cd ..
 		else 
 			# The dependency is missing checkout the corresponding repo
 			echo "The dependency '$PREFIX/$dep' does not exist."			
