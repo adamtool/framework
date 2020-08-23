@@ -163,7 +163,7 @@
 		<sequential>
 			<jar destfile="@{outputfolder}/adam_@{filesuffix}-standalone.jar">
 				<resources refid="@{resources}" />
-				<zipgroupfileset dir="${dependenciesfolder}/libs" includes="@{jarresources}"/>
+				<zipgroupfileset dir="${libfolder}/" includes="@{jarresources}"/>
 			</jar>
 		</sequential>
 	</macrodef>
