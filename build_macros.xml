@@ -9,6 +9,11 @@
 		</resourcelist>
 	</path>
 
+    <!-- todo: make it only fail when any task concerning the tests is used, this typedef is
+                executed directly no matter whether anybody wanted to test s.th.. The fail
+                is just to have a better error message -->
+    <available file="${libfolder}/testing/" type="dir" property="noTestLibs" />
+	<fail unless="noTestLibs" message="The libraries for testing in '${libfolder}/testing/' are missing. Please execute make pull_dependencies first." />
     <typedef name="testng" classname="org.testng.TestNGAntTask" classpathref="testng.classpath" />
 
 	<macrodef name="invoke-testng">
@@ -25,7 +30,7 @@
 				<jvmarg value="-Dexamplesfolder=@{examplesfolder}" />
 				<jvmarg value="-Dtestoutputfolder=@{testoutputfolder}" />
 				<jvmarg value="-Dlibfolder=@{libfolder}" />
-				<jvmarg value="-DPROPERTY_FILE=${mainfolder}/ADAM.properties" />
+				<jvmarg value="-DPROPERTY_FILE=${adampropertiesfile}" />
 				<classpath refid="@{testclassesclasspath}" />
 				<xmlfileset file="testng.xml"/>		
 				<!-- only for all classes this would be enough	-->
@@ -158,7 +163,7 @@
 		<sequential>
 			<jar destfile="@{outputfolder}/adam_@{filesuffix}-standalone.jar">
 				<resources refid="@{resources}" />
-				<zipgroupfileset dir="${macros.basedir}/lib" includes="@{jarresources}"/>
+				<zipgroupfileset dir="${dependenciesfolder}/libs" includes="@{jarresources}"/>
 			</jar>
 		</sequential>
 	</macrodef>

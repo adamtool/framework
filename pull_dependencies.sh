@@ -22,7 +22,6 @@ for dep in "${dep_folders[@]}"	# all dependencies
 			echo "The dependency '$PREFIX/$dep' does not exist."			
 			echo "Start cloning the git repository ${dep_repos[$count]}"
 			git clone ${dep_repos[$count]}
-			cd ..
 		fi
 	    count=$(($count+1));		
 done
