@@ -117,6 +117,7 @@
 	        </linecontains>
 		    <replaceregex pattern="\$\{dependenciesfolder\}/" replace="${dependenciesfolder}/"/><!-- replace the dependencies folder with the concrete path -->
 		    <replaceregex pattern="\$\{frameworkfolder\}/" replace="${frameworkfolder}/"/><!-- replace the framework folder with the concrete path-->
+		    <replaceregex pattern="\$\{subproject.basedir\}/" replace="${subproject.basedir}/"/><!-- replace the subproject.basedir folder with the concrete path-->
 		    <replaceregex pattern="$" replace=","/> <!-- put the include pattern at each end -->
 	        <prefixlines prefix="" /> <!-- replace linebreaks by '' to get it prepared for using it as includes -->
 	        <striplinebreaks />

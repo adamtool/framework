@@ -11,6 +11,7 @@ t=jar
 .PHONY: tools
 .PHONY: petrinetwithtransits
 #.PHONY: javadoc
+.PHONY: setStandalone
 .PHONY: setClean
 .PHONY: setCleanAll
 .PHONY: clean
@@ -33,7 +34,7 @@ define generate_src
 endef
 
 # targets
-all: tools petrinetwithtransits
+all: $(FRAMEWORK_TARGETS)
 
 pull_dependencies:
 	./pull_dependencies.sh ${DEPENDENCIES_FOLDERS} ${DEPENDENCIES_REPOS}
@@ -46,6 +47,9 @@ tools:
 
 petrinetwithtransits:
 	ant -buildfile ./petrinetWithTransits/build.xml $(t)
+
+setStandalone:
+	$(eval t=jar-standalone)
 
 setClean:
 	$(eval t=clean)
