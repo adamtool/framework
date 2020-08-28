@@ -1,6 +1,8 @@
+# @author Manuel Gieseking
 # dependencies (folders and repos should be equally ordered)
 DEPENDENCIES_FOLDERS="libs"
 DEPENDENCIES_REPOS="git@github.com:adamtool/libs.git"
+DEPENDENCIES_REV="9710954c15318438329f53beac71fd9c942bdfca"
 # the build target
 FRAMEWORK_TARGETS = tools petrinetwithtransits
 t=jar
@@ -37,7 +39,7 @@ endef
 all: $(FRAMEWORK_TARGETS)
 
 pull_dependencies:
-	./pull_dependencies.sh ${DEPENDENCIES_FOLDERS} ${DEPENDENCIES_REPOS}
+	./pull_dependencies.sh ${DEPENDENCIES_FOLDERS} ${DEPENDENCIES_REPOS} ${DEPENDENCIES_REV}
 
 rm_dependencies:
 	rm -rf dependencies
