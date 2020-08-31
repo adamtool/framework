@@ -5,11 +5,16 @@
 <!--  %%%%%%%%%%%%%%%%%%%%%%%%%%%%% TESTS %%%%%%%%%%%%%%%%%%%%%%%%%%% -->
 	<path id="testng.classpath">
 		<resourcelist id="tests.libs">
-			<file name="${macros.basedir}/test/testlibs.res"/>
+			<file name="${macros.basedir}/testing/testlibs.res"/>
 		</resourcelist>
 	</path>
 
-	<taskdef name="testng" classname="org.testng.TestNGAntTask" classpathref="testng.classpath" />
+    <!-- todo: make it only fail when any task concerning the tests is used, this typedef is
+                executed directly no matter whether anybody wanted to test s.th.. The fail
+                is just to have a better error message -->
+    <available file="${libfolder}/testing/" type="dir" property="noTestLibs" />
+	<fail unless="noTestLibs" message="The libraries for testing in '${libfolder}/testing/' are missing. Please execute make pull_dependencies first." />
+    <typedef name="testng" classname="org.testng.TestNGAntTask" classpathref="testng.classpath" />
 
 	<macrodef name="invoke-testng">
 		<attribute name="outputdir"/>
@@ -19,13 +24,13 @@
 		<attribute name="testoutputfolder"/>
 		<attribute name="libfolder"/>
 		<sequential>
-			<testng outputdir="@{outputdir}" verbose="2" haltonfailure="true">
+ 			<testng outputdir="@{outputdir}" verbose="2" haltonfailure="true">
 				<!-- enable assertions -->
 				<jvmarg value="-ea" />
 				<jvmarg value="-Dexamplesfolder=@{examplesfolder}" />
 				<jvmarg value="-Dtestoutputfolder=@{testoutputfolder}" />
 				<jvmarg value="-Dlibfolder=@{libfolder}" />
-				<jvmarg value="-DPROPERTY_FILE=${mainfolder}/ADAM.properties" />
+				<jvmarg value="-DPROPERTY_FILE=${adampropertiesfile}" />
 				<classpath refid="@{testclassesclasspath}" />
 				<xmlfileset file="testng.xml"/>		
 				<!-- only for all classes this would be enough	-->
@@ -51,7 +56,7 @@
 			</condition>
 			<tstamp/>
 			<fail unless="propsSpecified" message="class.name property not specified; try calling ant with -Dclass.name=uniolunisaar.adam...."/>
-			<copy file="${macros.basedir}/testng.single-class.xml" tofile="testng.xml" overwrite="true">
+			<copy file="${macros.basedir}/testing/testng.single-class.xml" tofile="testng.xml" overwrite="true">
 				<filterset>
 					<filter token="CLASS" value="${class.name}"/>
 				</filterset>
@@ -81,13 +86,13 @@
 			</condition>
 			<tstamp/>
 			<fail unless="propsSpecified" message="class.name and/or test.name property not specified; try calling ant with -Dclass.name=uniolunisaar.adam... -Dmethod.name=myTestMethod"/>
-			<copy file="${macros.basedir}/testng.single-method.xml" tofile="testng.xml" overwrite="true">
+			<copy file="${macros.basedir}/testing/testng.single-method.xml" tofile="testng.xml" overwrite="true">
 				<filterset>
 					<filter token="CLASS" value="${class.name}"/>
 					<filter token="TEST" value="${method.name}"/>
 				</filterset>
 			</copy>		
-			<invoke-testng outputdir="@{reportsfolder}/testng-single-class-${class.name}-${method.name}"
+			<invoke-testng outputdir="@{reportsfolder}/testng-single-method-${class.name}-${method.name}"
 				testclassesclasspath="@{testclassesclasspath}"
 				testclassesfolder="@{testclassesfolder}"
 				examplesfolder="@{examplesfolder}"
@@ -158,7 +163,7 @@
 		<sequential>
 			<jar destfile="@{outputfolder}/adam_@{filesuffix}-standalone.jar">
 				<resources refid="@{resources}" />
-				<zipgroupfileset dir="${macros.basedir}/lib" includes="@{jarresources}"/>
+				<zipgroupfileset dir="${libfolder}/" includes="@{jarresources}"/>
 			</jar>
 		</sequential>
 	</macrodef>
