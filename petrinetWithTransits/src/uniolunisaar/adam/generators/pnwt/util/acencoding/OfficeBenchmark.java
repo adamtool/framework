@@ -97,7 +97,7 @@ public class OfficeBenchmark {
 		itOpen.add(new Pair<String, String>("in3", "in2"));
 		open.put("it", itOpen);
 		
-		return new AccessControl(name, groups, locations, starts, connections, open).createAccessControlExample();
+		return new AccessControlChainSplitAtPlaces(name, groups, locations, starts, connections, open).createAccessControlExample();
 	}
 	
 	public static PetriNetWithTransits generateOfficeSmall() {
@@ -196,7 +196,7 @@ public class OfficeBenchmark {
 		postmanOpen.add(new Pair<String, String>("bur", "cor"));
 		open.put("postman", postmanOpen);
 		
-		return new AccessControl(name, groups, locations, starts, connections, open).createAccessControlExample();
+		return new AccessControlChainSplitAtPlaces(name, groups, locations, starts, connections, open).createAccessControlExample();
 	}
 	
 	public static PetriNetWithTransits generateOfficeNormal() {
@@ -250,7 +250,7 @@ public class OfficeBenchmark {
 		connections.put("co2", "pos");
 		connections.put("co2", "ele");				// access controll happens on other level
 		
-		return new AccessControl(name, groups, locations, starts, null, null).createAccessControlExample();
+		return new AccessControlChainSplitAtPlaces(name, groups, locations, starts, null, null).createAccessControlExample();
 	}
 }
 		// visitorDay:

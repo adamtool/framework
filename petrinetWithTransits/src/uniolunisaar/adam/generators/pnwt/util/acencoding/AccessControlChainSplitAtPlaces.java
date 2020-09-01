@@ -14,7 +14,7 @@ import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
  *
  */
 
-public class AccessControl {
+public class AccessControlChainSplitAtPlaces {
 	
 	private Set<String> groups;
 	private Set<String> locations;
@@ -23,7 +23,7 @@ public class AccessControl {
 	private Map<String, Set<Pair<String, String>>> open; // person -> open doors
 	private PetriNetWithTransits net;
 	
-	public AccessControl(String name, Set<String> pers, Set<String> locs, Map<String, String> sts, Set<Pair<String, String>> con, Map<String, Set<Pair<String, String>>> op) {
+	public AccessControlChainSplitAtPlaces(String name, Set<String> pers, Set<String> locs, Map<String, String> sts, Set<Pair<String, String>> con, Map<String, Set<Pair<String, String>>> op) {
 		net = new PetriNetWithTransits(name);
 		groups = pers;
 		locations= locs;
@@ -35,11 +35,7 @@ public class AccessControl {
 	public PetriNetWithTransits createAccessControlExample() { 
 		for (String person : groups) {
 			for (String location : locations) {
-				if (starts.get(person).equals(location)) {
-					addRoom(person, location);
-				} else {
-					addRoom(person, location);
-				}
+				addRoom(person, location);
 			}
 			
 			for (Pair<String, String> pair : connections) {
@@ -54,7 +50,6 @@ public class AccessControl {
 			}
 		}
 		// TODO open doors for all benchmarks
-		// TODO make all connections based on set of pairs instead of hashmaps
 		// TODO shared doors, limited throughput door
 		return net;
 	}
@@ -69,6 +64,7 @@ public class AccessControl {
 			net.createFlow(createChain, transitionCreate);
 			net.createFlow(transitionCreate, p);
 			net.createInitialTransit(transitionCreate, p);
+			net.createTransit(p, transitionCreate, p);
 			
 		}
 		return p;
@@ -81,6 +77,7 @@ public class AccessControl {
 		net.createFlow(from, connection);
 		net.createFlow(connection, to);
 		net.createTransit(from, connection, to);
+		net.createTransit(to, connection, to);
 		Place control = net.createPlace("CONTROL" + from.getId() + "TO" + to.getId());
 		net.createFlow(control, connection);
 		net.createFlow(connection, control);

@@ -61,7 +61,7 @@ public class AirportBenchmark {
 		connections.add(new Pair<>("co3", "sho"));
 		connections.add(new Pair<>("sho", "el2"));
 	
-		return new AccessControl(name, groups, locations, starts, null, null).createAccessControlExample();
+		return new AccessControlChainSplitAtPlaces(name, groups, locations, starts, null, null).createAccessControlExample();
 		
 		// staff:
 		// and:

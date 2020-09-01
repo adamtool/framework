@@ -64,7 +64,7 @@ public class ReactOfficeBenchmark {
 		connections.put("sec", "pro");
 		connections.put("sec", "ro5");
 		
-		return new AccessControl(name, groups, locations, starts, null, null).createAccessControlExample();
+		return new AccessControlChainSplitAtPlaces(name, groups, locations, starts, null, null).createAccessControlExample();
 		
 		
 		// new ForallGlobally(new Not(new AP(sec)));
