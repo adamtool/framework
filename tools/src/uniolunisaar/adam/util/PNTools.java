@@ -8,11 +8,13 @@ import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.HashMap;
 import java.util.Map;
+import uniol.apt.adt.exception.TransitionFireException;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Marking;
 import uniol.apt.adt.pn.Node;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
+import uniol.apt.adt.pn.Token;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
@@ -26,6 +28,57 @@ import uniolunisaar.adam.tools.Tools;
  * @author Manuel Gieseking
  */
 public class PNTools {
+
+    /**
+     * Checks whether the given transition t is fireable in the given marking m.
+     * Different to t.isFireable(m) this method also correctly handles inhibitor
+     * arcs.
+     *
+     * @param t - the transition which is checked to be fireable
+     * @param m - the marking in which the transition should be fireeable
+     * @return true iff t is fireable in m (m[t>) respecting inhibitor arcs.
+     */
+    public static boolean isFireable(Transition t, Marking m) {
+        PetriNet net = m.getNet();
+        for (Flow f : net.getPresetEdges(t.getId())) {
+            if (PetriNetExtensionHandler.isInhibitor(f)) {
+                if (m.getToken(f.getPlace()).getValue() != 0) {
+                    return false;
+                }
+            } else if (m.getToken(f.getPlace()).compareTo(Token.valueOf(f.getWeight())) < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
+     * Fires the given transition t in the given marking m. Different to
+     * t.fire(m) this method also correctly handles inhibitor arcs.
+     *
+     * @param t - the transition which should be fired
+     * @param m - the marking in which the transition should be fired
+     * @return M' for m[t>M' respecting inhibitor arcs.
+     */
+    public static Marking fire(Transition t, Marking m) {
+        PetriNet net = m.getNet();
+        if (isFireable(t, m)) {
+            for (Flow f : net.getPresetEdges(t.getId())) {
+                if (!PetriNetExtensionHandler.isInhibitor(f)) {
+                    m = m.addTokenCount(f.getPlace(), -f.getWeight());
+                }
+            }
+            for (Flow f : net.getPostsetEdges(t.getId())) {
+                if (!PetriNetExtensionHandler.isInhibitor(f)) {
+                    m = m.addTokenCount(f.getPlace(), +f.getWeight());
+                }
+            }
+            return m;
+        } else {
+            throw new TransitionFireException("transition '" + t.getId()
+                    + "' is not fireable in marking '" + m.toString() + "'.");
+        }
+    }
 
     public static void annotateProcessFamilyID(PetriNet net) {
         PetriNetExtensionHandler.setProcessFamilyID(net, net.getName() + Thread.currentThread().getName());
@@ -163,7 +216,7 @@ public class PNTools {
     }
 
     public static void savePN2Dot(String path, PetriNet net, boolean withLabel, boolean withOrigPlaces, Integer tokencount) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(path + ".dot")) {
+        try ( PrintStream out = new PrintStream(path + ".dot")) {
             if (tokencount == -1) {
                 out.println(pn2Dot(net, withLabel, withOrigPlaces));
             } else {

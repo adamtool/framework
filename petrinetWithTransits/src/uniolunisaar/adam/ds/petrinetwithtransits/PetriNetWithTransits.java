@@ -23,6 +23,7 @@ import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.exceptions.pnwt.InconsistencyException;
 import uniolunisaar.adam.exceptions.pnwt.NoSuchTransitException;
 import uniolunisaar.adam.exceptions.pnwt.NotInitialPlaceException;
+import uniolunisaar.adam.util.PNTools;
 import uniolunisaar.adam.util.PNWTTools;
 
 /**
@@ -539,6 +540,32 @@ public class PetriNetWithTransits extends PetriNet {
     public void removeFlow(String sourceId, String targetId) {
         PetriNetWithTransits.this.removeTransit(sourceId, targetId);
         super.removeFlow(sourceId, targetId);
+    }
+
+    // Firing with inhibitor arcs
+    /**
+     * Checks whether the given transition t is fireable in the given marking m.
+     * Different to t.isFireable(m) this method also correctly handles inhibitor
+     * arcs.
+     *
+     * @param t - the transition which is checked to be fireable
+     * @param m - the marking in which the transition should be fireeable
+     * @return true iff t is fireable in m (m[t>) respecting inhibitor arcs.
+     */
+    public boolean isFireable(Transition t, Marking m) {
+        return PNTools.isFireable(t, m);
+    }
+
+    /**
+     * Fires the given transition t in the given marking m. Different to
+     * t.fire(m) this method also correctly handles inhibitor arcs.
+     *
+     * @param t - the transition which should be fired
+     * @param m - the marking in which the transition should be fired
+     * @return M' for m[t>M' respecting inhibitor arcs.
+     */
+    public Marking fire(Transition t, Marking m) {
+        return PNTools.fire(t, m);
     }
 
     // Set extensions  
