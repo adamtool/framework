@@ -115,6 +115,15 @@ public class Logger {
     }
 
     /**
+     * Adds a number to the verbose message stream.
+     *
+     * @param msg
+     */
+    public void addMessage(int msg) {
+        addMessage("" + msg);
+    }
+
+    /**
      * When force is true, these messages will be shown not matter of the status
      * of the silent flag.
      *
