@@ -13,6 +13,7 @@ t=jar
 .PHONY: tools
 .PHONY: petrinetwithtransits
 #.PHONY: javadoc
+.PHONY: setJavac
 .PHONY: setStandalone
 .PHONY: setClean
 .PHONY: setCleanAll
@@ -52,6 +53,9 @@ petrinetwithtransits:
 
 setStandalone:
 	$(eval t=jar-standalone)
+
+setJavac:
+	$(eval t=javac)
 
 setClean:
 	$(eval t=clean)
