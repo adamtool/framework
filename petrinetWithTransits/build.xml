@@ -110,7 +110,7 @@
 	<target name="test-class" depends="loadProperties,antlr.transits,antlr.sdn" description="Runs the tests of a specific class">
 		<antcall target="pnwithtransits.fu.test-class"/>
 	</target>
-	<target name="javac" depends="loadProperties" description="Compiles the module">
+	<target name="javac" depends="loadProperties,antlr.transits,antlr.sdn" description="Compiles the module">
 		<antcall target="pnwithtransits.fu.javac"/>
 	</target>
 	<target name="jar" depends="loadProperties,antlr.transits,antlr.sdn" description="Builds a jar with all its dependencies">
