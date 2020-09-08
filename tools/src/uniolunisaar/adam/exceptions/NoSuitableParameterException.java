@@ -1,5 +1,6 @@
 package uniolunisaar.adam.exceptions;
 
+
 /**
  *
  * @author Manuel Gieseking

@@ -1,4 +1,7 @@
+
 package uniolunisaar.adam.util;
+
+
 
 /**
  * This enum contains all by ADAM used keys for saving object via the Extendable

@@ -1,4 +1,5 @@
-# @author Manuel Gieseking
+## @author Manuel Gieseking
+
 # dependencies (folders and repos should be equally ordered)
 DEPENDENCIES_FOLDERS="libs"
 DEPENDENCIES_REPOS="git@github.com:adamtool/libs.git"
@@ -45,7 +46,7 @@ pull_dependencies:
 	./pull_dependencies.sh ${DEPENDENCIES_FOLDERS} ${DEPENDENCIES_REPOS} ${DEPENDENCIES_REV}
 
 rm_dependencies:
-	rm -rf dependencies
+	$(RM) -rf dependencies
 
 tools:
 	ant -buildfile ./tools/build.xml $(t)
@@ -66,12 +67,12 @@ setCleanAll:
 	$(eval t=clean-all)
 
 clean: setClean $(FRAMEWORK_TARGETS)
-	rm -r -f deploy
-	rm -r -f javadoc
+	$(RM) -r -f deploy
+	$(RM) -r -f javadoc
 
 clean-all: setCleanAll $(FRAMEWORK_TARGETS)
-	rm -r -f deploy
-	rm -r -f javadoc
+	$(RM) -r -f deploy
+	$(RM) -r -f javadoc
 
 #javadoc:
 #	ant javadoc
