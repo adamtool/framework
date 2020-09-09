@@ -153,6 +153,9 @@ public class Tools {
         // TODO: Since the APT-Renderer isn't adaptive enough, 
         // delete the quotation marks around the token number
         file = file.replaceAll("token=\"([^\"]*)\"", "token=$1");
+        // the same for the coordinates
+        file = file.replaceAll("xCoord=\"([^\"]*)\"", "xCoord=$1");
+        file = file.replaceAll("yCoord=\"([^\"]*)\"", "yCoord=$1");
         return file;
     }
 
