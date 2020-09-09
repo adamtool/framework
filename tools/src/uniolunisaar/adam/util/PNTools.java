@@ -106,12 +106,15 @@ public class PNTools {
 
     public static Map<Node, Node> addElementsForPetriNetWithIDsInLabel(PetriNet net, PetriNet out) {
         Map<Node, Node> mapping = new HashMap<>();
+        Marking init = new Marking(out);
         for (Place place : net.getPlaces()) {
             Place p = out.createPlace();
             p.copyExtensions(place);
             PetriNetExtensionHandler.setLabel(p, place.getId());
             mapping.put(place, p);
+            init.setTokenCount(p, place.getInitialToken());
         }
+        out.setInitialMarking(init);
         for (Transition transition : net.getTransitions()) {
             Transition t = out.createTransition();
             t.copyExtensions(transition);
@@ -124,9 +127,12 @@ public class PNTools {
         }
 
         for (Marking m : net.getFinalMarkings()) {
-            out.addFinalMarking(new Marking(out, m));
+            Marking fin = new Marking(out);
+            for (Place place : net.getPlaces()) {
+                fin.setTokenCount((Place) mapping.get(place), m.getToken(place));
+            }
+            out.addFinalMarking(fin);
         }
-        out.setInitialMarking(new Marking(out, net.getInitialMarking()));
         out.copyExtensions(net);
         return mapping;
     }
