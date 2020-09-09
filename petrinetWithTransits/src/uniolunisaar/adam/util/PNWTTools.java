@@ -98,7 +98,7 @@ public class PNWTTools {
     }
 
     private static void setTransitAnnotation(Transition t, String text) {
-        t.putExtension(AdamExtensions.tfl.name(), text, ExtensionProperty.WRITE_TO_FILE);
+        t.putExtension(AdamExtensions.tfl.name(), text, ExtensionProperty.WRITE_TO_FILE, ExtensionProperty.NOCOPY);
     }
 
     private static void parseAndCreateTransitsFromTransitionExtensionText(PetriNetWithTransits net, boolean withAutomatic) throws ParseException {
@@ -148,6 +148,8 @@ public class PNWTTools {
 //                }
 //                    game.setTokenFlow(t, tfl);
                 }
+                // clear the entry because this just for saving and is not changed when any transit is changed.
+                t.removeExtension(AdamExtensions.tfl.name());
             } else if (withAutomatic) {
                 if (t.getPreset().size() == 1) {
                     Place pre = t.getPreset().iterator().next();
@@ -505,7 +507,7 @@ public class PNWTTools {
     }
 
     public static void savePnwt2Dot(String path, PetriNetWithTransits net, boolean withLabel, Integer tokencount) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(path + ".dot")) {
+        try ( PrintStream out = new PrintStream(path + ".dot")) {
             if (tokencount == -1) {
                 out.println(pnwt2Dot(net, withLabel));
             } else {

@@ -659,15 +659,15 @@ public class PetriNetWithTransits extends PetriNet {
     }
 
     public int getPartition(Place place) {
-        return PetriNetWithTransitsExtensionHandler.getPartition(place);
+        return PetriNetExtensionHandler.getPartition(place);
     }
 
     public boolean hasPartition(Place place) {
-        return PetriNetWithTransitsExtensionHandler.hasPartition(place);
+        return PetriNetExtensionHandler.hasPartition(place);
     }
 
     public void setPartition(Place place, int token) {
-        PetriNetWithTransitsExtensionHandler.setPartition(place, token);
+        PetriNetExtensionHandler.setPartition(place, token);
     }
 
     public int getID(Place place) {

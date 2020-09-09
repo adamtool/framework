@@ -23,18 +23,6 @@ class PetriNetWithTransitsExtensionHandler extends PetriNetExtensionHandler {
         place.removeExtension(AdamExtensions.itfl.name());
     }
 
-    static int getPartition(Place place) {
-        return (Integer) place.getExtension(AdamExtensions.token.name());
-    }
-
-    static boolean hasPartition(Place place) {
-        return place.hasExtension(AdamExtensions.token.name());
-    }
-
-    static void setPartition(Place place, int token) {
-        place.putExtension(AdamExtensions.token.name(), token, ExtensionProperty.WRITE_TO_FILE);
-    }
-
     static int getID(Place place) {
         return (Integer) place.getExtension(AdamExtensions.id.name());
     }
@@ -42,5 +30,5 @@ class PetriNetWithTransitsExtensionHandler extends PetriNetExtensionHandler {
     static void setID(Place place, int id) {
         place.putExtension(AdamExtensions.id.name(), id);
     }
-  
+
 }

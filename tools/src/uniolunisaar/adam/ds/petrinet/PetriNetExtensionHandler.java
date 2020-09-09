@@ -191,7 +191,19 @@ public class PetriNetExtensionHandler {
         place.putExtension(AdamExtensions.origID.name(), id);
     }
 
+    public static int getPartition(Place place) {
+        return (Integer) place.getExtension(AdamExtensions.token.name());
+    }
+
+    public static boolean hasPartition(Place place) {
+        return place.hasExtension(AdamExtensions.token.name());
+    }
+
+    public static void setPartition(Place place, int token) {
+        place.putExtension(AdamExtensions.token.name(), token, ExtensionProperty.WRITE_TO_FILE);
+    }
 // %%%%%%%%%%%%%%%%%%%%%%%%% TRANSITION EXTENSIONS
+
     public static boolean isStrongFair(Transition t) {
         return t.hasExtension(AdamExtensions.strongFair.name());
     }

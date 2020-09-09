@@ -156,9 +156,17 @@ public class Tools {
         return file;
     }
 
+    /**
+     * Saves the given Petri net as an APT file.
+     *
+     * @param path
+     * @param net
+     * @throws FileNotFoundException
+     * @throws ModuleException
+     */
     public static void savePN(String path, PetriNet net) throws FileNotFoundException, ModuleException {
         String file = getPN(net);
-        try (PrintStream out = new PrintStream(path + ".apt")) {
+        try ( PrintStream out = new PrintStream(path + ".apt")) {
             out.println(file);
         }
         Logger.getInstance().addMessage("Saved to: " + path + ".apt", false);
@@ -169,14 +177,14 @@ public class Tools {
     }
 
     public static void saveFile(String path, String content, boolean append) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(new FileOutputStream(path, append))) {
+        try ( PrintStream out = new PrintStream(new FileOutputStream(path, append))) {
             out.println(content);
             Logger.getInstance().addMessage("Saved to: " + path);
         }
     }
 
     public static void saveFile(String path, byte[] content) throws FileNotFoundException, IOException {
-        try (OutputStream out = new FileOutputStream(path)) {
+        try ( OutputStream out = new FileOutputStream(path)) {
             out.write(content);
             Logger.getInstance().addMessage("Saved to: " + path, false);
         }
@@ -250,7 +258,7 @@ public class Tools {
     }
 
     public static void save2Dot(String path, IDotSaveable object) throws FileNotFoundException {
-        try (PrintStream out = new PrintStream(path + ".dot")) {
+        try ( PrintStream out = new PrintStream(path + ".dot")) {
             out.println(object.toDot());
         }
         Logger.getInstance().addMessage("Saved to: " + path + ".dot", true);
