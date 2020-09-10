@@ -155,6 +155,11 @@ public class PetriNetExtensionHandler {
         node.putExtension(AdamExtensions.yCoord.name(), id, ExtensionProperty.WRITE_TO_FILE);
     }
 
+    public static void clearCoords(Place place) {
+        place.removeExtension(AdamExtensions.xCoord.name());
+        place.removeExtension(AdamExtensions.yCoord.name());
+    }
+
     public static boolean hasBinID(Node node) {
         return node.hasExtension(AdamExtensions.binID.name());
     }
@@ -240,4 +245,5 @@ public class PetriNetExtensionHandler {
     public static void removeInhibitor(Flow f) {
         f.removeExtension(AdamExtensions.inhibitor.name());
     }
+
 }
