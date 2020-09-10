@@ -202,8 +202,8 @@ public class PNWTTools {
         return pnwt;
     }
 
-    public static void saveAPT(String path, PetriNetWithTransits net, boolean withAnnotationPartition) throws RenderException, FileNotFoundException {
-        String file = net.toAPT(withAnnotationPartition, false);
+    public static void saveAPT(String path, PetriNetWithTransits net, boolean withAnnotationPartition, boolean withCoordinates) throws RenderException, FileNotFoundException {
+        String file = net.toAPT(withAnnotationPartition, withCoordinates);
         Tools.saveFile(path + ".apt", file);
     }
 
@@ -507,7 +507,7 @@ public class PNWTTools {
     }
 
     public static void savePnwt2Dot(String path, PetriNetWithTransits net, boolean withLabel, Integer tokencount) throws FileNotFoundException {
-        try ( PrintStream out = new PrintStream(path + ".dot")) {
+        try (PrintStream out = new PrintStream(path + ".dot")) {
             if (tokencount == -1) {
                 out.println(pnwt2Dot(net, withLabel));
             } else {
