@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.HashMap;
 import java.util.Map;
+import uniol.apt.adt.exception.StructureException;
 import uniol.apt.adt.exception.TransitionFireException;
 import uniol.apt.adt.pn.Flow;
 import uniol.apt.adt.pn.Marking;
@@ -17,6 +18,7 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Token;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
+import uniolunisaar.adam.ds.BoundingBox;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.logic.externaltools.pn.Dot;
@@ -80,6 +82,55 @@ public class PNTools {
         }
     }
 
+    /**
+     * Calculates the extension of the given Petri net with transits.
+     *
+     * @param net - the Petri net with transits
+     * @return a bounding box we the extensions of net
+     */
+    public static BoundingBox calculateBoundingBox(PetriNet net) {
+        double top = Double.MAX_VALUE, bottom = -Double.MAX_VALUE, left = Double.MAX_VALUE, right = -Double.MAX_VALUE;
+        for (Node node : net.getNodes()) {
+            double xcoord = PetriNetExtensionHandler.getXCoord(node);
+            if (xcoord < left) {
+                left = xcoord;
+            }
+            if (xcoord > right) {
+                right = xcoord;
+            }
+            double ycoord = PetriNetExtensionHandler.getYCoord(node);
+            if (ycoord < top) {
+                top = ycoord;
+            }
+            if (ycoord > bottom) {
+                bottom = ycoord;
+            }
+        }
+        return new BoundingBox(top, bottom, left, right);
+    }
+
+    /**
+     * Returns, iff available the label of the node. For a transition
+     * node.getLabel() for a place PetriNetExtensionHandler.getLabel(node).
+     *
+     * @param net
+     * @param node
+     * @return
+     */
+    public static String getLabel(PetriNet net, Node node) {
+        if (!net.containsNode(node)) {
+            throw new StructureException("Node '" + node.getId() + "' does not belong to net '" + net.getName() + "'");
+        }
+        if (net.containsTransition(node.getId())) {
+            return ((Transition) node).getLabel();
+        }
+        Place p = (Place) node;
+        if (!PetriNetExtensionHandler.hasLabel(p)) {
+            throw new StructureException("Place '" + p.getId() + "' does not have a label.");
+        }
+        return PetriNetExtensionHandler.getLabel(p);
+    }
+
     public static void annotateProcessFamilyID(PetriNet net) {
         PetriNetExtensionHandler.setProcessFamilyID(net, net.getName() + Thread.currentThread().getName());
     }
@@ -112,7 +163,7 @@ public class PNTools {
             p.copyExtensions(place);
             PetriNetExtensionHandler.setLabel(p, place.getId());
             mapping.put(place, p);
-            init.setTokenCount(p, place.getInitialToken());
+            init = init.setTokenCount(p, place.getInitialToken());
         }
         out.setInitialMarking(init);
         for (Transition transition : net.getTransitions()) {
@@ -222,7 +273,7 @@ public class PNTools {
     }
 
     public static void savePN2Dot(String path, PetriNet net, boolean withLabel, boolean withOrigPlaces, Integer tokencount) throws FileNotFoundException {
-        try ( PrintStream out = new PrintStream(path + ".dot")) {
+        try (PrintStream out = new PrintStream(path + ".dot")) {
             if (tokencount == -1) {
                 out.println(pn2Dot(net, withLabel, withOrigPlaces));
             } else {
