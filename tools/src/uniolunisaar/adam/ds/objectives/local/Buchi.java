@@ -1,9 +1,10 @@
-package uniolunisaar.adam.ds.objectives;
+package uniolunisaar.adam.ds.objectives.local;
 
 import java.util.HashSet;
 import java.util.Set;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
+import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 
 /**

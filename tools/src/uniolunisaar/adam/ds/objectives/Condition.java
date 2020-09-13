@@ -18,7 +18,8 @@ public abstract class Condition<W extends Condition<W>> {
         A_BUCHI,
         E_PARITY,
         A_PARITY,
-        LTL
+        LTL,
+        GLOBAL_SAFETY
     }
 
     public abstract void buffer(PetriNet net);
