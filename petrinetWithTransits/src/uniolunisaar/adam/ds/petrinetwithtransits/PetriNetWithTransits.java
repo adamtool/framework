@@ -285,6 +285,8 @@ public class PetriNetWithTransits extends PetriNet {
             tfl = new Transit(this, pre, t, postSet);
             tfls.put(pre.getId(), tfl);
         }
+        // s.th. changed, notify listeners
+//        invokeListeners(); // don't want the notify the listeners which listen on the changes of the Petri net, would have to implement an own list
         return tfl;
     }
 
@@ -322,6 +324,8 @@ public class PetriNetWithTransits extends PetriNet {
             tfl = new Transit(this, t, postSet);
             tfls.put(Transit.INIT_KEY, tfl);
         }
+        // s.th. changed, notify listeners
+//        invokeListeners(); // don't want the notify the listeners which listen on the changes of the Petri net, would have to implement an own list
         return tfl;
     }
 
@@ -414,6 +418,8 @@ public class PetriNetWithTransits extends PetriNet {
         } else {
             throw new NoSuchTransitException(this, sourceId, targetId);
         }
+        // s.th. changed, notify listeners
+//        invokeListeners(); // don't want the notify the listeners which listen on the changes of the Petri net, would have to implement an own list
     }
 
     public void removeInitialTransit(Transition source, Place target) {
@@ -439,6 +445,8 @@ public class PetriNetWithTransits extends PetriNet {
         if (tf.getPostset().isEmpty()) {
             transits.get(transitionId).remove(Transit.INIT_KEY);
         }
+        // s.th. changed, notify listeners
+//        invokeListeners(); // don't want the notify the listeners which listen on the changes of the Petri net, would have to implement an own list
     }
 
     public Transit getTransit(Transition t, Place preset) {
