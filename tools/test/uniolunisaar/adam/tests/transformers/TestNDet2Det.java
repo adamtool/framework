@@ -1,4 +1,4 @@
-package uniolunisaar.adam.tools;
+package uniolunisaar.adam.tests.transformers;
 
 import java.io.File;
 import org.testng.annotations.BeforeClass;
@@ -7,6 +7,7 @@ import uniolunisaar.adam.ds.automata.BuchiAutomaton;
 import uniolunisaar.adam.ds.automata.BuchiState;
 import uniolunisaar.adam.ds.automata.StringLabel;
 import uniolunisaar.adam.logic.transformers.automata.NDet2DetAutomatonTransformer;
+import uniolunisaar.adam.tools.Tools;
 
 /**
  *
