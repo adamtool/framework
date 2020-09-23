@@ -17,7 +17,7 @@ import uniol.apt.io.renderer.RenderException;
 import uniol.apt.io.renderer.impl.AptLTSRenderer;
 import uniol.apt.io.renderer.impl.DotLTSRenderer;
 import uniol.apt.io.renderer.impl.PnmlPNRenderer;
-import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
+import uniolunisaar.adam.exceptions.synthesis.pgwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.util.PNWTTools;
 import uniolunisaar.adam.tools.Tools;

@@ -22,9 +22,7 @@ import uniol.apt.io.parser.impl.AptPNParser;
 import uniol.apt.io.renderer.RenderException;
 import uniol.apt.io.renderer.impl.AptPNRenderer;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
-import uniolunisaar.adam.exceptions.pnwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.ds.petrinetwithtransits.Transit;
-import uniolunisaar.adam.ds.objectives.Condition;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.logic.parser.transits.TransitParser;
@@ -37,53 +35,6 @@ import uniolunisaar.adam.tools.Tools;
  * @author Manuel Gieseking
  */
 public class PNWTTools {
-
-    private static boolean hasConditionAnnotation(PetriNet net) {
-        return net.hasExtension(AdamExtensions.condition.name())
-                || net.hasExtension(AdamExtensions.winningCondition.name())// todo: this is only for the fallback to the just-sythesis-version.
-                ;
-    }
-
-    private static String getConditionAnnotation(PetriNet net) {
-        return (String) net.getExtension(AdamExtensions.condition.name());
-    }
-
-    public static void setConditionAnnotation(PetriNet net, Condition.Objective con) {
-        net.putExtension(AdamExtensions.condition.name(), con.name(), ExtensionProperty.WRITE_TO_FILE);
-    }
-
-    public static Condition.Objective parseConditionFromNetExtensionText(PetriNetWithTransits net) throws CouldNotFindSuitableConditionException {
-        if (hasConditionAnnotation(net)) {
-            try {
-                // todo: this is only for the fallback to the just-synthesis-version.
-                String con;
-                if (net.hasExtension(AdamExtensions.winningCondition.name())) {
-                    con = (String) net.getExtension(AdamExtensions.winningCondition.name());
-                    net.removeExtension(AdamExtensions.winningCondition.name());
-                    net.putExtension(AdamExtensions.condition.name(), con, ExtensionProperty.WRITE_TO_FILE);
-                } else {
-                    con = getConditionAnnotation(net);
-                }
-                Condition.Objective winCon = Condition.Objective.valueOf(con);
-                return winCon;
-            } catch (ClassCastException | IllegalArgumentException e) {
-                String con = getConditionAnnotation(net);
-                // Set some standards concerning existential or universal
-                if (con.equals("SAFETY")) {
-                    return Condition.Objective.A_SAFETY;
-                }
-                if (con.equals("REACHABILITY")) {
-                    return Condition.Objective.E_REACHABILITY;
-                }
-                if (con.equals("BUCHI")) {
-                    return Condition.Objective.E_BUCHI;
-                }
-                throw new CouldNotFindSuitableConditionException(net, e);
-            }
-        } else {
-            throw new CouldNotFindSuitableConditionException(net);
-        }
-    }
 
     static boolean hasTransitAnnotation(Transition t) {
         return t.hasExtension(AdamExtensions.tfl.name());
