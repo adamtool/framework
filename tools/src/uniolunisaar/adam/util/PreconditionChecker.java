@@ -25,7 +25,7 @@ public class PreconditionChecker implements IGraphListener<PetriNet, Flow, Node>
         this.net.addListener(this);
     }
 
-    public boolean check() {
+    public boolean check() throws Exception {
         return true;
     }
 
