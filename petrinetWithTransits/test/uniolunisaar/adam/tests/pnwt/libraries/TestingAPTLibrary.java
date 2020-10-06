@@ -115,7 +115,7 @@ public class TestingAPTLibrary {
 
     @Test
     public void copyConstructor() throws ParseException, IOException {
-        final String path = System.getProperty("examplesfolder") + "/safety/burglar/burglar.apt";
+        final String path = System.getProperty("examplesfolder") + "/forallsafety/burglar/burglar.apt";
         PetriNet pn = Tools.getPetriNet(path);
 
         PetriNet net2 = new PetriNet(pn);
@@ -130,7 +130,7 @@ public class TestingAPTLibrary {
 
     @Test
     public void burglar() throws IOException, ParseException {
-        final String path = System.getProperty("examplesfolder") + "/safety/burglar/burglar.apt";
+        final String path = System.getProperty("examplesfolder") + "/forallsafety/burglar/burglar.apt";
         PetriNet pn = Tools.getPetriNet(path);
         BoundedResult res = Bounded.checkBounded(pn);
         Assert.assertTrue(res.isBounded());
@@ -176,7 +176,7 @@ public class TestingAPTLibrary {
 
     @Test(expectedExceptions = {NoSuchNodeException.class}, expectedExceptionsMessageRegExp = "Node 't1' does not exist in graph 'burglar.net'")
     public void testTokenflow() throws IOException, ParseException {
-        final String path = System.getProperty("examplesfolder") + "/safety/burglar/burglar.apt";
+        final String path = System.getProperty("examplesfolder") + "/forallsafety/burglar/burglar.apt";
         PetriNetWithTransits game = PNWTTools.getPetriNetWithTransitsFromParsedPetriNet(Tools.getPetriNet(path), true);
         game.removeNode(game.getTransition("t1"));
         game.getTransition("t1");
@@ -185,7 +185,7 @@ public class TestingAPTLibrary {
     @Test
     public void pnmlRenderer() throws RenderException, ParseException, IOException {
         PnmlPNRenderer renderer = new PnmlPNRenderer();
-        String out = renderer.render(Tools.getPetriNet(System.getProperty("examplesfolder") + "/safety/burglar/burglar.apt"));
+        String out = renderer.render(Tools.getPetriNet(System.getProperty("examplesfolder") + "/forallsafety/burglar/burglar.apt"));
 //        System.out.println(out);
     }
 
