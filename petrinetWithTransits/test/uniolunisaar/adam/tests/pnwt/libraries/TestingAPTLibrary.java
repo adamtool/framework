@@ -17,7 +17,6 @@ import uniol.apt.io.renderer.RenderException;
 import uniol.apt.io.renderer.impl.AptLTSRenderer;
 import uniol.apt.io.renderer.impl.DotLTSRenderer;
 import uniol.apt.io.renderer.impl.PnmlPNRenderer;
-import uniolunisaar.adam.exceptions.synthesis.pgwt.CouldNotFindSuitableConditionException;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.util.PNWTTools;
 import uniolunisaar.adam.tools.Tools;
@@ -130,7 +129,7 @@ public class TestingAPTLibrary {
     }
 
     @Test
-    public void burglar() throws IOException, ParseException, CouldNotFindSuitableConditionException {
+    public void burglar() throws IOException, ParseException {
         final String path = System.getProperty("examplesfolder") + "/safety/burglar/burglar.apt";
         PetriNet pn = Tools.getPetriNet(path);
         BoundedResult res = Bounded.checkBounded(pn);
