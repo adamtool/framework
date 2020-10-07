@@ -16,7 +16,6 @@ t=javac
 #.PHONY: javadoc
 .PHONY: setJavac
 .PHONY: setJar
-.PHONY: setJavac
 .PHONY: setStandalone
 .PHONY: setClean
 .PHONY: setCleanAll
