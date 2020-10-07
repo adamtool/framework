@@ -86,11 +86,15 @@ public class PNTools {
      * Calculates the extension of the given Petri net with transits.
      *
      * @param net - the Petri net with transits
-     * @return a bounding box we the extensions of net
+     * @return a bounding box with the extensions of net or 'null' if a node of
+     * the net has no x-coordinate
      */
     public static BoundingBox calculateBoundingBox(PetriNet net) {
         double top = Double.MAX_VALUE, bottom = -Double.MAX_VALUE, left = Double.MAX_VALUE, right = -Double.MAX_VALUE;
         for (Node node : net.getNodes()) {
+            if (!PetriNetExtensionHandler.hasXCoord(node)) {
+                return null;
+            }
             double xcoord = PetriNetExtensionHandler.getXCoord(node);
             if (xcoord < left) {
                 left = xcoord;
