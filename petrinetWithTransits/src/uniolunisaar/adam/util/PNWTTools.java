@@ -6,9 +6,11 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import uniol.apt.adt.extension.ExtensionProperty;
@@ -22,6 +24,8 @@ import uniol.apt.io.parser.impl.AptPNParser;
 import uniol.apt.io.renderer.RenderException;
 import uniol.apt.io.renderer.impl.AptPNRenderer;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
+import uniolunisaar.adam.ds.petrinetwithtransits.DataFlowTree;
+import uniolunisaar.adam.ds.petrinetwithtransits.DataFlowTreeNode;
 import uniolunisaar.adam.ds.petrinetwithtransits.Transit;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
 import uniolunisaar.adam.exceptions.ExternalToolException;
@@ -581,5 +585,104 @@ public class PNWTTools {
             }
         }
         return mapping;
+    }
+
+    public static List<DataFlowTree> getDataFlowTrees(PetriNetWithTransits pnwt, List<Transition> firingSequence) {
+        List<DataFlowTree> trees = new ArrayList<>();
+        // the list of current leaves of all trees
+        List<DataFlowTreeNode> children = new ArrayList<>();
+        // for each transition in the firing sequence
+        for (int i = 0; i < firingSequence.size(); i++) {
+            Transition t = firingSequence.get(i);
+            Collection<Transit> transits = pnwt.getTransits(t);
+            for (Transit transit : transits) {
+                if (transit.isInitial()) { // when initial create a new tree
+                    DataFlowTree tree = new DataFlowTree(t);
+                    trees.add(tree);
+                    tree.getRoot().addChildren(transit.getPostset());
+                    children.addAll(tree.getRoot().getChildren());
+                } else { // when not initial check all current leaves of the trees and possible extend the trees
+                    Place pre = transit.getPresetPlace();
+                    List<DataFlowTreeNode> childrenToRemove = new ArrayList<>();
+                    List<DataFlowTreeNode> childrenToAdd = new ArrayList<>();
+                    for (DataFlowTreeNode child : children) {
+                        if (child.getNode().getId().equals(pre.getId())) { // the preset of the transit is a current leave of any tree
+                            childrenToRemove.add(child); // this is no leave a the tree anymore                                   
+                            // add transition as child
+                            DataFlowTreeNode tNode = child.addChild(t);
+                            // and all the transit successors
+                            tNode.addChildren(transit.getPostset());
+                            childrenToAdd.addAll(tNode.getChildren()); // add the new leaves of the tree
+                        }
+                    }
+                    children.removeAll(childrenToRemove);
+                    children.addAll(childrenToAdd);
+                }
+            }
+        }
+        return trees;
+    }
+
+    private static void addChild(DataFlowTree tree, DataFlowTreeNode node, StringBuilder sb) {
+        String parentID = tree.hashCode() + "." + node.getParent().hashCode();
+        String childID = tree.hashCode() + "." + node.hashCode();
+        // child node
+        sb.append("\"").append(childID).append("\"[label=\"").append(node.getNode().getId()).append("\", shape=none]\n");
+        // edge
+        sb.append("\"").append(parentID).append("\"").append("->").append("\"").append(childID).append("\"\n");
+        // if there is no successor this branch is finished
+        if (node.getChildren() == null || node.getChildren().isEmpty()) {
+            return;
+        }
+        // add the next transition
+        DataFlowTreeNode tNode = node.getChildren().get(0); // there can only be one child
+        String tNodeID = tree.hashCode() + "." + tNode.hashCode();
+        sb.append("\"").append(tNodeID).append("\"[shape=point]").append("\n");
+        sb.append("\"").append(childID).append("\"").append("->").append("\"").append(tNodeID);
+        sb.append("\"[label=\"").append(tNode.getNode().getId()).append("\",arrowhead=none]\n");
+        // recursively all children
+        for (DataFlowTreeNode child : tNode.getChildren()) {
+            addChild(tree, child, sb);
+        }
+    }
+
+    public static String dataFlowTreesToDot(List<DataFlowTree> trees) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("digraph DataFlowTrees {\n");
+
+        for (DataFlowTree tree : trees) {
+            DataFlowTreeNode pre = tree.getRoot();
+            // init of the tree o--ti--.
+            String initId = "init." + tree.hashCode();
+            String dotId = tree.hashCode() + "." + pre.hashCode();
+            sb.append("# new tree\n");
+            sb.append("\"").append(initId).append("\"[shape=circle, height=0.1, width=0.1, fixedsize=true, label=\"\"]").append("\n");
+            sb.append("\"").append(dotId).append("\"[shape=point]").append("\n");
+            sb.append("\"").append(initId).append("\"").append("->").append("\"").append(dotId);
+            sb.append("\"[label=\"").append(pre.getNode().getId()).append("\",arrowhead=none]\n");
+            // add recursively all children
+            for (DataFlowTreeNode child : pre.getChildren()) {
+                addChild(tree, child, sb);
+            }
+        }
+        sb.append("\n\n");
+        sb.append("overlap=false\n");
+//        sb.append("label=\"").append(net.getName()).append("\"\n");
+        sb.append("fontsize=12\n");
+        sb.append("}");
+        return sb.toString();
+    }
+
+    public static void saveDataFlowTreesToPDF(String path, List<DataFlowTree> trees, String procID) throws FileNotFoundException, IOException {
+        Tools.saveFile(path + ".dot", dataFlowTreesToDot(trees));
+        try {
+            Dot.call(path + ".dot", path, true, procID);
+        } catch (IOException | InterruptedException | ExternalToolException ex) {
+            File dotFile = new File(path + ".dot");
+            if (dotFile.exists()) {
+//                Files.delete(dotFile.toPath());
+            }
+            Logger.getInstance().addError("Saving pdf from dot failed.", ex);
+        }
     }
 }
