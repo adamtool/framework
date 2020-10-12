@@ -136,7 +136,7 @@ public class ExternalProcessHandler {
         return proc.destroyForcibly();
     }
 
-    public Process destroyForciblyWithChilds() {
+    public Process destroyForciblyWithChildren() {
         for (Iterator<ProcessHandle> iterator = proc.children().iterator(); iterator.hasNext();) {
             ProcessHandle childProc = iterator.next();
 //            System.out.println("pid" + childProc.pid());

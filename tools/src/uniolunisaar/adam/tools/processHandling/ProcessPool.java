@@ -75,9 +75,9 @@ public class ProcessPool implements IProcessListener {
         }
     }
 
-    public synchronized void destroyForciblyProcessAndChilds(String id) {
+    public synchronized void destroyForciblyProcessAndChildren(String id) {
         if (processes.containsKey(id)) {
-            processes.get(id).destroyForciblyWithChilds();
+            processes.get(id).destroyForciblyWithChildren();
         } else {
             Logger.getInstance().addWarning("Couldn't find a process with id '" + id + "' to destroy.");
         }
@@ -88,6 +88,16 @@ public class ProcessPool implements IProcessListener {
         for (Map.Entry<String, ExternalProcessHandler> entry : processes.entrySet()) {
             if (entry.getKey().startsWith(id + "#")) {
                 entry.getValue().destroyForcibly();
+            }
+        }
+//        semaphore.release();
+    }
+
+    public synchronized void destroyForciblyProcessesAndChildrenOfNet(String id) throws InterruptedException {
+//        semaphore.acquire();
+        for (Map.Entry<String, ExternalProcessHandler> entry : processes.entrySet()) {
+            if (entry.getKey().startsWith(id + "#")) {
+                entry.getValue().destroyForciblyWithChildren();
             }
         }
 //        semaphore.release();
