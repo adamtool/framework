@@ -137,12 +137,16 @@ public class ExternalProcessHandler {
     }
 
     public Process destroyForciblyWithChildren() {
-        for (Iterator<ProcessHandle> iterator = proc.children().iterator(); iterator.hasNext();) {
+        destroyForciblyAllChildrenRecursively(proc.toHandle());
+        return proc.destroyForcibly();
+    }
+
+    private void destroyForciblyAllChildrenRecursively(ProcessHandle child) {
+        for (Iterator<ProcessHandle> iterator = child.children().iterator(); iterator.hasNext();) {
             ProcessHandle childProc = iterator.next();
-//            System.out.println("pid" + childProc.pid());
+            destroyForciblyAllChildrenRecursively(childProc);
             childProc.destroyForcibly();
         }
-        return proc.destroyForcibly();
     }
 
     public String getErrors() throws ProcessNotStartedException {
