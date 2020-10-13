@@ -83,7 +83,7 @@ public class ProcessPool implements IProcessListener {
         }
     }
 
-    public synchronized void destroyForciblyProcessesOfNet(String id) throws InterruptedException {
+    public synchronized void destroyForciblyProcessesOfNet(String id) {
 //        semaphore.acquire();
         for (Map.Entry<String, ExternalProcessHandler> entry : processes.entrySet()) {
             if (entry.getKey().startsWith(id + "#")) {
@@ -93,7 +93,7 @@ public class ProcessPool implements IProcessListener {
 //        semaphore.release();
     }
 
-    public synchronized void destroyForciblyProcessesAndChildrenOfNet(String id) throws InterruptedException {
+    public synchronized void destroyForciblyProcessesAndChildrenOfNet(String id) {
 //        semaphore.acquire();
         for (Map.Entry<String, ExternalProcessHandler> entry : processes.entrySet()) {
             if (entry.getKey().startsWith(id + "#")) {

@@ -1,0 +1,12 @@
+package uniolunisaar.adam.ds.petrinetwithtransits;
+
+import java.util.ArrayList;
+import uniol.apt.adt.pn.Node;
+
+/**
+ *
+ * @author Manuel
+ */
+public class DataFlowChain extends ArrayList<Node> {
+
+}
