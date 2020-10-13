@@ -18,6 +18,8 @@ import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Token;
 import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
+import uniol.apt.io.renderer.RenderException;
+import uniol.apt.io.renderer.impl.PnmlPNRenderer;
 import uniolunisaar.adam.ds.BoundingBox;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.exceptions.ExternalToolException;
@@ -368,4 +370,12 @@ public class PNTools {
         return mvPdf;
     }
 
+    public static String pn2pnml(PetriNet net) throws RenderException {
+        return new PnmlPNRenderer().render(net);
+    }
+
+    public static void save2pnml(String path, PetriNet net) throws FileNotFoundException, RenderException {
+        String pnml = pn2pnml(net);
+        Tools.saveFile(path, pnml);
+    }
 }
