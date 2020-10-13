@@ -137,7 +137,12 @@ public class ExternalProcessHandler {
     }
 
     public Process destroyForciblyWithChildren() {
-        destroyForciblyAllChildrenRecursively(proc.toHandle());
+        // todo: check why this doesn't work
+//        destroyForciblyAllChildrenRecursively(proc.toHandle());
+        for (Iterator<ProcessHandle> iterator = proc.children().iterator(); iterator.hasNext();) {
+            ProcessHandle childProc = iterator.next();
+            childProc.destroyForcibly();
+        }
         return proc.destroyForcibly();
     }
 
