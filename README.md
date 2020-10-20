@@ -30,9 +30,7 @@ This modules can be used as separate library and
 Related Publications:
 ---------------------
 - _Bernd Finkbeiner, Manuel Gieseking, Jesko Hecking-Harbusch, Ernst-Rüdiger Olderog:_
-  [Model Checking Data Flows in Concurrent Network Updates](https://doi.org/10.1007/978-3-030-31784-3_30). ATVA 2019: 515-533
-- _Bernd Finkbeiner, Manuel Gieseking, Jesko Hecking-Harbusch, Ernst-Rüdiger Olderog:_
-  [Model Checking Data Flows in Concurrent Network Updates (Full Version)](http://arxiv.org/abs/1907.11061). CoRR abs/1907.11061 (2019)
+  [Model Checking Data Flows in Concurrent Network Updates](https://doi.org/10.1007/978-3-030-31784-3_30). ATVA 2019: 515-533 [(Full Version)](http://arxiv.org/abs/1907.11061).
 
 ------------------------------------
 
