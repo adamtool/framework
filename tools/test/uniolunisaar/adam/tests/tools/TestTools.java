@@ -163,6 +163,6 @@ public class TestTools {
         net.createFlow(p1,t);
         net.createFlow(t,p2);
         String pnml = PNTools.pn2pnml(net);
-        System.out.println(pnml);
+//        System.out.println(pnml);
     }
 }

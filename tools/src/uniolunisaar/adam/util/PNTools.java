@@ -442,7 +442,8 @@ public class PNTools {
         // add the coordinates iff existent
         for (Node node : idNet.getNodes()) {
             if (PetriNetExtensionHandler.hasXCoord(node) && PetriNetExtensionHandler.hasYCoord(node)) {
-                String startPoint = "<place id=\"" + node.getId() + "\">\n";
+                String prefix = (idNet.containsPlace(node.getId())) ? "<place id=\"" : "<transition id=\"";
+                String startPoint = prefix + node.getId() + "\">\n";
                 String addPart = "<graphics>\n"
                         + "  <position x=\"" + PetriNetExtensionHandler.getXCoord(node) + "\" y=\"" + PetriNetExtensionHandler.getYCoord(node) + "\"/>\n"
                         + "</graphics>";
