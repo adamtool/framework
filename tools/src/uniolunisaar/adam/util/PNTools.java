@@ -425,7 +425,7 @@ public class PNTools {
         for (Transition transition : idNet.getTransitions()) {
             String label = transition.getLabel().replaceAll("<", "[");
             label = label.replaceAll(">", "]");
-            pnml = pnml.replaceAll("<text>" + transition.getId() + "</text>", "<text>" + label + "</text>");
+            pnml = pnml.replaceAll("<text>" + transition.getLabel() + "</text>", "<text>" + label + "</text>");
         }
         // add the inhibitor annotation to the arcs
         for (Flow edge : idNet.getEdges()) {
@@ -438,6 +438,16 @@ public class PNTools {
                 newArc += "normal\">";
             }
             pnml = pnml.replaceAll(oldArc, newArc);
+        }
+        // add the coordinates iff existent
+        for (Node node : idNet.getNodes()) {
+            if (PetriNetExtensionHandler.hasXCoord(node) && PetriNetExtensionHandler.hasYCoord(node)) {
+                String startPoint = "<place id=\"" + node.getId() + "\">\n";
+                String addPart = "<graphics>\n"
+                        + "  <position x=\"" + PetriNetExtensionHandler.getXCoord(node) + "\" y=\"" + PetriNetExtensionHandler.getYCoord(node) + "\"/>\n"
+                        + "</graphics>";
+                pnml = pnml.replaceAll(startPoint, startPoint + addPart);
+            }
         }
         return pnml;
     }

@@ -158,9 +158,11 @@ public class TestTools {
         net.createPlace("nod1");
         Place p1 = net.createPlace("nod2_<>");
         Place p2 = net.createPlace("nod3");
-        Transition t = net.createTransition("asdf");
+        Transition t = net.createTransition("<init-fl>asdf");
+        Transition t2 = net.createTransition("asdf-<init-fl>asdf");
         net.createFlow(p1,t);
         net.createFlow(t,p2);
         String pnml = PNTools.pn2pnml(net);
+        System.out.println(pnml);
     }
 }
