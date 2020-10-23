@@ -6,7 +6,7 @@ This module is used for model checking in AdamMC and for the synthesis in AdamSY
 Contains:
 ---------
 - data structures for
-  * Petri nets with transits (cp. [ATVA'19](http://arxiv.org/abs/1907.11061)),
+  * Petri nets with transits (cf. [ATVA'19](http://arxiv.org/abs/1907.11061)),
   * alternating Büchi tree automata
   * Büchi automata
   * circuits
@@ -14,7 +14,7 @@ Contains:
   * rendering into the dot format
   * calculating bounding boxes
 - process handler and pool management
-- transformer of nondeterminisc automata into deterministic ones
+- transformer of nondeterministic automata into deterministic ones
 - renderer for circuits into Aiger format
 - renderer for Petri nets with transits and the automata into the dot format
 - parser for Petri nets with transits and Software defined networks
