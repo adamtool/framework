@@ -8,10 +8,14 @@ import org.testng.Assert;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import uniol.apt.adt.pn.PetriNet;
+import uniol.apt.adt.pn.Place;
+import uniol.apt.adt.pn.Transition;
 import uniol.apt.io.parser.ParseException;
+import uniol.apt.io.renderer.RenderException;
 import uniol.apt.util.Pair;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.tools.Tools;
+import uniolunisaar.adam.util.PNTools;
 
 /**
  *
@@ -146,5 +150,17 @@ public class TestTools {
 //        System.out.println("count " +  Logger.instances.size());
 //        Logger.getInstance();
 //        System.out.println("count " +  Logger.instances.size());
+    }
+
+    public void testPNMLRenderer() throws RenderException {
+        PetriNet net = new PetriNet();
+        net.createPlace("peter_<tfl>_asdf");
+        net.createPlace("nod1");
+        Place p1 = net.createPlace("nod2_<>");
+        Place p2 = net.createPlace("nod3");
+        Transition t = net.createTransition("asdf");
+        net.createFlow(p1,t);
+        net.createFlow(t,p2);
+        String pnml = PNTools.pn2pnml(net);
     }
 }

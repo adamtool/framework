@@ -8,6 +8,8 @@ import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.MatchResult;
+import java.util.regex.Pattern;
 import uniol.apt.adt.exception.StructureException;
 import uniol.apt.adt.exception.TransitionFireException;
 import uniol.apt.adt.pn.Flow;
@@ -370,8 +372,74 @@ public class PNTools {
         return mvPdf;
     }
 
+    /**
+     * It is not enough to only get rid of the < and > symbols. At least other
+     * tools often have very restrictive grammars for the ids of the nodes.
+     *
+     * @param pnml
+     * @return
+     * @deprecated
+     */
+    @Deprecated
+    private static String replaceSpecialSymbolsForPNML(String pnml) {
+        // replace place ids which contain '<' or '>'
+        String[] matches = Pattern.compile("id=\"([^\"]*)\"")
+                .matcher(pnml)
+                .results()
+                .map(MatchResult::group)
+                .toArray(String[]::new);
+        for (String match : matches) {
+            if (match.contains("<") || match.contains(">")) {
+                String oldID = match.substring(3, match.length());
+                String id = oldID.replaceAll("[<]", "[");
+                id = id.replaceAll("[>]", "]");
+                // replace the id with " " to unique ids
+                pnml = pnml.replaceAll(oldID, id);
+                // replace all < with [ and > with ] in the text field
+                pnml = pnml.replaceAll("<text>" + oldID.substring(1, oldID.length() - 1) + "</text>", "<text>" + id.substring(1, id.length() - 1) + "</text>");
+
+            }
+        }
+        return pnml;
+    }
+
+    /**
+     * Since many other tools have a very restrictive syntax for the ids of the
+     * nodes we replace all nodes with ids and only write the real ID in the
+     * text.
+     *
+     * @param net
+     * @return
+     * @throws RenderException
+     */
     public static String pn2pnml(PetriNet net) throws RenderException {
-        return new PnmlPNRenderer().render(net);
+        // create the net with the ids
+        PetriNet idNet = createPetriNetWithIDsInLabel(net);
+        String pnml = new PnmlPNRenderer().render(idNet);
+        // replace the text field with the real id
+        for (Place place : idNet.getPlaces()) {
+            String label = PetriNetExtensionHandler.getLabel(place).replaceAll("<", "[");
+            label = label.replaceAll(">", "]");
+            pnml = pnml.replaceAll("<text>" + place.getId() + "</text>", "<text>" + label + "</text>");
+        }
+        for (Transition transition : idNet.getTransitions()) {
+            String label = transition.getLabel().replaceAll("<", "[");
+            label = label.replaceAll(">", "]");
+            pnml = pnml.replaceAll("<text>" + transition.getId() + "</text>", "<text>" + label + "</text>");
+        }
+        // add the inhibitor annotation to the arcs
+        for (Flow edge : idNet.getEdges()) {
+            String prefix = "<arc id=\"" + edge.getSource().getId() + "-" + edge.getTarget().getId() + "\" source=\"" + edge.getSource().getId() + "\" target=\"" + edge.getTarget().getId() + "\"";
+            String oldArc = prefix + ">";
+            String newArc = prefix + " type=\"";
+            if (PetriNetExtensionHandler.isInhibitor(edge)) {
+                newArc += "inhibitor\">";
+            } else {
+                newArc += "normal\">";
+            }
+            pnml = pnml.replaceAll(oldArc, newArc);
+        }
+        return pnml;
     }
 
     public static void save2pnml(String path, PetriNet net) throws FileNotFoundException, RenderException {
