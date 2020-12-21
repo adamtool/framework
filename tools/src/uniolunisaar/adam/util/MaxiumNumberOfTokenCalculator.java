@@ -17,7 +17,7 @@ public class MaxiumNumberOfTokenCalculator {
 
     public static long getMaximumNumberOfToken(PetriNet pn) {
         Logger.getInstance().addMessage("Calculate maximum number of token... ");
-        CoverabilityGraph cv = CoverabilityGraph.get(pn);
+        CoverabilityGraph cv = CoverabilityGraph.getReachabilityGraph(pn);
         long max = 0;
         for (Iterator<CoverabilityGraphNode> it = cv.getNodes().iterator(); it.hasNext();) {
             CoverabilityGraphNode node = it.next();

@@ -1,5 +1,6 @@
 package uniolunisaar.adam.tests.pnwt.libraries;
 
+import java.io.File;
 import java.io.IOException;
 import org.testng.Assert;
 import org.testng.annotations.Test;
@@ -11,8 +12,10 @@ import uniol.apt.adt.ts.State;
 import uniol.apt.adt.ts.TransitionSystem;
 import uniol.apt.analysis.bounded.Bounded;
 import uniol.apt.analysis.bounded.BoundedResult;
+import uniol.apt.analysis.coverability.CoverabilityGraph;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.io.parser.impl.AptLTSParser;
+import uniol.apt.io.parser.impl.AptPNParser;
 import uniol.apt.io.renderer.RenderException;
 import uniol.apt.io.renderer.impl.AptLTSRenderer;
 import uniol.apt.io.renderer.impl.DotLTSRenderer;
@@ -27,6 +30,30 @@ import uniolunisaar.adam.tools.Tools;
  */
 @Test
 public class TestingAPTLibrary {
+
+    private static final String inputDir = System.getProperty("examplesfolder");
+
+    @Test
+    public void reachVsCover() throws Exception {
+        File file = null;
+//        File file = new File(inputDir + "/forallsafety/reversible/wf_2_3_pg_reversible.apt"); // not bounded
+//        File file = new File(inputDir + "/forallsafety/scalable/documentWorkFlow/standard/15_DW.apt");  // takes too long
+        PetriNet net = new AptPNParser().parseFile(file);
+        long start = System.currentTimeMillis();
+        CoverabilityGraph cg = CoverabilityGraph.get(net);
+        int nb_nodes_cg = cg.calculateNodes();
+        long end = System.currentTimeMillis();
+        System.out.println("CG: nodes: " + nb_nodes_cg + " needed: " + (end - start) / 100 + "s ");
+        
+        BoundedResult checkBounded = Bounded.checkBounded(net);
+        System.out.println("it is bounded "+ checkBounded.isBounded());
+
+        start = System.currentTimeMillis();
+        CoverabilityGraph reach = CoverabilityGraph.getReachabilityGraph(net);
+        int nb_nodes_reach = reach.calculateNodes();
+        end = System.currentTimeMillis();
+        System.out.println("Reach: nodes: " + nb_nodes_reach + " needed: " + (end - start) / 100 + "s ");
+    }
 
     @Test
     public void testTransitionSystems() throws RenderException, ParseException, IOException {

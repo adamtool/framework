@@ -468,7 +468,7 @@ public class PetriNetWithTransits extends PetriNet {
     }
 
     public CoverabilityGraph getReachabilityGraph() {
-        return CoverabilityGraph.get(this);
+        return CoverabilityGraph.getReachabilityGraph(this);
     }
 
     public void checkTransitConsistency(Transit transit) {
