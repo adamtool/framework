@@ -650,6 +650,11 @@ public class PNWTTools {
         StringBuilder sb = new StringBuilder();
         sb.append("digraph DataFlowTrees {\n");
 
+        if(trees.isEmpty()) {
+              sb.append("# there is no tree\n"); 
+              sb.append("\"For the given firing sequence there exists no data flow tree.\"[shape=none]");
+        }
+        
         for (DataFlowTree tree : trees) {
             DataFlowTreeNode pre = tree.getRoot();
             // init of the tree o--ti--.

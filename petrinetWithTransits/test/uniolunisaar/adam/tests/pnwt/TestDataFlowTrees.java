@@ -14,7 +14,6 @@ import uniol.apt.io.parser.ParseException;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.ds.petrinetwithtransits.DataFlowTree;
 import uniolunisaar.adam.ds.petrinetwithtransits.PetriNetWithTransits;
-import uniolunisaar.adam.ds.petrinetwithtransits.Transit;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.PNWTTools;
 
@@ -39,7 +38,8 @@ public class TestDataFlowTrees {
 
     @Test
     public void testNoTree() throws IOException, InterruptedException, ParseException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        final String path = inputDir + File.separator + "ATVA19_motivatingExample.apt";
+//        final String path = inputDir + File.separator + "ATVA19_motivatingExample.apt";
+        final String path = inputDir + File.separator + "handbuiltSDN-ATVA19.apt";
         PetriNetWithTransits pnwt = PNWTTools.getPetriNetWithTransitsFromFile(path, false);
         // some firable, some with transits, some without, but never a chain is created
         List<Transition> firingSequence = new ArrayList<>();
@@ -55,7 +55,8 @@ public class TestDataFlowTrees {
 
     @Test
     public void testOneTree() throws IOException, InterruptedException, ParseException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        final String path = inputDir + File.separator + "ATVA19_motivatingExample.apt";
+//        final String path = inputDir + File.separator + "ATVA19_motivatingExample.apt";
+        final String path = inputDir + File.separator + "handbuiltSDN-ATVA19.apt";
         PetriNetWithTransits pnwt = PNWTTools.getPetriNetWithTransitsFromFile(path, false);
         // some firable, some with transits, some without, but never a chain is created
         List<Transition> firingSequence = new ArrayList<>();
@@ -80,7 +81,8 @@ public class TestDataFlowTrees {
 
     @Test
     public void testSeveralTrees() throws IOException, InterruptedException, ParseException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        final String path = inputDir + File.separator + "ATVA19_motivatingExample.apt";
+//        final String path = inputDir + File.separator + "ATVA19_motivatingExample.apt";
+        final String path = inputDir + File.separator + "handbuiltSDN-ATVA19.apt";
         PetriNetWithTransits pnwt = PNWTTools.getPetriNetWithTransitsFromFile(path, false);
         // some firable, some with transits, some without, but never a chain is created
         List<Transition> firingSequence = new ArrayList<>();
@@ -117,7 +119,8 @@ public class TestDataFlowTrees {
 
     @Test
     public void testRealTrees() throws IOException, InterruptedException, ParseException, NoSuchMethodException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        final String path = inputDir + File.separator + "ATVA19_motivatingExample.apt";
+//        final String path = inputDir + File.separator + "ATVA19_motivatingExample.apt";
+        final String path = inputDir + File.separator + "handbuiltSDN-ATVA19.apt";
         PetriNetWithTransits pnwt = PNWTTools.getPetriNetWithTransitsFromFile(path, false);  
         Place s = pnwt.getPlace("S");
         pnwt.createTransit(s, pnwt.getTransition("t0"), s);
