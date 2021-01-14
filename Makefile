@@ -2,7 +2,7 @@
 
 # dependencies (folders and repos should be equally ordered)
 DEPENDENCIES_FOLDERS="libs,examples"
-DEPENDENCIES_REPOS="git@github.com:adamtool/libs.git,git@github.com:adamtool/examples.git"
+DEPENDENCIES_REPOS="https://github.com/adamtool/libs.git,https://github.com/adamtool/examples.git"
 DEPENDENCIES_REV="HEAD,HEAD"
 # the build target
 FRAMEWORK_TARGETS = tools petrinetwithtransits
