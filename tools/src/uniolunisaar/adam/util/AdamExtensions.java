@@ -44,6 +44,7 @@ public enum AdamExtensions {
     convOrigID,
     convColors,
     convValuation,
+    convTransitionMapping,
     processFamilyID,
     original,
     binID
