@@ -6,6 +6,9 @@ testOutput/
 testng.xml
 antlr/
 
+################## Texteditor related
+*~
+
 ################## JAVA related
 # Compiled class file
 *.class
