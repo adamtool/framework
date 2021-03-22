@@ -93,6 +93,14 @@ public class PNTools {
         }
     }
 
+    /**
+     * Adds the boundedness of a place to its extension. Unbounded places are
+     * annotated with a -1.
+     *
+     * @param net - the input net
+     * @return the input net annotated with the boundedness of the places in
+     * their extensions.
+     */
     public static PetriNet addsBoundedness2Places(PetriNet net) {
         Collection<Place> places = net.getPlaces();
         // initialize them with 0 bounds for not reachable places
