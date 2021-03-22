@@ -213,7 +213,7 @@ public class PetriNetExtensionHandler {
     }
 
     public static void setBoundedness(Place place, long k) {
-        place.putExtension(AdamExtensions.boundedness.name(), k, ExtensionProperty.WRITE_TO_FILE);
+        place.putExtension(AdamExtensions.boundedness.name(), k, ExtensionProperty.WRITE_TO_FILE, ExtensionProperty.NOCOPY);
     }
 
     public static boolean hasBoundedness(Place place) {
