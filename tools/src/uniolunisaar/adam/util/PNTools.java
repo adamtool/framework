@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
@@ -19,9 +21,14 @@ import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Token;
 import uniol.apt.adt.pn.Transition;
+import uniol.apt.analysis.bounded.BoundedResult;
+import uniol.apt.analysis.coverability.CoverabilityGraph;
+import uniol.apt.analysis.coverability.CoverabilityGraphNode;
+import uniol.apt.analysis.language.FiringSequence;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.io.renderer.RenderException;
 import uniol.apt.io.renderer.impl.PnmlPNRenderer;
+import uniol.apt.util.interrupt.InterrupterRegistry;
 import uniolunisaar.adam.ds.BoundingBox;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.exceptions.ExternalToolException;
@@ -84,6 +91,29 @@ public class PNTools {
             throw new TransitionFireException("transition '" + t.getId()
                     + "' is not fireable in marking '" + m.toString() + "'.");
         }
+    }
+
+    public static PetriNet addsBoundedness2Places(PetriNet net) {
+        Collection<Place> places = net.getPlaces();
+        // initialize them with 0 bounds for not reachable places
+        for (Place place : places) {
+            PetriNetExtensionHandler.setBoundedness(place, 0);
+        }
+
+        // check coverability graph
+        CoverabilityGraph cover = CoverabilityGraph.get(net);
+        for (CoverabilityGraphNode state : cover.getNodes()) {
+            Marking marking = state.getMarking();
+            for (Place place : places) {
+                InterrupterRegistry.throwIfInterruptRequestedForCurrentThread();
+                long k = PetriNetExtensionHandler.getBoundedness(place);
+                Token value = marking.getToken(place);
+                if (k < value.getValue() || value.isOmega()) {
+                    PetriNetExtensionHandler.setBoundedness(place, value.getValue());
+                }
+            }
+        }
+        return net;
     }
 
     /**

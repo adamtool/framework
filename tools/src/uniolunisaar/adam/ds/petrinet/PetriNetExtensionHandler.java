@@ -207,6 +207,18 @@ public class PetriNetExtensionHandler {
     public static void setPartition(Place place, int token) {
         place.putExtension(AdamExtensions.token.name(), token, ExtensionProperty.WRITE_TO_FILE);
     }
+
+    public static long getBoundedness(Place place) {
+        return (Long) place.getExtension(AdamExtensions.boundedness.name());
+    }
+
+    public static void setBoundedness(Place place, long k) {
+        place.putExtension(AdamExtensions.boundedness.name(), k, ExtensionProperty.WRITE_TO_FILE);
+    }
+
+    public static boolean hasBoundedness(Place place) {
+        return place.hasExtension(AdamExtensions.boundedness.name());
+    }
 // %%%%%%%%%%%%%%%%%%%%%%%%% TRANSITION EXTENSIONS
 
     public static boolean isStrongFair(Transition t) {
