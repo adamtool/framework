@@ -245,6 +245,18 @@ public class PetriNetExtensionHandler {
         t.removeExtension(AdamExtensions.weakFair.name());
     }
 
+    public static boolean hasOrigID(Transition transition) {
+        return transition.hasExtension(AdamExtensions.origID.name());
+    }
+
+    public static String getOrigID(Transition transition) {
+        return (String) transition.getExtension(AdamExtensions.origID.name());
+    }
+
+    public static void setOrigID(Transition transition, String id) {
+        transition.putExtension(AdamExtensions.origID.name(), id);
+    }
+
 // %%%%%%%%%%%%%%%%%%%%%%%%%% FLOW EXTENSIONS
     public static boolean isInhibitor(Flow f) {
         return f.hasExtension(AdamExtensions.inhibitor.name());
