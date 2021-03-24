@@ -48,5 +48,6 @@ public enum AdamExtensions {
     convTransitionMapping,
     processFamilyID,
     original,
-    binID
+    binID,
+    flowMovesTokenBetweenEqualGamePlaces
 }
