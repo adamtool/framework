@@ -11,23 +11,27 @@ import uniolunisaar.adam.tools.Logger;
  * @author Manuel Gieseking
  */
 public class ExtensionManagement {
-    
+
     private static ExtensionManagement instance = null;
-    
+
     public static ExtensionManagement getInstance() {
         if (instance == null) {
             instance = new ExtensionManagement();
         }
         return instance;
     }
-    
+
     private final Map<String, IAdamExtensions> extensionKeys;
-    
+
     private ExtensionManagement() {
         extensionKeys = new HashMap<>();
     }
-    
-    public void registerExtensions(IAdamExtensions[] values, boolean overwrite) {
+
+    public void registerExtensions(IAdamExtensions... values) {
+        registerExtensions(true, values);
+    }
+
+    public void registerExtensions(boolean overwrite, IAdamExtensions... values) {
         for (IAdamExtensions value : values) {
             if (!overwrite && extensionKeys.containsKey(value.name())) {
                 Logger.getInstance().addWarning("The value '" + value.name() + "' is already available.");
@@ -36,15 +40,15 @@ public class ExtensionManagement {
             }
         }
     }
-    
+
     public <Ex extends Extensible> boolean hasExtension(Ex extensible, IAdamExtensions extensionKey) {
         return extensible.hasExtension(extensionKey.name());
     }
-    
+
     public <Ex extends Extensible> void putExtension(Ex extensible, IAdamExtensions extensionKey, Object object, ExtensionProperty... extensionProperty) {
         extensible.putExtension(extensionKey.name(), object);
     }
-    
+
     public <Ex extends Extensible> void removeExtension(Ex extensible, IAdamExtensions extensionKey) {
         extensible.removeExtension(extensionKey.name());
     }
@@ -66,5 +70,5 @@ public class ExtensionManagement {
         TYPE obj = (TYPE) extensible.getExtension(extensionKey.name());
         return obj;
     }
-    
+
 }

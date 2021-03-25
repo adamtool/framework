@@ -20,7 +20,7 @@ public class PetriNetExtensionHandler {
 
     // register the Extensions for the framework
     static {
-        ExtensionManagement.getInstance().registerExtensions(AdamExtensions.values(), true);
+        ExtensionManagement.getInstance().registerExtensions(true, AdamExtensions.values());
     }
 
     // %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% NET EXTENSIONS
