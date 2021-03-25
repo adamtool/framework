@@ -1,19 +1,21 @@
-package uniolunisaar.adam.logic.transformers.pn2aiger.mcc;
+package uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.mcc;
 
-import uniolunisaar.adam.logic.transformers.pn2aiger.*;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.circuits.AigerFile;
 import uniolunisaar.adam.ds.circuits.CircuitRendererSettings;
-import static uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer.OUTPUT_PREFIX;
+import static uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.AigerRenderer.INIT_LATCH;
+import static uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.AigerRenderer.OUTPUT_PREFIX;
+import uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.AigerRendererSafeStutterRegister;
+import static uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.AigerRendererSafeStutterRegister.STUTT_LATCH;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class AigerRendererSafeStutterRegisterLogTransOnlyPlaces extends AigerRendererSafeStutterRegisterLogTrans {
+public class AigerRendererSafeStutterRegisterOnlyPlaces extends AigerRendererSafeStutterRegister {
 
-    public AigerRendererSafeStutterRegisterLogTransOnlyPlaces(PetriNet net, boolean max, CircuitRendererSettings.TransitionSemantics semantics) {
+    public AigerRendererSafeStutterRegisterOnlyPlaces(PetriNet net, boolean max, CircuitRendererSettings.TransitionSemantics semantics) {
         super(net, max, semantics);
     }
 

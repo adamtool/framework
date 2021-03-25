@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.transformers.pn2aiger;
+package uniolunisaar.adam.logic.transformers.petrinet.pn2aiger;
 
 import java.util.Set;
 import uniol.apt.adt.pn.Flow;

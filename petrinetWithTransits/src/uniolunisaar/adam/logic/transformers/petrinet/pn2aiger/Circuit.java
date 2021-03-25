@@ -1,11 +1,11 @@
-package uniolunisaar.adam.logic.transformers.pn2aiger;
+package uniolunisaar.adam.logic.transformers.petrinet.pn2aiger;
 
 import uniol.apt.adt.pn.PetriNet;
 import uniolunisaar.adam.ds.circuits.CircuitRendererSettings;
-import uniolunisaar.adam.logic.transformers.pn2aiger.mcc.AigerRendererSafeStutterRegisterFireability;
-import uniolunisaar.adam.logic.transformers.pn2aiger.mcc.AigerRendererSafeStutterRegisterLogTransFireability;
-import uniolunisaar.adam.logic.transformers.pn2aiger.mcc.AigerRendererSafeStutterRegisterLogTransOnlyPlaces;
-import uniolunisaar.adam.logic.transformers.pn2aiger.mcc.AigerRendererSafeStutterRegisterOnlyPlaces;
+import uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.mcc.AigerRendererSafeStutterRegisterFireability;
+import uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.mcc.AigerRendererSafeStutterRegisterLogTransFireability;
+import uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.mcc.AigerRendererSafeStutterRegisterLogTransOnlyPlaces;
+import uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.mcc.AigerRendererSafeStutterRegisterOnlyPlaces;
 
 /**
  *

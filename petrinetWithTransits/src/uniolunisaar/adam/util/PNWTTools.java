@@ -32,6 +32,7 @@ import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.logic.parser.transits.TransitParser;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.logic.externaltools.pn.Dot;
+import uniolunisaar.adam.logic.transformers.pnwt.PNWT2Dot;
 import uniolunisaar.adam.tools.Tools;
 
 /**
@@ -288,7 +289,7 @@ public class PNWTTools {
 //        return game;
 //    }
     public static String pnwt2Dot(PetriNetWithTransits net, boolean withLabel) {
-        return PNWTTools.pnwt2Dot(net, withLabel, null);
+        return PNWT2Dot.get(net, withLabel, false, null);
     }
 
 //    public static String getFlowRepresentativ(int id) {
@@ -301,113 +302,6 @@ public class PNWTTools {
 //        }
 //        return String.valueOf(start + id);
 //    }
-    public static String pnwt2Dot(PetriNetWithTransits net, boolean withLabel, Integer tokencount) {
-        final String placeShape = "circle";
-        final String specialPlaceShape = "doublecircle";
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("digraph PetriNet {\n");
-
-        // Transitions
-        sb.append("#transitions\n");
-        sb.append("node [shape=box, height=0.5, width=0.5, fixedsize=true];\n");
-        for (Transition t : net.getTransitions()) {
-            String c = null;
-            if (net.isStrongFair(t)) {
-                c = "blue";
-            }
-            if (net.isWeakFair(t)) {
-                c = "lightblue";
-            }
-            String color = (c != null) ? "style=filled, fillcolor=" + c : "";
-
-            sb.append("\"").append(t.getId()).append("\"").append("[").append(color);
-            if (withLabel) {
-                if (net.isStrongFair(t) || net.isWeakFair(t)) {
-                    sb.append(", ");
-                }
-                sb.append("xlabel=\"").append(t.getLabel()).append("\"");
-            }
-            sb.append("];\n");
-        }
-        sb.append("\n\n");
-
-        // Places
-        sb.append("#places\n");
-        for (Place place : net.getPlaces()) {
-            // special?
-            String shape = (net.isBad(place) || net.isReach(place) || net.isBuchi(place)) ? specialPlaceShape : placeShape;
-            // Initialtoken number
-            Long token = place.getInitialToken().getValue();
-            String tokenString = (token > 0) ? token.toString() : "";
-            // Drawing
-            sb.append("\"").append(place.getId()).append("\"").append("[shape=").append(shape);
-            sb.append(", height=0.5, width=0.5, fixedsize=true");
-            sb.append(", xlabel=").append("\"").append(place.getId()).append("\"");
-            sb.append(", label=").append("\"").append(tokenString).append("\"");
-
-            if (net.hasPartition(place)) {
-                int t = net.getPartition(place);
-                if (t != 0) {  // should it be colored?
-                    sb.append(", style=\"filled");
-                    if (net.isInitialTransit(place)) {
-                        sb.append(", dashed");
-                    }
-                    sb.append("\", fillcolor=");
-                    if (tokencount == null) {
-                        sb.append("gray");
-                    } else {
-                        sb.append("\"");
-                        float val = ((t + 1) * 1.f) / (tokencount * 1.f);
-                        sb.append(val).append(" ").append(val).append(" ").append(val);
-                        sb.append("\"");
-                    }
-                } else if (net.isInitialTransit(place)) {
-                    sb.append(", style=dashed");
-                }
-            } else if (net.isInitialTransit(place)) {
-                sb.append(", style=dashed");
-            }
-
-            sb.append("];\n");
-        }
-
-        // Flows
-        Map<Flow, String> map = getTransitRelationFromTransitions(net);
-        sb.append("\n#flows\n");
-        for (Flow f : net.getEdges()) {
-            sb.append("\"").append(f.getSource().getId()).append("\"").append("->").append("\"").append(f.getTarget().getId()).append("\"");
-            Integer w = f.getWeight();
-            String weight = "\"" + ((w != 1) ? w.toString() + " : " : "");
-            if (map.containsKey(f)) {
-                weight += map.get(f);
-            }
-            weight += "\"";
-            sb.append("[label=").append(weight);
-            if (map.containsKey(f)) {
-                String tfl = map.get(f);
-                if (!tfl.contains(",")) {
-                    sb.append(", color=\"");
-                    Transit init = net.getInitialTransit(f.getTransition());
-                    int max = net.getTransits(f.getTransition()).size() + ((init == null) ? 0 : init.getPostset().size() - 1);
-                    int id = Tools.calcStringIDSmallPrecedenceReverse(tfl);
-                    float val = ((id + 1) * 1.f) / (max * 1.f);
-                    sb.append(val).append(" ").append(val).append(" ").append(val);
-                    sb.append("\"");
-                }
-            }
-            if (net.isInhibitor(f)) {
-                sb.append(", dir=\"both\", arrowtail=\"odot\"");
-            }
-            sb.append("]\n");
-        }
-        sb.append("overlap=false\n");
-        sb.append("label=\"").append(net.getName()).append("\"\n");
-        sb.append("fontsize=12\n");
-        sb.append("}");
-        return sb.toString();
-    }
-
     public static Map<Flow, String> getTransitRelationFromTransitions(PetriNetWithTransits net) {
         Map<Flow, String> map = new HashMap<>(); // store for each flow it's string representation of the token flows
         for (Transition t : net.getTransitions()) {
@@ -470,7 +364,7 @@ public class PNWTTools {
             if (tokencount == -1) {
                 out.println(pnwt2Dot(net, withLabel));
             } else {
-                out.println(pnwt2Dot(net, withLabel, tokencount));
+                out.println(PNWT2Dot.get(net, withLabel, false, tokencount));
             }
         }
         Logger.getInstance().addMessage("Saved to: " + path + ".dot", true);

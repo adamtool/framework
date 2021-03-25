@@ -1,20 +1,22 @@
-package uniolunisaar.adam.logic.transformers.pn2aiger.mcc;
+package uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.mcc;
 
-import uniolunisaar.adam.logic.transformers.pn2aiger.*;
 import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Transition;
 import uniolunisaar.adam.ds.circuits.AigerFile;
-import static uniolunisaar.adam.ds.circuits.AigerFile.NEW_VALUE_OF_LATCH_SUFFIX;
 import uniolunisaar.adam.ds.circuits.CircuitRendererSettings;
-import static uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer.OUTPUT_PREFIX;
+import static uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.AigerRenderer.ENABLED_PREFIX;
+import static uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.AigerRenderer.INIT_LATCH;
+import static uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.AigerRenderer.OUTPUT_PREFIX;
+import uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.AigerRendererSafeStutterRegister;
+import static uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.AigerRendererSafeStutterRegister.STUTT_LATCH;
 
 /**
  *
  * @author Manuel Gieseking
  */
-public class AigerRendererSafeStutterRegisterLogTransFireability extends AigerRendererSafeStutterRegisterLogTrans {
+public class AigerRendererSafeStutterRegisterFireability extends AigerRendererSafeStutterRegister {
 
-    public AigerRendererSafeStutterRegisterLogTransFireability(PetriNet net, boolean max, CircuitRendererSettings.TransitionSemantics semantics) {
+    public AigerRendererSafeStutterRegisterFireability(PetriNet net, boolean max, CircuitRendererSettings.TransitionSemantics semantics) {
         super(net, max, semantics);
     }
 

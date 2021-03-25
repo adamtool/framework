@@ -9,7 +9,7 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.exceptions.ProcessNotStartedException;
 import uniolunisaar.adam.logic.externaltools.pnwt.AigToDot;
-import uniolunisaar.adam.logic.transformers.pn2aiger.AigerRenderer;
+import uniolunisaar.adam.logic.transformers.petrinet.pn2aiger.AigerRenderer;
 import uniolunisaar.adam.tools.AdamProperties;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.tools.processHandling.ExternalProcessHandler;

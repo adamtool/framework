@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.regex.MatchResult;
 import java.util.regex.Pattern;
@@ -21,10 +20,8 @@ import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.adt.pn.Place;
 import uniol.apt.adt.pn.Token;
 import uniol.apt.adt.pn.Transition;
-import uniol.apt.analysis.bounded.BoundedResult;
 import uniol.apt.analysis.coverability.CoverabilityGraph;
 import uniol.apt.analysis.coverability.CoverabilityGraphNode;
-import uniol.apt.analysis.language.FiringSequence;
 import uniol.apt.io.parser.ParseException;
 import uniol.apt.io.renderer.RenderException;
 import uniol.apt.io.renderer.impl.PnmlPNRenderer;
@@ -33,6 +30,7 @@ import uniolunisaar.adam.ds.BoundingBox;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.exceptions.ExternalToolException;
 import uniolunisaar.adam.logic.externaltools.pn.Dot;
+import uniolunisaar.adam.logic.transformers.petrinet.PN2Dot;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.tools.Tools;
 
@@ -234,79 +232,8 @@ public class PNTools {
         return mapping;
     }
 
-    public static String pn2Dot(PetriNet net, boolean withLabel, boolean withOrigPlaces, Integer tokencount) {
-        final String placeShape = "circle";
-        final String specialPlaceShape = "doublecircle";
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("digraph PetriNet {\n");
-
-        // Transitions
-        sb.append("#transitions\n");
-        sb.append("node [shape=box, height=0.5, width=0.5, fixedsize=true];\n");
-        for (Transition t : net.getTransitions()) {
-            String c = null;
-            if (PetriNetExtensionHandler.isStrongFair(t)) {
-                c = "blue";
-            }
-            if (PetriNetExtensionHandler.isWeakFair(t)) {
-                c = "lightblue";
-            }
-            String color = (c != null) ? "style=filled, fillcolor=" + c : "";
-
-            sb.append("\"").append(t.getId()).append("\"").append("[").append(color);
-            if (withLabel) {
-                if (PetriNetExtensionHandler.isStrongFair(t) || PetriNetExtensionHandler.isWeakFair(t)) {
-                    sb.append(", ");
-                }
-                sb.append("xlabel=\"").append(t.getLabel()).append("\"");
-            }
-            sb.append("];\n");
-        }
-        sb.append("\n\n");
-
-        // Places
-        sb.append("#places\n");
-        for (Place place : net.getPlaces()) {
-            // special?
-            String shape = (PetriNetExtensionHandler.isBad(place) || PetriNetExtensionHandler.isReach(place) || PetriNetExtensionHandler.isBuchi(place)) ? specialPlaceShape : placeShape;
-            // Initialtoken number
-            Long token = place.getInitialToken().getValue();
-            String tokenString = (token > 0) ? token.toString() : "";
-            // Drawing
-            String id = place.getId();
-            if (withOrigPlaces && PetriNetExtensionHandler.hasOrigID(place)) {
-                id += "(" + PetriNetExtensionHandler.getOrigID(place) + ")";
-            }
-            sb.append("\"").append(place.getId()).append("\"").append("[shape=").append(shape);
-            sb.append(", height=0.5, width=0.5, fixedsize=true");
-            sb.append(", xlabel=").append("\"").append(id).append("\"");
-            sb.append(", label=").append("\"").append(tokenString).append("\"");
-            sb.append("];\n");
-        }
-
-        // Flows
-        sb.append("\n#flows\n");
-        for (Flow f : net.getEdges()) {
-            sb.append("\"").append(f.getSource().getId()).append("\"").append("->").append("\"").append(f.getTarget().getId()).append("\"");
-            Integer w = f.getWeight();
-            String weight = "\"" + ((w != 1) ? w.toString() + " : " : "");
-            weight += "\"";
-            sb.append("[label=").append(weight);
-            if (PetriNetExtensionHandler.isInhibitor(f)) {
-                sb.append(", dir=\"both\", arrowtail=\"odot\"");
-            }
-            sb.append("]\n");
-        }
-        sb.append("overlap=false\n");
-        sb.append("label=\"").append(net.getName()).append("\"\n");
-        sb.append("fontsize=12\n");
-        sb.append("}");
-        return sb.toString();
-    }
-
     public static String pn2Dot(PetriNet net, boolean withLabel, boolean withOrigPlaces) {
-        return pn2Dot(net, withLabel, withOrigPlaces, null);
+        return PN2Dot.get(net, withLabel, withOrigPlaces, null);
     }
 
     public static void savePN2Dot(String input, String output, boolean withLabel, boolean withOrigPlaces) throws IOException, ParseException {
@@ -323,7 +250,7 @@ public class PNTools {
             if (tokencount == -1) {
                 out.println(pn2Dot(net, withLabel, withOrigPlaces));
             } else {
-                out.println(pn2Dot(net, withLabel, withOrigPlaces, tokencount));
+                out.println(PN2Dot.get(net, withLabel, withOrigPlaces, tokencount));
             }
         }
         Logger.getInstance().addMessage("Saved to: " + path + ".dot", true);
