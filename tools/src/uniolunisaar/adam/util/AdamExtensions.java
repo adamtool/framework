@@ -1,14 +1,16 @@
 package uniolunisaar.adam.util;
 
 /**
- * This enum contains all by ADAM used keys for saving object via the Extendable
- * interface of APT (PetriNet, Place, Transition, Graph, State, etc.).
+ * This enum contains all by the framework used keys for saving object via the
+ * Extensible interface of APT (PetriNet, Place, Transition, Flow).
  *
- * ATTENTION: Do not use them directly to add or get any property. For
- * everything there are specific methods within the belonging classes. If you
- * add some key, also provide suitable methods in the suitable classes to access
- * the extensions.
- *
+ * ATTENTION: Do not use them directly to add or get any property. Use the
+ * uniolunisaar.adam.util.ExtensionManagement if you want to add and use your own
+ * extensions. For the provided extensions there are specific methods within the
+ * the class PetriNetExtensionHandler. For submodules the idea is 
+ * to have their own ExtensionHandler, which registers the own extensions
+ * and collects the methods calling the ExtensionManagement.
+ * 
  * @author Manuel Gieseking
  */
 public enum AdamExtensions implements IAdamExtensions {
@@ -22,13 +24,8 @@ public enum AdamExtensions implements IAdamExtensions {
     reach,
     buchi,
     origID,
-    id,
     strat_t,
     t,
-    tfl,
-    itfl,
-    n,
-    b,
     xCoord,
     yCoord,
     strongFair,

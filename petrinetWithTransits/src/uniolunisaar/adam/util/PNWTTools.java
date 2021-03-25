@@ -40,39 +40,42 @@ import uniolunisaar.adam.tools.Tools;
  */
 public class PNWTTools {
 
+    //%%%%%%%%%% The following methods are used for the parsing, here the 
+    //           Extensions are overwritten because they are stored as String
+    //           during the parsing. Thus, we handle them separately.
     static boolean hasTransitAnnotation(Transition t) {
-        return t.hasExtension(AdamExtensions.tfl.name());
+        return ExtensionManagement.getInstance().hasExtension(t, AdamPNWTExtensions.tfl);
     }
 
     static String getTransitAnnotation(Transition t) {
-        String tfl = (String) t.getExtension(AdamExtensions.tfl.name());
-        if (tfl.equals(AdamExtensions.tfl.name())) {
+        String tfl = ExtensionManagement.getInstance().getExtension(t, AdamPNWTExtensions.tfl, String.class);
+        if (tfl.equals(AdamPNWTExtensions.tfl.name())) {
             tfl = "";
         }
         return tfl;
     }
 
     private static void setTransitAnnotation(Transition t, String text) {
-        t.putExtension(AdamExtensions.tfl.name(), text, ExtensionProperty.WRITE_TO_FILE, ExtensionProperty.NOCOPY);
+        ExtensionManagement.getInstance().putExtension(t, AdamPNWTExtensions.tfl, text, ExtensionProperty.WRITE_TO_FILE, ExtensionProperty.NOCOPY);
     }
 
     private static void parseAndCreateTransitsFromTransitionExtensionText(PetriNetWithTransits net, boolean withAutomatic) throws ParseException {
-        //todo: hack. change it, when the new implemenation of the flows is implmemented
-        if (net.hasExtension(AdamExtensions.condition.name())) {
-            if (net.getExtension(AdamExtensions.condition.name()).equals("A_SAFETY")
-                    || net.getExtension(AdamExtensions.condition.name()).equals("SAFETY")
-                    || net.getExtension(AdamExtensions.condition.name()).equals("E_REACHABILITY")
-                    || net.getExtension(AdamExtensions.condition.name()).equals("REACHABILITY")) {
-                return;
-            }
-        } else if (net.hasExtension(AdamExtensions.winningCondition.name())) { // todo: this is only for the fallback to the just-sythesis-version.
-            if (net.getExtension(AdamExtensions.winningCondition.name()).equals("A_SAFETY")
-                    || net.getExtension(AdamExtensions.winningCondition.name()).equals("SAFETY")
-                    || net.getExtension(AdamExtensions.winningCondition.name()).equals("E_REACHABILITY")
-                    || net.getExtension(AdamExtensions.winningCondition.name()).equals("REACHABILITY")) {
-                return;
-            }
-        }
+//        //todo: hack. change it, when the new implemenation of the flows is implmemented
+//        if (net.hasExtension(AdamExtensions.condition.name())) {
+//            if (net.getExtension(AdamExtensions.condition.name()).equals("A_SAFETY")
+//                    || net.getExtension(AdamExtensions.condition.name()).equals("SAFETY")
+//                    || net.getExtension(AdamExtensions.condition.name()).equals("E_REACHABILITY")
+//                    || net.getExtension(AdamExtensions.condition.name()).equals("REACHABILITY")) {
+//                return;
+//            }
+//        } else if (net.hasExtension(AdamExtensions.winningCondition.name())) { // todo: this is only for the fallback to the just-sythesis-version.
+//            if (net.getExtension(AdamExtensions.winningCondition.name()).equals("A_SAFETY")
+//                    || net.getExtension(AdamExtensions.winningCondition.name()).equals("SAFETY")
+//                    || net.getExtension(AdamExtensions.winningCondition.name()).equals("E_REACHABILITY")
+//                    || net.getExtension(AdamExtensions.winningCondition.name()).equals("REACHABILITY")) {
+//                return;
+//            }
+//        }
 
         for (Transition t : net.getTransitions()) {
             if (hasTransitAnnotation(t)) {
@@ -104,7 +107,7 @@ public class PNWTTools {
 //                    game.setTokenFlow(t, tfl);
                 }
                 // clear the entry because this just for saving and is not changed when any transit is changed.
-                t.removeExtension(AdamExtensions.tfl.name());
+                ExtensionManagement.getInstance().removeExtension(t, AdamPNWTExtensions.tfl);
             } else if (withAutomatic) {
                 if (t.getPreset().size() == 1) {
                     Place pre = t.getPreset().iterator().next();
@@ -156,6 +159,7 @@ public class PNWTTools {
 //        }
         return pnwt;
     }
+    // %%%%%%%%%%%%%%%%%%% END method for parsing
 
     public static void saveAPT(String path, PetriNetWithTransits net, boolean withAnnotationPartition, boolean withCoordinates) throws RenderException, FileNotFoundException {
         String file = net.toAPT(withAnnotationPartition, withCoordinates);
@@ -650,11 +654,11 @@ public class PNWTTools {
         StringBuilder sb = new StringBuilder();
         sb.append("digraph DataFlowTrees {\n");
 
-        if(trees.isEmpty()) {
-              sb.append("# there is no tree\n"); 
-              sb.append("\"For the given firing sequence there exists no data flow tree.\"[shape=none]");
+        if (trees.isEmpty()) {
+            sb.append("# there is no tree\n");
+            sb.append("\"For the given firing sequence there exists no data flow tree.\"[shape=none]");
         }
-        
+
         for (DataFlowTree tree : trees) {
             DataFlowTreeNode pre = tree.getRoot();
             // init of the tree o--ti--.
