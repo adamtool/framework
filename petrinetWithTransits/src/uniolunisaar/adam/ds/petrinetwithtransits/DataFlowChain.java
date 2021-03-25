@@ -9,4 +9,5 @@ import uniol.apt.adt.pn.Node;
  */
 public class DataFlowChain extends ArrayList<Node> {
 
+    public static final long serialVersionUID = 1L;
 }
