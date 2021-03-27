@@ -27,21 +27,18 @@ public class PNWT2DotRenderer<G extends PetriNetWithTransits> extends PetriNet2D
         sb.append(super.getPlacesAdditionalStyles(net, withOrigPlaces, place));
 
         // add possible coloring and the initial transits
-        if (net.hasPartition(place)) {
+        if (nb_partitions != null && net.hasPartition(place)) {
             int t = net.getPartition(place);
             sb.append(", style=\"filled");
             if (net.isInitialTransit(place)) {
                 sb.append(", dashed");
             }
             sb.append("\", fillcolor=");
-            if (nb_partitions == null) {
-                sb.append("gray");
-            } else {
-                sb.append("\"");
-                float val = ((t + 1) * 1.f) / (nb_partitions * 1.f);
-                sb.append(val).append(" ").append(val).append(" ").append(val);
-                sb.append("\"");
-            }
+            sb.append("\"");
+            float val = ((t + 1) * 1.f) / (nb_partitions * 1.f);
+            sb.append(val).append(" ").append(val).append(" ").append(val);
+            sb.append("\"");
+
         } else if (net.isInitialTransit(place)) {
             sb.append(", style=dashed");
         }

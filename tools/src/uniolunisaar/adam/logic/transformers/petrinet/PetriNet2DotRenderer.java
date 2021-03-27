@@ -29,7 +29,7 @@ public class PetriNet2DotRenderer<G extends PetriNet> {
 
     protected String render(String type, G net, boolean withLabel, boolean withOrigPlaces) {
         StringBuilder sb = new StringBuilder();
-        sb.append(getHeader(type));
+        sb.append(getHeader(net, type));
         sb.append(getTransitions(net, withLabel));
         sb.append(getPlaces(net, withOrigPlaces));
         sb.append(getFlows(net));
@@ -38,7 +38,7 @@ public class PetriNet2DotRenderer<G extends PetriNet> {
     }
 
     // %%%%%%%%%%%%%%%%% HEADER
-    protected String getHeader(String name) {
+    protected String getHeader(G net, String name) {
         return "digraph " + name + " {\n";
     }
 
