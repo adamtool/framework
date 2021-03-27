@@ -1,4 +1,4 @@
-package uniolunisaar.adam.exceptions.pnwt;
+package uniolunisaar.adam.exceptions;
 
 /**
  *
