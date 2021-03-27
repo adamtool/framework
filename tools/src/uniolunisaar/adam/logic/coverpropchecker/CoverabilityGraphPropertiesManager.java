@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.transformers.petrinet.rgpropchecker;
+package uniolunisaar.adam.logic.coverpropchecker;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,6 @@ import uniol.apt.adt.pn.PetriNet;
 import uniol.apt.analysis.coverability.CoverabilityGraph;
 import uniol.apt.analysis.coverability.CoverabilityGraphNode;
 import uniolunisaar.adam.exceptions.pnwt.CalculationInterruptedException;
-import uniolunisaar.adam.logic.synthesis.solver.symbolic.bddapproach.distrenv.DistrEnvBDDSolverFactory;
 import uniolunisaar.adam.tools.Logger;
 import uniolunisaar.adam.util.ExtensionManagement;
 

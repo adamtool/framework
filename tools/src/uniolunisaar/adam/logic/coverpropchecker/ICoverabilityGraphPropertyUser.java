@@ -1,4 +1,4 @@
-package uniolunisaar.adam.logic.transformers.petrinet.rgpropchecker;
+package uniolunisaar.adam.logic.coverpropchecker;
 
 import uniol.apt.adt.pn.Marking;
 import uniol.apt.adt.pn.PetriNet;
