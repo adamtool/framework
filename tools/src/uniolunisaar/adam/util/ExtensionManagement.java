@@ -45,8 +45,8 @@ public class ExtensionManagement {
         return extensible.hasExtension(extensionKey.name());
     }
 
-    public <Ex extends Extensible> void putExtension(Ex extensible, IAdamExtensions extensionKey, Object object, ExtensionProperty... extensionProperty) {
-        extensible.putExtension(extensionKey.name(), object);
+    public <Ex extends Extensible> void putExtension(Ex extensible, IAdamExtensions extensionKey, Object object, ExtensionProperty... extensionProperties) {
+        extensible.putExtension(extensionKey.name(), object, extensionProperties);
     }
 
     public <Ex extends Extensible> void removeExtension(Ex extensible, IAdamExtensions extensionKey) {
