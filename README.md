@@ -29,6 +29,7 @@ This modules can be used as separate library and
 
 Related Publications:
 ---------------------
+**Petri Net with Transits** <img src="./doc/images/ae-badge-atva_outer_trans.png" alt="CAV Artifact Evaluation Badge" width="25mm" height="25mm">:
 - _Bernd Finkbeiner, Manuel Gieseking, Jesko Hecking-Harbusch, Ernst-Rüdiger Olderog:_
   [Model Checking Data Flows in Concurrent Network Updates](https://doi.org/10.1007/978-3-030-31784-3_30). ATVA 2019: 515-533 [(Full Version)](http://arxiv.org/abs/1907.11061).
 
