@@ -1,6 +1,7 @@
 package uniolunisaar.adam.ds.petrinetwithtransits;
 
 import uniol.apt.adt.extension.ExtensionProperty;
+import uniol.apt.adt.pn.Node;
 import uniol.apt.adt.pn.Place;
 import uniolunisaar.adam.ds.petrinet.PetriNetExtensionHandler;
 import uniolunisaar.adam.util.AdamPNWTExtensions;
@@ -29,12 +30,12 @@ class PetriNetWithTransitsExtensionHandler extends PetriNetExtensionHandler {
         ExtensionManagement.getInstance().removeExtension(place, AdamPNWTExtensions.itfl);
     }
 
-    static int getID(Place place) {
-        return ExtensionManagement.getInstance().getExtension(place, AdamPNWTExtensions.id, Integer.class);
+    static int getID(Node node) {
+        return ExtensionManagement.getInstance().getExtension(node, AdamPNWTExtensions.id, Integer.class);
     }
 
-    static void setID(Place place, int id) {
-        ExtensionManagement.getInstance().putExtension(place, AdamPNWTExtensions.id, id);
+    static void setID(Node node, int id) {
+        ExtensionManagement.getInstance().putExtension(node, AdamPNWTExtensions.id, id);
     }
 
 }

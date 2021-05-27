@@ -678,12 +678,12 @@ public class PetriNetWithTransits extends PetriNet {
         PetriNetExtensionHandler.setPartition(place, token);
     }
 
-    public int getID(Place place) {
-        return PetriNetWithTransitsExtensionHandler.getID(place);
+    public int getID(Node node) {
+        return PetriNetWithTransitsExtensionHandler.getID(node);
     }
 
-    public void setID(Place place, int id) {
-        PetriNetWithTransitsExtensionHandler.setID(place, id);
+    public void setID(Node node, int id) {
+        PetriNetWithTransitsExtensionHandler.setID(node, id);
     }
 
     public String getOrigID(Place place) {
