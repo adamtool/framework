@@ -134,13 +134,13 @@ public class PetriNetWithTransits extends PetriNet {
             Transition newNode = createTransition(newId);
             newNode.copyExtensions(n);
             // copy the edges
-            Set<Node> preset = n.getPresetNodes();
-            for (Node pre : preset) {
-                createFlow(pre.getId(), newNode.getId());
+            Set<Flow> preset = n.getPresetEdges();
+            for (Flow pre : preset) {
+                createFlow(pre.getSource().getId(), newNode.getId(), pre.getWeight());
             }
-            Set<Node> postset = n.getPostsetNodes();
-            for (Node post : postset) {
-                createFlow(newNode.getId(), post.getId());
+            Set<Flow> postset = n.getPostsetEdges();
+            for (Flow post : postset) {
+                createFlow(newNode.getId(), post.getTarget().getId(), post.getWeight());
             }
             // copy the tokenflows
             Map<String, Transit> tfls = transits.get(n.getId());
@@ -160,13 +160,13 @@ public class PetriNetWithTransits extends PetriNet {
             Place newNode = createPlace(newId);
             newNode.copyExtensions(n);
             // copy the edges
-            Set<Node> preset = n.getPresetNodes();
-            for (Node pre : preset) {
-                createFlow(pre.getId(), newNode.getId());
+            Set<Flow> preset = n.getPresetEdges();
+            for (Flow pre : preset) {
+                createFlow(pre.getSource().getId(), newNode.getId(), pre.getWeight());
             }
-            Set<Node> postset = n.getPostsetNodes();
-            for (Node post : postset) {
-                createFlow(newNode.getId(), post.getId());
+            Set<Flow> postset = n.getPostsetEdges();
+            for (Flow post : postset) {
+                createFlow(newNode.getId(), post.getTarget().getId(), post.getWeight());
             }
 
             //is initially marked?
