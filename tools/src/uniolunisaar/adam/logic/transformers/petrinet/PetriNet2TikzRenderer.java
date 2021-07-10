@@ -18,7 +18,7 @@ public class PetriNet2TikzRenderer<G extends PetriNet> {
     private final String PLACE_STYLE = "circle, thick, draw=black!75, fill=white, minimum size=6mm";
     private final String TRANSITION_STYLE = "rectangle, thick, draw=DarkBlue!75, fill=DarkBlue!20, minimum size=4mm";
 
-    public String renderFromCoordinates(PetriNet net) {
+    public String renderFromCoordinates(G net) {
         StringBuilder sb = new StringBuilder();
         sb.append(header());
         sb.append(nodes(net));
@@ -40,7 +40,7 @@ public class PetriNet2TikzRenderer<G extends PetriNet> {
         return sb.toString();
     }
 
-    protected String nodes(PetriNet net) {
+    protected String nodes(G net) {
         BoundingBox bb = PNTools.calculateBoundingBox(net);
         StringBuilder sb = new StringBuilder();
         sb.append(places(net, bb));
@@ -48,7 +48,7 @@ public class PetriNet2TikzRenderer<G extends PetriNet> {
         return sb.toString();
     }
 
-    protected String places(PetriNet net, BoundingBox bb) {
+    protected String places(G net, BoundingBox bb) {
         StringBuilder sb = new StringBuilder();
         for (Place place : net.getPlaces()) {
             double xcoord = norm(PetriNetExtensionHandler.getXCoord(place), bb.getLeft(), bb.getRight());
@@ -67,7 +67,7 @@ public class PetriNet2TikzRenderer<G extends PetriNet> {
         return sb.toString();
     }
 
-    protected String transitions(PetriNet net, BoundingBox bb) {
+    protected String transitions(G net, BoundingBox bb) {
         StringBuilder sb = new StringBuilder();
         for (Transition t : net.getTransitions()) {
             double xcoord = norm(PetriNetExtensionHandler.getXCoord(t), bb.getLeft(), bb.getRight());
@@ -82,7 +82,7 @@ public class PetriNet2TikzRenderer<G extends PetriNet> {
         return sb.toString();
     }
 
-    protected String path(PetriNet net) {
+    protected String path(G net) {
         StringBuilder sb = new StringBuilder();
         sb.append("\\draw[->] \n");
         for (Transition t : net.getTransitions()) {
