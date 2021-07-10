@@ -27,7 +27,7 @@ public class PetriNet2TikzRenderer<G extends PetriNet> {
         return sb.toString();
     }
 
-    String header() {
+    protected String header() {
         StringBuilder sb = new StringBuilder();
         // styles
         sb.append("\\tikzstyle{place}=[").append(PLACE_STYLE).append("]\n");
@@ -40,7 +40,7 @@ public class PetriNet2TikzRenderer<G extends PetriNet> {
         return sb.toString();
     }
 
-    String nodes(PetriNet net) {
+    protected String nodes(PetriNet net) {
         BoundingBox bb = PNTools.calculateBoundingBox(net);
         StringBuilder sb = new StringBuilder();
         sb.append(places(net, bb));
@@ -48,7 +48,7 @@ public class PetriNet2TikzRenderer<G extends PetriNet> {
         return sb.toString();
     }
 
-    String places(PetriNet net, BoundingBox bb) {
+    protected String places(PetriNet net, BoundingBox bb) {
         StringBuilder sb = new StringBuilder();
         for (Place place : net.getPlaces()) {
             double xcoord = norm(PetriNetExtensionHandler.getXCoord(place), bb.getLeft(), bb.getRight());
@@ -67,7 +67,7 @@ public class PetriNet2TikzRenderer<G extends PetriNet> {
         return sb.toString();
     }
 
-    String transitions(PetriNet net, BoundingBox bb) {
+    protected String transitions(PetriNet net, BoundingBox bb) {
         StringBuilder sb = new StringBuilder();
         for (Transition t : net.getTransitions()) {
             double xcoord = norm(PetriNetExtensionHandler.getXCoord(t), bb.getLeft(), bb.getRight());
@@ -82,7 +82,7 @@ public class PetriNet2TikzRenderer<G extends PetriNet> {
         return sb.toString();
     }
 
-    String path(PetriNet net) {
+    protected String path(PetriNet net) {
         StringBuilder sb = new StringBuilder();
         sb.append("\\draw[->] \n");
         for (Transition t : net.getTransitions()) {
@@ -98,13 +98,13 @@ public class PetriNet2TikzRenderer<G extends PetriNet> {
         return sb.toString();
     }
 
-    String footer() {
+    protected String footer() {
         StringBuilder sb = new StringBuilder();
         sb.append("\\end{tikzpicture}");
         return sb.toString();
     }
 
-    private double norm(double val, double min, double max) {
+    protected double norm(double val, double min, double max) {
         return 100 * (val - min) / (max - min);
     }
 }

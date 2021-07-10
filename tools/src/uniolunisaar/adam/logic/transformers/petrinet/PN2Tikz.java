@@ -10,6 +10,5 @@ public class PN2Tikz {
 
     public static String get(PetriNet net) {
         return new PetriNet2TikzRenderer<>().renderFromCoordinates(net);
-
     }
 }
