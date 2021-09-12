@@ -1,7 +1,7 @@
 package uniolunisaar.adam.ds.abta.posbooleanformula;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  *
@@ -41,7 +41,7 @@ public class PositiveBooleanConstants implements IPositiveBooleanFormula {
     }
 
     @Override
-    public List<IPositiveBooleanFormulaAtom> getAtoms() {
-        return new ArrayList<>();
+    public Set<IPositiveBooleanFormulaAtom> getAtoms() {
+        return new HashSet<>();
     }
 }

@@ -1,6 +1,6 @@
 package uniolunisaar.adam.ds.abta.posbooleanformula;
 
-import java.util.List;
+import java.util.Set;
 
 /**
  *
@@ -16,7 +16,7 @@ public class PositiveBooleanFormula implements IPositiveBooleanFormula {
     }
 
     @Override
-    public List<IPositiveBooleanFormulaAtom> getAtoms() {
+    public Set<IPositiveBooleanFormulaAtom> getAtoms() {
         return phi.getAtoms();
     }
 

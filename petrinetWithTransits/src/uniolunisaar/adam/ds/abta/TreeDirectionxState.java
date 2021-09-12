@@ -1,7 +1,8 @@
 package uniolunisaar.adam.ds.abta;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import uniolunisaar.adam.ds.abta.posbooleanformula.IPositiveBooleanFormulaAtom;
 
 /**
@@ -36,10 +37,10 @@ public class TreeDirectionxState implements IPositiveBooleanFormulaAtom {
     }
 
     @Override
-    public List<IPositiveBooleanFormulaAtom> getAtoms() {
-        List<IPositiveBooleanFormulaAtom> list = new ArrayList<>();
-        list.add(this);
-        return list;
+    public Set<IPositiveBooleanFormulaAtom> getAtoms() {
+        Set<IPositiveBooleanFormulaAtom> atoms = new HashSet<>();
+        atoms.add(this);
+        return atoms;
     }
 
 }
