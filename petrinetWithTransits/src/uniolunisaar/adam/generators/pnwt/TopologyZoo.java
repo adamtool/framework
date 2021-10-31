@@ -15,7 +15,15 @@ import uniolunisaar.adam.generators.pnwt.util.sdnencoding.TopologyToPN;
 public class TopologyZoo {
 
     public static PetriNetWithTransits createTopologyFromFile(String path) throws ParseException, IOException {
+        return createTopologyFromFile(path, false, false, false, false);
+    }
+
+    public static PetriNetWithTransits createTopologyFromFile(String path, boolean loopFreedom, boolean dropFreedom, boolean eventualDropFreedom, boolean packetCoherence) throws ParseException, IOException {
         TopologyToPN ttp = new TopologyToPN(new File(path));
+        ttp.setLoopFreedom(loopFreedom);
+        ttp.setDropFreedom(dropFreedom);
+        ttp.setEventualDropFreedom(eventualDropFreedom);
+        ttp.setPacketCoherence(packetCoherence);
         PetriNetWithTransits pn = ttp.generatePetriNet();
         ttp.setUpdate(pn);
         // calculate the maximal number of switches.

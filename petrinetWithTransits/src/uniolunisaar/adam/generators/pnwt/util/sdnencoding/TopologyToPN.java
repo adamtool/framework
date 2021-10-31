@@ -37,10 +37,10 @@ public class TopologyToPN {
 	static boolean useEmptyFull = false;
 	
 	// TODO XOR between these or none for connectivity
-	static boolean packetCoherence = false;
-	static boolean loopFreedom = false;
-	static boolean dropFreedom = false;
-	static boolean eventualDropFreedom = false;
+	boolean packetCoherence = false;
+	boolean loopFreedom = false;
+	boolean dropFreedom = false;
+	boolean eventualDropFreedom = false;
 	
 	public TopologyToPN(File file) throws ParseException, IOException {
 		ts = new AptLTSParser().parseFile(file);
@@ -445,4 +445,22 @@ public class TopologyToPN {
 		pn.createTransit(pre, transition2ID, post);
 		pn.createTransit(post, transition2ID, post);
 	}
+
+    public void setPacketCoherence(boolean packetCoherence) {
+        this.packetCoherence = packetCoherence;
+    }
+
+    public void setLoopFreedom(boolean loopFreedom) {
+        this.loopFreedom = loopFreedom;
+    }
+
+    public void setDropFreedom(boolean dropFreedom) {
+        this.dropFreedom = dropFreedom;
+    }
+
+    public void setEventualDropFreedom(boolean eventualDropFreedom) {
+        this.eventualDropFreedom = eventualDropFreedom;
+    }
+        
+        
 }
