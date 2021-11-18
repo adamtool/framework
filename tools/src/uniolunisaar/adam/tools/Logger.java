@@ -104,6 +104,7 @@ public class Logger {
     private ObjectOutputStream writer;
     private Object flag;
     private final PrintStream systemOutput;
+    private boolean errorsWithStackTrace = false;
 
     /**
      * Adds a message to the verbose message stream.
@@ -215,6 +216,9 @@ public class Logger {
             errorStream.println(msg);
             msg = "\n" + e.getMessage() + "\n" + Arrays.toString(e.getStackTrace());
             verboseMessageStream.println(msg);
+            if (errorsWithStackTrace) {
+                errorStream.println(msg);
+            }
         }
         if (output == OUTPUT.FILE || output == OUTPUT.STREAMS_AND_FILE) {
             file.append(msg).append(System.lineSeparator());
@@ -342,4 +346,13 @@ public class Logger {
             this.verboseMessageStream = verboseMessageStream;
         }
     }
+
+    public boolean isErrorsWithStackTrace() {
+        return errorsWithStackTrace;
+    }
+
+    public void setErrorsWithStackTrace(boolean errorsWithStackTrace) {
+        this.errorsWithStackTrace = errorsWithStackTrace;
+    }
+
 }
